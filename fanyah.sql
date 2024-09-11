@@ -45,20 +45,20 @@ CREATE TABLE utilisateur(
    id_utilisateur INT AUTO_INCREMENT,
    matricule VARCHAR(20) NOT NULL,
    nom VARCHAR(70) NOT NULL,
-   prenoms VARCHAR(70),
+   prenom VARCHAR(70),
    date_naissance DATE NOT NULL,
    cin VARCHAR(50) NOT NULL,
    mot_passe TEXT NOT NULL,
-   id_sexe INT NOT NULL,
-   id_role INT NOT NULL,
-   id_situation_familial INT NOT NULL,
+   sexe_id INT NOT NULL,
+   role_id INT NOT NULL,
+   situation_familial_id INT NOT NULL,
    PRIMARY KEY(id_utilisateur),
    UNIQUE(matricule),
    UNIQUE(cin),
    UNIQUE(mot_passe),
-   FOREIGN KEY(id_sexe) REFERENCES sexe(id_sexe),
-   FOREIGN KEY(id_role) REFERENCES role(id_role),
-   FOREIGN KEY(id_situation_familial) REFERENCES situation_familial(id_situation_familial)
+   FOREIGN KEY(sexe_id) REFERENCES sexe(id_sexe),
+   FOREIGN KEY(role_id) REFERENCES role(id_role),
+   FOREIGN KEY(situation_familial_id) REFERENCES situation_familial(id_situation_familial)
 );
 
 CREATE TABLE navire(
@@ -66,19 +66,19 @@ CREATE TABLE navire(
    navire VARCHAR(50) NOT NULL,
    nb_compartiment INT NOT NULL,
    quantite_max DECIMAL(10,2),
-   id_type_navire INT NOT NULL,
+   type_navire_id INT NOT NULL,
    PRIMARY KEY(id_navire),
    UNIQUE(navire),
-   FOREIGN KEY(id_type_navire) REFERENCES type_navire(id_type_navire)
+   FOREIGN KEY(type_navire_id) REFERENCES type_navire(id_type_navire)
 );
 
 CREATE TABLE mouvement_navire(
    id_mouvement_navire INT AUTO_INCREMENT,
    date_arriver DATE NOT NULL,
    date_depart VARCHAR(50),
-   id_navire INT NOT NULL,
+   navire_id INT NOT NULL,
    PRIMARY KEY(id_mouvement_navire),
-   FOREIGN KEY(id_navire) REFERENCES navire(id_navire)
+   FOREIGN KEY(navire_id) REFERENCES navire(id_navire)
 );
 
 CREATE TABLE prevision(
@@ -99,25 +99,25 @@ CREATE TABLE entree_magasin(
    chauffeur VARCHAR(60) NOT NULL,
    quantite_palette INT NOT NULL,
    date_entrant DATE NOT NULL,
-   id_utilisateur INT NOT NULL,
-   id_station INT NOT NULL,
-   id_magasin INT NOT NULL,
+   agent_id INT NOT NULL,
+   station_id INT NOT NULL,
+   magasin_id INT NOT NULL,
    PRIMARY KEY(id_entree_magasin),
    UNIQUE(bon_livraison),
-   FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur),
-   FOREIGN KEY(id_station) REFERENCES station(id_station),
-   FOREIGN KEY(id_magasin) REFERENCES magasin(id_magasin)
+   FOREIGN KEY(agent_id) REFERENCES utilisateur(id_utilisateur),
+   FOREIGN KEY(station_id) REFERENCES station(id_station),
+   FOREIGN KEY(magasin_id) REFERENCES magasin(id_magasin)
 );
 
 CREATE TABLE sortant_magasin(
    id_sortant_magasin INT AUTO_INCREMENT,
    quantite_sortie INT NOT NULL,
    date_sortie DATE NOT NULL,
-   id_entree_magasin INT NOT NULL,
-   id_utilisateur INT NOT NULL,
+   entree_magasin_id INT NOT NULL,
+   agent_id INT NOT NULL,
    PRIMARY KEY(id_sortant_magasin),
-   FOREIGN KEY(id_entree_magasin) REFERENCES entree_magasin(id_entree_magasin),
-   FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+   FOREIGN KEY(entree_magasin_id) REFERENCES entree_magasin(id_entree_magasin),
+   FOREIGN KEY(agent_id) REFERENCES utilisateur(id_utilisateur)
 );
 
 CREATE TABLE compartiment_navire(
