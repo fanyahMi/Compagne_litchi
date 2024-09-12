@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/plugins/bootstrap.min.css">
     <title>Sign In</title>
@@ -97,25 +98,21 @@
             <div class="row" style="box-shadow: 0 4px 20px rgba(222, 219, 219, 0.127);border-radius: 10px;background-size: contain;background-repeat: no-repeat; padding:5% ;justify-content: space-around;background-color: whitesmoke">
                 <div class="col-md-7" style='background-image: url("assets/images/Logo_vectoriel_etk4ek.png");background-size: contain;background-repeat: no-repeat;background-position: center'>
                 </div>
-                <div class="col-12 col-md-4 " style="min-width: 320px;">
-                    <h4 class="fw-300 c-dark-green mB-40" id="titre" >Connectez-vous</h4>
-                    <form action="{{ url('login') }}" method="POST">
+                <div class="col-12 col-md-4" style="min-width: 320px;">
+                    <h4 class="fw-300 c-dark-green mB-40" id="titre">Connectez-vous</h4>
+                    <form id="loginForm">
                         @csrf
                         <div class="mb-3">
                             <label class="text-normal text-dark form-label">Nº matricule</label>
-                            <input type="text" class="form-control" name="matricule" value="m@m" required>
+                            <input type="text" class="form-control" name="matricule" id="matricule" value="20240902">
                         </div>
                         <div class="mb-3">
                             <label class="text-normal text-dark form-label">Mot de passe</label>
-                            <input type="password" class="form-control" name="password" required value="m">
+                            <input type="password" class="form-control" name="motDePasse" id="motDePasse" value="Smith" required>
                         </div>
-                        @if ($errors->any())
-                            <div class="error-message text-danger">
-                                @foreach ($errors->all() as $error)
-                                    <p>{{ $error }}</p>
-                                @endforeach
-                            </div>
-                        @endif
+                        <div class="mb-3">
+                            <div id="generalError" class="error-message text-danger"></div>
+                        </div>
                         <div class="">
                             <div class="peers ai-c jc-sb fxw-nw">
                                 <div class="peer">
@@ -127,7 +124,7 @@
                                     </div>
                                 </div>
                                 <div class="peer">
-                                    <button class="btn btn-color bouton">Login</button>
+                                    <button type="submit" class="btn btn-color bouton">Login</button>
                                 </div>
                             </div>
                         </div>
@@ -135,5 +132,46 @@
                 </div>
             </div>
         </div>
+
+       <script src="assets/js/plugins/jquery.js"></script>
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $('#loginForm').on('submit', function(event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: '{{ url('loginWeb') }}',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                $('#generalError').text('');
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                }
+            },
+            error: function(xhr) {
+                $('#generalError').text('');
+                try {
+                    var responseJSON = $.parseJSON(xhr.responseText);
+                        if (responseJSON.message) {
+                            $('#generalError').text(responseJSON.message);
+                        }
+                        if (responseJSON.error) {
+                            $('#generalError').text(responseJSON.error);
+                        }
+
+                } catch (e) {
+                    $('#generalError').text('Erreur inconnue: ' + xhr.responseText);
+                }
+            }
+        });
+    });
+});
+</script>
   </body>
 </html>

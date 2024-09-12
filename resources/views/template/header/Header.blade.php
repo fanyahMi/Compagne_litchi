@@ -97,9 +97,10 @@
                             <div class="pro-head">
                                 <img src="assets/images/user/avatar-1.jpg" class="img-radius" alt="User-Profile-Image">
                                 <span>John Doe</span>
-                                <a href="auth-signin.html" class="dud-logout" title="Logout">
+                                <a  class="dud-logout" title="Logout" href="{{ route('logout') }}" >
                                     <i class="feather icon-log-out"></i>
                                 </a>
+
                             </div>
                         </div>
                     </div>
