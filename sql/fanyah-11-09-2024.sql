@@ -85,11 +85,11 @@ CREATE TABLE prevision(
    id_prevision INT AUTO_INCREMENT,
    annee INT NOT NULL,
    quota INT,
-   id_station INT NOT NULL,
-   id_navire INT NOT NULL,
+   station_id INT NOT NULL,
+   navire_id INT NOT NULL,
    PRIMARY KEY(id_prevision),
-   FOREIGN KEY(id_station) REFERENCES station(id_station),
-   FOREIGN KEY(id_navire) REFERENCES navire(id_navire)
+   FOREIGN KEY(station_id) REFERENCES station(id_station),
+   FOREIGN KEY(navire_id) REFERENCES navire(id_navire)
 );
 
 CREATE TABLE entree_magasin(
@@ -123,21 +123,21 @@ CREATE TABLE sortant_magasin(
 CREATE TABLE compartiment_navire(
    id_compartiment_navire INT AUTO_INCREMENT,
    quantite_max DECIMAL(15,2) NOT NULL,
-   id_navire INT NOT NULL,
+   navire_id INT NOT NULL,
    PRIMARY KEY(id_compartiment_navire),
-   FOREIGN KEY(id_navire) REFERENCES navire(id_navire)
+   FOREIGN KEY(navire_id) REFERENCES navire(id_navire)
 );
 
-CREATE TABLE palette_navire(
-   id_palette_navire INT AUTO_INCREMENT,
+CREATE TABLE embarquement(
+   id_embarquement INT AUTO_INCREMENT,
    quantite INT NOT NULL,
-   id_utilisateur INT NOT NULL,
-   id_mouvement_navire INT NOT NULL,
-   id_compartiment_navire INT NOT NULL,
-   id_station INT NOT NULL,
-   PRIMARY KEY(id_palette_navire),
-   FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur),
-   FOREIGN KEY(id_mouvement_navire) REFERENCES mouvement_navire(id_mouvement_navire),
-   FOREIGN KEY(id_compartiment_navire) REFERENCES compartiment_navire(id_compartiment_navire),
-   FOREIGN KEY(id_station) REFERENCES station(id_station)
+   agent_id INT NOT NULL,
+   mouvement_navire_id INT NOT NULL,
+   compartiment_navire_id INT NOT NULL,
+   station_id INT NOT NULL,
+   PRIMARY KEY(id_embarquement),
+   FOREIGN KEY(agent_id) REFERENCES utilisateur(id_utilisateur),
+   FOREIGN KEY(mouvement_navire_id) REFERENCES mouvement_navire(id_mouvement_navire),
+   FOREIGN KEY(compartiment_navire_id) REFERENCES compartiment_navire(id_compartiment_navire),
+   FOREIGN KEY(station_id) REFERENCES station(id_station)
 );
