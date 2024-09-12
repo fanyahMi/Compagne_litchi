@@ -117,9 +117,15 @@
 
 @endsection
 @section('script')
+
 <script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
 $(document).ready(function() {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     $('#ajout_agentForm').on('submit', function(event) {
         event.preventDefault(); // Prevent page reload
 
