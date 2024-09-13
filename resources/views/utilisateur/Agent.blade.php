@@ -27,9 +27,9 @@
                                 <div class="form-group col-md-6">
                                     <label for="nom">Nom</label>
                                     <input type="text" class="form-control" name="nom" id="nom" placeholder="Nom">
-                                    @error('nom')
-                                        <p class="error-message" style="color: red;">{{ $message }}</p>
-                                    @enderror
+                                    <div class="mb-3">
+                                        <div id="error-nom" class="error-message text-danger"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-row">
@@ -37,25 +37,25 @@
                                     <label for="prenom">Prénom</label>
                                     <input type="text" class="form-control" name="prenom" id="prenom" placeholder="Prénom">
                                     <!-- Optional error message for 'prenom' -->
-                                    @error('prenom')
-                                        <p class="error-message" style="color: red;">{{ $message }}</p>
-                                    @enderror
+                                    <div class="mb-3">
+                                        <div id="error-prenom" class="error-message text-danger"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-3">
                                     <label for="dateNaissance">Date de naissance</label>
                                     <input type="date" class="form-control" name="dateNaissance" id="dateNaissance">
-                                    @error('dateNaissance')
-                                        <p class="error-message" style="color: red;">{{ $message }}</p>
-                                    @enderror
+                                    <div class="mb-3">
+                                        <div id="error-dateNaissance" class="error-message text-danger"></div>
+                                    </div>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="cin">CIN</label>
                                     <input type="text" class="form-control" name="cin" id="cin" maxlength="12">
-                                    @error('cin')
-                                        <p class="error-message" style="color: red;">{{ $message }}</p>
-                                    @enderror
+                                    <div class="mb-3">
+                                        <div id="error-cin" class="error-message text-danger"></div>
+                                    </div>
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="sexe">Sexe</label>
@@ -65,9 +65,9 @@
                                         <option value="F">Féminin</option>
                                     </select>
                                     <!-- Optional error message for 'sexe' -->
-                                    @error('sexe')
-                                        <p class="error-message" style="color: red;">{{ $message }}</p>
-                                    @enderror
+                                    <div class="mb-3">
+                                        <div id="error-sexe" class="error-message text-danger"></div>
+                                    </div>
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="situation">Situation familiale</label>
@@ -77,9 +77,9 @@
                                         <option value="Marié">Marié</option>
                                     </select>
                                     <!-- Optional error message for 'situation' -->
-                                    @error('situation')
-                                        <p class="error-message" style="color: red;">{{ $message }}</p>
-                                    @enderror
+                                    <div class="mb-3">
+                                        <div id="error-situation" class="error-message text-danger"></div>
+                                    </div>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary">Insérer</button>
@@ -126,38 +126,36 @@ $(document).ready(function() {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    $('#ajout_agentForm').on('submit', function(event) {
-        event.preventDefault(); // Prevent page reload
 
+    $('#ajout_agentForm').on('submit', function(event) {
+        event.preventDefault();
         $.ajax({
-            url: $(this).attr('action'), // Get form's action URL
-            method: 'POST', // Request method
-            data: $(this).serialize(), // Serialize form data
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: $(this).serialize(),
             success: function(response) {
                 alert('Agent ajouté avec succès !');
                 console.log(response);
-                $('p.error-message').text(''); // Clear previous error messages
-                $('#ajout_agentForm')[0].reset(); // Optionally reset the form
+                $('p.error-message').text('');
+                $('#ajout_agentForm')[0].reset();
             },
             error: function(xhr) {
-                // Clear all previous error messages
-                $('p.error-message').text(''); // Clear all previous error messages
-                try {
-                    var responseJSON = $.parseJSON(xhr.responseText);
-                    if (responseJSON.errors) {
-                        // Display errors below respective fields
-                        $.each(responseJSON.errors, function(key, messages) {
-                            $('#' + key).siblings('.error-message').text(messages.join(', '));
-                        });
-                    } else {
-                        $('#errorMessage').text('Erreur inconnue: ' + xhr.responseText);
-                    }
-                } catch (e) {
-                    $('#errorMessage').text('Erreur inconnue: ' + xhr.responseText);
+                $('p.error-message').text('');
+                $('#error-message').text('');
+
+                console.log(xhr);
+
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+                     $.each(errors, function(key, messages) {
+                        console.log('#' + key, messages[0]);
+                        $('#error-' + key).text(messages[0]);
+                    });
                 }
             }
         });
     });
 });
+
 </script>
 @endsection

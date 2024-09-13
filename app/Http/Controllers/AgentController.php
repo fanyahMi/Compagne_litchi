@@ -60,26 +60,33 @@ class AgentController extends Controller
     }
 
     public function addAgent(Request $request) {
+        // Validation des données
         $validatedData = $request->validate([
             'nom' => 'required|string',
-            'prenom' => 'nullable|string', // Changed to nullable to allow absence
+            'prenom' => 'nullable|string',
             'dateNaissance' => 'required|date|before:'.now()->subYears(18)->toDateString(),
             'cin' => 'required|digits:12',
             'sexe' => 'required',
             'situation' => 'required'
         ], [
-            'nom.required' => 'Nom obligatoire',
+            'nom.required' => 'Le champ nom est obligatoire.',
             'dateNaissance.before' => 'La personne doit être majeure.',
             'cin.digits' => 'Le nº CIN doit contenir 12 chiffres.'
         ]);
 
-        try {
-            // Process the validated data (e.g., save to the database)
-            // Example: Agent::create($validatedData);
 
-            return response()->json(['message' => 'Agent added successfully'], 201);
+        try {
+            // Traitement des données validées (ex: enregistrement en base de données)
+            // Exemple : Agent::create($validatedData);
+
+            // Retourne une réponse JSON en cas de succès
+            return response()->json(['message' => 'Agent ajouté avec succès'], 201);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            // Log de l'erreur pour le débogage
+            Log::error('Une erreur est survenue lors de l\'ajout de l\'agent : ' . $e->getMessage());
+
+            // Retourne une réponse JSON en cas d'échec
+            return response()->json(['error' => 'Erreur lors de l\'ajout de l\'agent: ' . $e->getMessage()], 400);
         }
     }
 
