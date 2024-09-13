@@ -21,7 +21,8 @@ class Agent extends Model
         'mot_passe',
         'sexe_id',
         'role_id',
-        'situation_familial_id'
+        'situation_familial_id',
+        'created_at'
     ];
 
     public $timestamps = false;
@@ -58,5 +59,20 @@ class Agent extends Model
         } catch (Exception $e) {
             throw $e;
         }
+    }
+
+    public static function generateMatricule($numero){
+            // Get the current date
+            $now = now();
+
+            // Format the year and month
+            $year = $now->format('Y'); // Get the current year
+            $month = $now->format('m'); // Get the current month
+
+            // Generate the matricule
+            $matricule = $year . $month . str_pad($numero, 2, '0', STR_PAD_LEFT); // Pad rank with zeros if needed
+
+            return $matricule;
+
     }
 }

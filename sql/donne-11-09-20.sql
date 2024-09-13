@@ -22,7 +22,7 @@ INSERT INTO magasin (magasin) VALUES
 ('Magasin B1');
 
 -- Exemple de données pour la table 'utilisateur' avec bcrypt
-INSERT INTO utilisateur (matricule, nom, prenom, date_naissance, cin, mot_passe, sexe_id, role_id, situation_familial_id)
+INSERT INTO utilisateur (matricule, nom, prenom, date_naissance, cin, mot_passe, sexe_id, role_id, situation_familial_id,created_at)
 VALUES
-('20240901', 'Doe', 'John', '1985-06-15', '12345678', 'Doe', 1, 1, 1),
-('20240902', 'Smith', 'Jane', '1990-04-22', '87654321', 'Smith', 2, 2, 2);
+('20240901', 'Doe', 'John', '1985-06-15', '12345678', 'Doe', 1, 1, 1,now()),
+('20240902', 'Smith', 'Jane', '1990-04-22', '87654321', 'Smith', 2, 2, 2,now());

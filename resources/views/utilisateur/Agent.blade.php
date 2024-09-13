@@ -21,7 +21,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="mt-5">Insertion de nouvel agent</h5>
-                        <hr><form id="ajout_agentForm" action="{{ url('ajout_agent') }}" method="POST">
+                        <hr><form id="ajout_agentForm" action="{{ url('ajout-agent') }}" method="POST">
                             @csrf
                             <div class="form-row">
                                 <div class="form-group col-md-6">
@@ -61,8 +61,9 @@
                                     <label for="sexe">Sexe</label>
                                     <select id="sexe" name="sexe" class="form-control" required>
                                         <option value="">Sélectionner</option>
-                                        <option value="M">Masculin</option>
-                                        <option value="F">Féminin</option>
+                                        @foreach($sexes as $sexe)
+                                            <option value="{{ $sexe->id_sexe }}">{{ $sexe->sexe }}</option>
+                                        @endforeach
                                     </select>
                                     <!-- Optional error message for 'sexe' -->
                                     <div class="mb-3">
@@ -72,9 +73,9 @@
                                 <div class="form-group col-md-4">
                                     <label for="situation">Situation familiale</label>
                                     <select id="situation" name="situation" class="form-control" required>
-                                        <option value="">Sélectionner</option>
-                                        <option value="Célibataire">Célibataire</option>
-                                        <option value="Marié">Marié</option>
+                                        @foreach($situations as $situation)
+                                            <option value="{{ $situation->id_situation_familial }}">{{ $situation->situation_familial }}</option>
+                                        @endforeach
                                     </select>
                                     <!-- Optional error message for 'situation' -->
                                     <div class="mb-3">
@@ -94,16 +95,14 @@
                                     <thead>
                                         <tr>
                                             <th>Nom et prénom</th>
-                                            <th>Date</th>
-                                            <th>Actions</th>
+                                            <th>Date de naissance</th>
+                                            <th>CIN</th>
+                                            <th>Sexe</th>
+                                            <th>Situation patrimonial</th>
+                                            <th>Embauvher le</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body">
-                                        <tr>
-                                            <td>fft</td>
-                                            <td>hdgyg</td>
-                                            <td>jhgdgu</td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -127,6 +126,7 @@ $(document).ready(function() {
         }
     });
 
+    loadAgent();
     $('#ajout_agentForm').on('submit', function(event) {
         event.preventDefault();
         $.ajax({
@@ -147,14 +147,80 @@ $(document).ready(function() {
 
                 if (xhr.status === 422) {
                     var errors = xhr.responseJSON.errors;
-                     $.each(errors, function(key, messages) {
+                    $.each(errors, function(key, messages) {
                         console.log('#' + key, messages[0]);
-                        $('#error-' + key).text(messages[0]);
+                        $('#error-' + key).text(messages[0]); // Ensure these elements exist
                     });
                 }
             }
         });
     });
+
+    $(document).on('click', '.delete-btn', function() {
+            var id = $(this).data('id_agent');
+
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette agent ?')) {
+                $.ajax({
+                    url: '/supp-agent/' + id,
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert(response.message);
+                            loadAgent(); // Recharge les données après suppression
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur lors de la suppression : ", error);
+                    }
+                });
+            }
+        });
+
+    function loadAgent() {
+        $.ajax({
+            url: '/get-agent', // Assuming you're including this in a Blade file
+            type: 'GET',
+            success: function(data) {
+                $('#table-body').empty();
+                data.forEach(function(agent) {
+                    appendAgent(agent);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des réservations : ", error);
+            }
+        });
+    }
+    const sexes = @json($sexes); // Convert PHP array to JavaScript
+    const situations = @json($situations);
+
+    const sexeMap = {};
+    sexes.forEach(sexe => {
+        sexeMap[sexe.id_sexe] = sexe.sexe;
+    });
+
+    const situationMap = {};
+    situations.forEach(situation => {
+        situationMap[situation.id_situation_familial] = situation.situation_familial;
+    });
+
+    function appendAgent(agent) {
+        var row = '<tr>' +
+                  '<td>' + agent.nom + ' ' + agent.prenom + '</td>' + // Added space
+                  '<td>' + agent.date_naissance + '</td>' +
+                  '<td>' + agent.cin + '</td>' +
+                  '<td>' + sexeMap[agent.sexe_id]+ '</td>' +
+                  '<td>' + situationMap[agent.situation_familial_id] + '</td>' +
+                  '<td>' + agent.created_at + '</td>' +
+                  '<td>' +
+                    '<button class="btn btn-danger btn-sm delete-btn" data-id_agent="' + agent.id_utilisateur + '">Supprimer</button>' +
+                  '</td>' +
+                  '</tr>';
+        $('#table-body').append(row);
+    }
 });
 
 </script>

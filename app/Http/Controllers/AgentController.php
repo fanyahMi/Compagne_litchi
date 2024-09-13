@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Agent;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Log;
 
@@ -27,7 +28,10 @@ class AgentController extends Controller
 
 
     public function index(){
-        return view('utilisateur.Agent');
+        $sexes = DB::table('sexe')->select('id_sexe', 'sexe')->get();
+        $situations = DB::table('situation_familial')->select('id_situation_familial', 'situation_familial')->get();
+
+        return view('utilisateur.Agent', compact('sexes', 'situations'));
     }
 
     public function loginWeb(Request $request)
@@ -55,8 +59,16 @@ class AgentController extends Controller
         }
     }
 
-    public function getAgent(){
+    public function getAgent() {
+        $agents = Agent::orderBy('created_at', 'desc')->get();
 
+        if ($agents->contains(function ($agent) {
+            return in_array(null, $agent->toArray(), true) || in_array('', $agent->toArray(), true);
+        })) {
+            return ' ';
+        }
+
+        return response()->json($agents);
     }
 
     public function addAgent(Request $request) {
@@ -70,17 +82,36 @@ class AgentController extends Controller
             'situation' => 'required'
         ], [
             'nom.required' => 'Le champ nom est obligatoire.',
+            'dateNaissance.required' => 'Date de naissance obligatoire.',
             'dateNaissance.before' => 'La personne doit être majeure.',
+            'cin.required' => 'Le nº CIN obligatoire.',
             'cin.digits' => 'Le nº CIN doit contenir 12 chiffres.'
         ]);
 
 
         try {
-            // Traitement des données validées (ex: enregistrement en base de données)
-            // Exemple : Agent::create($validatedData);
+            $numero = Agent::whereYear('created_at', now()->year)
+                     ->whereMonth('created_at', now()->month)
+                     ->count() + 1;
 
-            // Retourne une réponse JSON en cas de succès
-            return response()->json(['message' => 'Agent ajouté avec succès'], 201);
+            $agent = Agent::create([
+                'matricule' => Agent::generateMatricule($numero),
+                'nom' => $validatedData['nom'],
+                'prenom' => $validatedData['prenom'],
+                'date_naissance' => $validatedData['dateNaissance'],
+                'cin'=> $validatedData['cin'],
+                'mot_passe' => $validatedData['cin'],
+                'sexe_id' => $validatedData['sexe'],
+                'role_id' => 2 ,
+                'situation_familial_id' => $validatedData['situation'],
+                'created_at' => now()
+            ]);
+
+            return response()->json([
+                'message' => 'Agent ajouté avec succès',
+                'agent' => $agent,
+            ], 201);
+
         } catch (Exception $e) {
             // Log de l'erreur pour le débogage
             Log::error('Une erreur est survenue lors de l\'ajout de l\'agent : ' . $e->getMessage());
@@ -88,6 +119,23 @@ class AgentController extends Controller
             // Retourne une réponse JSON en cas d'échec
             return response()->json(['error' => 'Erreur lors de l\'ajout de l\'agent: ' . $e->getMessage()], 400);
         }
+    }
+
+    public function dropAgent($id)
+    {
+        $agent = Agent::findOrFail($id);
+        if ($agent) {
+            $agent->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Agent supprimée avec succès.',
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Agent non trouvée.',
+        ], 404);
     }
 
 }
