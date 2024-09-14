@@ -91,9 +91,10 @@
                         <h5 class="c-black-900"><b>Liste des réservations</b></h5>
                         <div class="mT-30">
                             <div id="table-container">
-                                <table id="produitTable" class="table table-hover table-bordered">
+                                <table id="produitTable" class="table table-hover table-bordered table-responsive">
                                     <thead>
                                         <tr>
+                                            <th>Matricule</th>
                                             <th>Nom et prénom</th>
                                             <th>Date de naissance</th>
                                             <th>CIN</th>
@@ -113,6 +114,80 @@
             <!-- [ form-element ] end -->
         </div>
         <!--  Liste   --->
+
+        <!-- [ modal ] start -->
+		<div id="modifierModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModificationAgent" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modification</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="modifier_agentForm" action="" method="POST">
+                            @csrf
+                            <input type="hidden" id="id_utilisateur-modal" name="id_utilisateur">
+                            <div class="form-group">
+                                <label for="nom">Nom</label>
+                                <input type="text" class="form-control" id="nom-modal" name="nom">
+                            </div>
+                            <div  class="form-group">
+                                <div id="error-modal-nom" class="error-message text-danger"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="prenom">Prénom</label>
+                                <input type="text" class="form-control" id="prenom-modal" name="prenom">
+                            </div>
+                            <div  class="form-group">
+                                <div id="error-modal-prenom" class="error-message text-danger"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="dateNaissance">Date de naissance</label>
+                                <input type="date" class="form-control" id="dateNaissance-modal" name="dateNaissance">
+                            </div>
+                            <div  class="form-group">
+                                <div id="error-modal-dateNaissance class="error-message text-danger"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cin">CIN</label>
+                                <input type="text" class="form-control" id="cin-modal" name="cin" maxlength="12">
+                            </div>
+                            <div  class="form-group">
+                                <div id="error-modal-cin" class="error-message text-danger"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="sexe">Sexe</label>
+                                <select id="sexe-modal" name="sexe" class="form-control">
+                                    <option value="">Sélectionner</option>
+                                    @foreach($sexes as $sexe)
+                                        <option value="{{ $sexe->id_sexe }}">{{ $sexe->sexe }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div  class="form-group">
+                                <div id="error-modal-sexe" class="error-message text-danger"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="situation">Situation familiale</label>
+                                <select id="situation-modal" name="situation" class="form-control">
+                                    @foreach($situations as $situation)
+                                        <option value="{{ $situation->id_situation_familial }}">{{ $situation->situation_familial }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div  class="form-group">
+                                <div id="error-modal-situation" class="error-message text-danger"></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn  btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn  btn-primary" id="saveChangesBtn">Modifier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ modal ] end -->
 
 @endsection
 @section('script')
@@ -138,18 +213,15 @@ $(document).ready(function() {
                 console.log(response);
                 $('p.error-message').text('');
                 $('#ajout_agentForm')[0].reset();
+                loadAgent();
             },
             error: function(xhr) {
                 $('p.error-message').text('');
                 $('#error-message').text('');
-
-                console.log(xhr);
-
                 if (xhr.status === 422) {
                     var errors = xhr.responseJSON.errors;
                     $.each(errors, function(key, messages) {
-                        console.log('#' + key, messages[0]);
-                        $('#error-' + key).text(messages[0]); // Ensure these elements exist
+                        $('#error-' + key).text(messages[0]);
                     });
                 }
             }
@@ -169,7 +241,7 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.status === 'success') {
                             alert(response.message);
-                            loadAgent(); // Recharge les données après suppression
+                            loadAgent();
                         }
                     },
                     error: function(xhr, status, error) {
@@ -181,7 +253,7 @@ $(document).ready(function() {
 
     function loadAgent() {
         $.ajax({
-            url: '/get-agent', // Assuming you're including this in a Blade file
+            url: '/get-agent',
             type: 'GET',
             success: function(data) {
                 $('#table-body').empty();
@@ -194,7 +266,7 @@ $(document).ready(function() {
             }
         });
     }
-    const sexes = @json($sexes); // Convert PHP array to JavaScript
+    const sexes = @json($sexes);
     const situations = @json($situations);
 
     const sexeMap = {};
@@ -209,6 +281,7 @@ $(document).ready(function() {
 
     function appendAgent(agent) {
         var row = '<tr>' +
+                '<td>' + agent.matricule  + '</td>' +
                   '<td>' + agent.nom + ' ' + agent.prenom + '</td>' + // Added space
                   '<td>' + agent.date_naissance + '</td>' +
                   '<td>' + agent.cin + '</td>' +
@@ -216,11 +289,65 @@ $(document).ready(function() {
                   '<td>' + situationMap[agent.situation_familial_id] + '</td>' +
                   '<td>' + agent.created_at + '</td>' +
                   '<td>' +
+                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_agent="' + agent.id_utilisateur + '">Modifier</button>' +
+                  '</td>' +
+                  '<td>' +
                     '<button class="btn btn-danger btn-sm delete-btn" data-id_agent="' + agent.id_utilisateur + '">Supprimer</button>' +
                   '</td>' +
                   '</tr>';
         $('#table-body').append(row);
     }
+
+    $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
+        var id = $(this).data('id_agent');
+        $.ajax({
+            url: '/get-agent/' + id,
+            type: 'GET',
+            success: function(agentData) {
+                $('#id_utilisateur-modal').val(agentData.id_utilisateur);
+                $('#nom-modal').val(agentData.nom);
+                $('#prenom-modal').val(agentData.prenom);
+                $('#dateNaissance-modal').val(agentData.date_naissance);
+                $('#cin-modal').val(agentData.cin);
+                $('#sexe-modal').val(agentData.sexe_id).trigger('change');
+                $('#situation-modal').val(agentData.situation_familial_id).trigger('change');
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors de la récupération de l'agent : ", error);
+            }
+        });
+    });
+
+    $('#saveChangesBtn').on('click', function(e) {
+        e.preventDefault();
+        var formData = $('#modifier_agentForm').serialize();
+        $.ajax({
+            url: '/update-agent',
+            method: 'PUT',
+            data: formData,
+            success: function(response) {
+                alert('Modifications enregistrées avec succès !');
+                $('#modifierModal').modal('hide');
+                loadAgent();
+            },
+            error: function(xhr) {
+                var errors = xhr.responseJSON.errors;
+                $.each(errors, function(key, messages) {
+                    $('#error-modal-' + key).text(messages[0]);
+                });
+            }
+        });
+    });
+
+
+    $('#exampleModal').on('show.bs.modal', function(event) {
+		var button = $(event.relatedTarget)
+		var recipient = button.data('whatever')
+		var modal = $(this)
+		modal.find('.modal-title').text('New message to ' + recipient)
+		modal.find('.modal-body input').val(recipient)
+	})
+
 });
 
 </script>

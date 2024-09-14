@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Agent;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Exception;
 use Log;
 
@@ -60,64 +61,44 @@ class AgentController extends Controller
     }
 
     public function getAgent() {
-        $agents = Agent::orderBy('created_at', 'desc')->get();
-
-        if ($agents->contains(function ($agent) {
-            return in_array(null, $agent->toArray(), true) || in_array('', $agent->toArray(), true);
-        })) {
+        $agents = Agent::getAgentTableau();
+        if ($agents === ' ') {
             return ' ';
         }
-
         return response()->json($agents);
     }
 
     public function addAgent(Request $request) {
-        // Validation des données
         $validatedData = $request->validate([
-            'nom' => 'required|string',
-            'prenom' => 'nullable|string',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'nullable|string|max:255',
             'dateNaissance' => 'required|date|before:'.now()->subYears(18)->toDateString(),
-            'cin' => 'required|digits:12',
-            'sexe' => 'required',
-            'situation' => 'required'
+            'cin' => [
+                'required',
+                'digits:12',
+                Rule::unique('utilisateur')
+            ],
+            'sexe' => 'required|integer',
+            'situation' => 'required|integer'
         ], [
             'nom.required' => 'Le champ nom est obligatoire.',
-            'dateNaissance.required' => 'Date de naissance obligatoire.',
+            'dateNaissance.required' => 'La date de naissance est obligatoire.',
             'dateNaissance.before' => 'La personne doit être majeure.',
-            'cin.required' => 'Le nº CIN obligatoire.',
-            'cin.digits' => 'Le nº CIN doit contenir 12 chiffres.'
+            'cin.required' => 'Le nº CIN est obligatoire.',
+            'cin.digits' => 'Le nº CIN doit contenir 12 chiffres.',
+            'cin.unique' => 'Le nº CIN existe déjà dans la base de données.'
         ]);
 
 
         try {
-            $numero = Agent::whereYear('created_at', now()->year)
-                     ->whereMonth('created_at', now()->month)
-                     ->count() + 1;
 
-            $agent = Agent::create([
-                'matricule' => Agent::generateMatricule($numero),
-                'nom' => $validatedData['nom'],
-                'prenom' => $validatedData['prenom'],
-                'date_naissance' => $validatedData['dateNaissance'],
-                'cin'=> $validatedData['cin'],
-                'mot_passe' => $validatedData['cin'],
-                'sexe_id' => $validatedData['sexe'],
-                'role_id' => 2 ,
-                'situation_familial_id' => $validatedData['situation'],
-                'created_at' => now()
-            ]);
-
+            Agent::ajouterAgent( $validatedData['nom'], $validatedData['prenom'], $validatedData['dateNaissance'], $validatedData['cin'], $validatedData['sexe'], $validatedData['situation']);
             return response()->json([
                 'message' => 'Agent ajouté avec succès',
-                'agent' => $agent,
-            ], 201);
+                       ], 200);
 
         } catch (Exception $e) {
-            // Log de l'erreur pour le débogage
-            Log::error('Une erreur est survenue lors de l\'ajout de l\'agent : ' . $e->getMessage());
-
-            // Retourne une réponse JSON en cas d'échec
-            return response()->json(['error' => 'Erreur lors de l\'ajout de l\'agent: ' . $e->getMessage()], 400);
+           return response()->json(['error' => 'Erreur lors de l\'ajout de l\'agent: ' . $e->getMessage()], 400);
         }
     }
 
@@ -136,6 +117,51 @@ class AgentController extends Controller
             'status' => 'error',
             'message' => 'Agent non trouvée.',
         ], 404);
+    }
+
+    public function getById($id)
+    {
+        try {
+            $agent = Agent::getAgentById($id);
+            return response()->json($agent);
+        } catch (\Exception $e) {
+            Log::error('Error fetching agent: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 404);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        $validatedData = $request->validate([
+            'id_utilisateur' => 'required|integer|exists:utilisateur,id_utilisateur',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'nullable|string|max:255',
+            'dateNaissance' => 'required|date|before:'.now()->subYears(18)->toDateString(),
+            'cin' => [
+                'required',
+                'digits:12',
+                Rule::unique('utilisateur')->ignore($request->input('id_utilisateur'), 'id_utilisateur')
+            ],
+            'sexe' => 'required|integer',
+            'situation' => 'required|integer',
+        ], [
+            'nom.required' => 'Le champ nom est obligatoire.',
+            'dateNaissance.required' => 'Date de naissance obligatoire.',
+            'dateNaissance.before' => 'La personne doit être majeure.',
+            'cin.required' => 'Le nº CIN est obligatoire.',
+            'cin.digits' => 'Le nº CIN doit contenir 12 chiffres.',
+            'cin.unique' => 'Le nº CIN existe déjà dans la base de données.'
+        ]);
+
+        try {
+            $id = $request->input('id_utilisateur');
+            $data = $request->only(['nom', 'prenom', 'dateNaissance', 'cin', 'sexe', 'situation']);
+            $agent = Agent::updateAgent($id, $data);
+            return response()->json(['status' => 'success', 'message' => 'Agent mis à jour avec succès!', 'agent' => $agent]);
+        } catch (\Exception $e) {
+            Log::error('Error updating agent: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
     }
 
 }

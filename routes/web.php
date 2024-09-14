@@ -16,7 +16,9 @@ Route::middleware(['utilisateur'])->group(function () {
     Route::get('/', [AgentController::class, 'index'])->name('admin.index');
     Route::post('/ajout-agent', [AgentController::class, 'addAgent']) ->name('utilisateur.addAgent');
     Route::get('/get-agent', [AgentController::class, 'getAgent']);
+    Route::get('/get-agent/{id}', [AgentController::class, 'getById']);
     Route::delete('/supp-agent/{id}', [AgentController::class, 'dropAgent']);
+    Route::put('/update-agent', [AgentController::class, 'update']);
 });
 
 

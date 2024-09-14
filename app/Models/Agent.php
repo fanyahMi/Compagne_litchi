@@ -29,7 +29,7 @@ class Agent extends Model
     protected $primaryKey = "id_utilisateur";
     public $incrementing = true;
 
-    public function hashPassword($motDePasse)
+    public static function hashPassword($motDePasse)
     {
         $hashedPassword = Hash::make($motDePasse);
         return $hashedPassword;
@@ -44,8 +44,8 @@ class Agent extends Model
                 ->first();
 
             if ($user) {
-                //if (Hash::check($motDePasse, $user->mot_passe)) {
-                if ($motDePasse == $user->mot_passe) {
+                if (Hash::check($motDePasse, $user->mot_passe)) {
+                //if ($motDePasse == $user->mot_passe) {
                     return [
                         'matricule' => $user->matricule,
                         'role' => $user->role,
@@ -61,18 +61,74 @@ class Agent extends Model
         }
     }
 
-    public static function generateMatricule($numero){
-            // Get the current date
+    private static function getNumeroAgent(){
+        $numero = Agent::whereYear('created_at', now()->year)
+                     ->whereMonth('created_at', now()->month)
+                     ->count() + 1;
+        return $numero;
+    }
+
+    private static function generateMatricule(){
+            $numero = Agent::getNumeroAgent();
             $now = now();
-
-            // Format the year and month
-            $year = $now->format('Y'); // Get the current year
-            $month = $now->format('m'); // Get the current month
-
-            // Generate the matricule
-            $matricule = $year . $month . str_pad($numero, 2, '0', STR_PAD_LEFT); // Pad rank with zeros if needed
-
+            $year = $now->format('Y');
+            $month = $now->format('m');
+            $matricule = $year . $month . str_pad($numero, 2, '0', STR_PAD_LEFT);
             return $matricule;
+    }
 
+    public  static function ajouterAgent($nom, $prenom, $dateNaissance, $cin, $sexeId, $situation,$roleId = 2){
+        $matricule = Agent::generateMatricule();
+        Agent::create([
+            'matricule' => $matricule,
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'date_naissance' => $dateNaissance,
+            'cin'=> $cin,
+            'mot_passe' => Agent::hashPassword($matricule),
+            'sexe_id' => $sexeId,
+            'role_id' => $roleId ,
+            'situation_familial_id' => $situation,
+            'created_at' => now()
+        ]);
+    }
+
+    public static function getAgentTableau() {
+        $agents = Agent::orderBy('created_at', 'desc')->get();
+        if ($agents->contains(function ($agent) {
+            return in_array(null, $agent->toArray(), true) || in_array('', $agent->toArray(), true);
+        })) {
+            return ' ';
+        }
+
+        return $agents;
+    }
+
+    public static function getAgentById($id){
+        try {
+            return Agent::findOrFail($id);
+        } catch (\Exception $e) {
+            Log::error('Error fetching agent: ' . $e->getMessage());
+            throw new \Exception('Agent non trouvé.');
+        }
+    }
+
+    public static function updateAgent($id, array $data)
+    {
+        try {
+            $agent = Agent::findOrFail($id);
+            $agent->update([
+                'nom' => $data['nom'],
+                'prenom' => $data['prenom'],
+                'date_naissance' => $data['dateNaissance'],
+                'cin' => $data['cin'],
+                'sexe_id' => $data['sexe'],
+                'situation_familial_id' => $data['situation'],
+            ]);
+            return $agent;
+        } catch (\Exception $e) {
+            Log::error('Error updating agent: ' . $e->getMessage());
+            throw new \Exception('Erreur lors de la mise à jour de l\'agent.');
+        }
     }
 }
