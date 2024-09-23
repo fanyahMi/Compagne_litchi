@@ -242,9 +242,6 @@ $(document).ready(function() {
             '<td>' +
                 '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_navire="' + navire.id_navire + '">Modifier</button>' +
             '</td>' +
-            '<td>' +
-                '<button class="btn btn-danger btn-sm delete-btn" data-id_navire="' + navire.id_navire + '">Supprimer</button>' +
-            '</td>' +
         '</tr>';
         $('#table-body').append(row);
     }

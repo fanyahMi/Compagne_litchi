@@ -19,8 +19,8 @@
 					<li class="nav-item pcoded-hasmenu">
 						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Magasin</span></a>
 						<ul class="pcoded-submenu">
-							<li><a href="bc_alert.html">Entree</a></li>
-							<li><a href="bc_button.html">Sortie</a></li>
+							<li><a href="{{ url('entree-magasin') }}">Entree</a></li>
+							<li><a href="{{ url('sortie-magasin') }}">Sortie</a></li>
 						</ul>
 					</li>
 
