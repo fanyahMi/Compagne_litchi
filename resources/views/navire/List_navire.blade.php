@@ -1,6 +1,6 @@
 @extends('template.Layout')
 @section('titre')
-    Liste des agents
+    Liste des navires
 @endsection
 @section('page')
 <style>
@@ -20,8 +20,8 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="mt-5">Insertion de nouvel agent</h5>
-                        <hr><form id="ajout_agentForm" action="{{ url('ajout-agent') }}" method="POST">
+                        <h5 class="mt-5">Insertion de nouveau navire</h5>
+                        <hr><form id="ajout_navireForm" action="{{ url('ajout-navire') }}" method="POST">
                             @csrf
                             <div class="form-row">
                                 <div class="form-group col-md-6">
@@ -33,53 +33,34 @@
                                 </div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="prenom">Prénom</label>
-                                    <input type="text" class="form-control" name="prenom" id="prenom" placeholder="Prénom">
-                                    <!-- Optional error message for 'prenom' -->
+
+                                <div class="form-group col-md-3">
+                                    <label for="nb_compartiment">Nombre de compartiment</label>
+                                    <input type="number" class="form-control" name="nb_compartiment" id="nb_compartiment" >
                                     <div class="mb-3">
-                                        <div id="error-prenom" class="error-message text-danger"></div>
+                                        <div id="error-nb_compartiment" class="error-message text-danger"></div>
                                     </div>
                                 </div>
+                                <div class="form-group col-md-3">
+                                    <label for="quantite_max">Capacite maximal</label>
+                                    <input type="number" class="form-control" name="quantite_max" id="quantite_max">
+                                    <div class="mb-3">
+                                        <div id="error-quantite_max" class="error-message text-danger"></div>
+                                    </div>
+                                </div>
+
                             </div>
                             <div class="form-row">
-                                <div class="form-group col-md-3">
-                                    <label for="dateNaissance">Date de naissance</label>
-                                    <input type="date" class="form-control" name="dateNaissance" id="dateNaissance">
-                                    <div class="mb-3">
-                                        <div id="error-dateNaissance" class="error-message text-danger"></div>
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="cin">CIN</label>
-                                    <input type="text" class="form-control" name="cin" id="cin" maxlength="12">
-                                    <div class="mb-3">
-                                        <div id="error-cin" class="error-message text-danger"></div>
-                                    </div>
-                                </div>
                                 <div class="form-group col-md-4">
-                                    <label for="sexe">Sexe</label>
-                                    <select id="sexe" name="sexe" class="form-control" required>
-                                        <option value="">Sélectionner</option>
-                                        @foreach($sexes as $sexe)
-                                            <option value="{{ $sexe->id_sexe }}">{{ $sexe->sexe }}</option>
+                                    <label for="type_navire">Type de navire</label>
+                                    <select id="type_navire" name="type_navire" class="form-control" required>
+                                        @foreach($type_navire as $type)
+                                            <option value="{{ $type->id_type_navire }}">{{ $type->type_navire }}</option>
                                         @endforeach
                                     </select>
-                                    <!-- Optional error message for 'sexe' -->
+                                    <!-- Optional error message for 'type_navire' -->
                                     <div class="mb-3">
-                                        <div id="error-sexe" class="error-message text-danger"></div>
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="situation">Situation familiale</label>
-                                    <select id="situation" name="situation" class="form-control" required>
-                                        @foreach($situations as $situation)
-                                            <option value="{{ $situation->id_situation_familial }}">{{ $situation->situation_familial }}</option>
-                                        @endforeach
-                                    </select>
-                                    <!-- Optional error message for 'situation' -->
-                                    <div class="mb-3">
-                                        <div id="error-situation" class="error-message text-danger"></div>
+                                        <div id="error-type_navire" class="error-message text-danger"></div>
                                     </div>
                                 </div>
                             </div>
@@ -88,19 +69,16 @@
                         <div id="error-message" class="error-message"></div>
                     </div>
                     <div class="card-body">
-                        <h5 class="c-black-900"><b>Liste des réservations</b></h5>
+                        <h5 class="c-black-900"><b>Liste des navires</b></h5>
                         <div class="mT-30">
                             <div id="table-container">
                                 <table id="produitTable" class="table table-hover table-bordered ">
                                     <thead>
                                         <tr>
-                                            <th>Matricule</th>
-                                            <th>Nom et prénom</th>
-                                            <th>Date de naissance</th>
-                                            <th>CIN</th>
-                                            <th>Sexe</th>
-                                            <th>Situation patrimonial</th>
-                                            <th>Embaucher le</th>
+                                            <th>Navire</th>
+                                            <th>Type</th>
+                                            <th>Nombre de compartiment</th>
+                                            <th>Capacite</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body">
@@ -126,7 +104,7 @@
                     <div class="modal-body">
                         <form id="modifier_agentForm" action="" method="POST">
                             @csrf
-                            <input type="hidden" id="id_utilisateur-modal" name="id_utilisateur">
+                            <input type="hidden" id="id_navire-modal" name="id_navire">
                             <div class="form-group">
                                 <label for="nom">Nom</label>
                                 <input type="text" class="form-control" id="nom-modal" name="nom">
@@ -135,48 +113,30 @@
                                 <div id="error-modal-nom" class="error-message text-danger"></div>
                             </div>
                             <div class="form-group">
-                                <label for="prenom">Prénom</label>
-                                <input type="text" class="form-control" id="prenom-modal" name="prenom">
+                                <label for="nb_compartiment">Nombre de compartiment</label>
+                                <input type="number" class="form-control" id="nb_compartiment-modal" name="nb_compartiment">
                             </div>
                             <div  class="form-group">
-                                <div id="error-modal-prenom" class="error-message text-danger"></div>
+                                <div id="error-modal-nb_compartiment" class="error-message text-danger"></div>
                             </div>
                             <div class="form-group">
-                                <label for="dateNaissance">Date de naissance</label>
-                                <input type="date" class="form-control" id="dateNaissance-modal" name="dateNaissance">
+                                <label for="quantite_max">Capacite maximal</label>
+                                <input type="number" class="form-control" id="quantite_max-modal" name="quantite_max" maxlength="12">
                             </div>
                             <div  class="form-group">
-                                <div id="error-modal-dateNaissance class="error-message text-danger"></div>
+                                <div id="error-modal-quantite_max" class="error-message text-danger"></div>
                             </div>
                             <div class="form-group">
-                                <label for="cin">CIN</label>
-                                <input type="text" class="form-control" id="cin-modal" name="cin" maxlength="12">
-                            </div>
-                            <div  class="form-group">
-                                <div id="error-modal-cin" class="error-message text-danger"></div>
-                            </div>
-                            <div class="form-group">
-                                <label for="sexe">Sexe</label>
-                                <select id="sexe-modal" name="sexe" class="form-control">
+                                <label for="type_navire">Type de navire</label>
+                                <select id="type_navire-modal" name="type_navire" class="form-control">
                                     <option value="">Sélectionner</option>
-                                    @foreach($sexes as $sexe)
-                                        <option value="{{ $sexe->id_sexe }}">{{ $sexe->sexe }}</option>
+                                    @foreach($type_navire as $type)
+                                        <option value="{{ $type->id_type_navire }}">{{ $type->type_navire }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div  class="form-group">
-                                <div id="error-modal-sexe" class="error-message text-danger"></div>
-                            </div>
-                            <div class="form-group">
-                                <label for="situation">Situation familiale</label>
-                                <select id="situation-modal" name="situation" class="form-control">
-                                    @foreach($situations as $situation)
-                                        <option value="{{ $situation->id_situation_familial }}">{{ $situation->situation_familial }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div  class="form-group">
-                                <div id="error-modal-situation" class="error-message text-danger"></div>
+                                <div id="error-modal-type_navire" class="error-message text-danger"></div>
                             </div>
                         </form>
                     </div>
@@ -201,8 +161,8 @@ $(document).ready(function() {
         }
     });
 
-    loadAgent();
-    $('#ajout_agentForm').on('submit', function(event) {
+    loadNavire();
+    $('#ajout_navireForm').on('submit', function(event) {
         event.preventDefault();
         $.ajax({
             url: $(this).attr('action'),
@@ -212,8 +172,8 @@ $(document).ready(function() {
                 alert('Agent ajouté avec succès !');
                 console.log(response);
                 $('p.error-message').text('');
-                $('#ajout_agentForm')[0].reset();
-                loadAgent();
+                $('#ajout_navireForm')[0].reset();
+                loadNavire();
             },
             error: function(xhr) {
                 $('p.error-message').text('');
@@ -241,7 +201,7 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.status === 'success') {
                             alert(response.message);
-                            loadAgent();
+                            loadNavire();
                         }
                     },
                     error: function(xhr, status, error) {
@@ -251,66 +211,56 @@ $(document).ready(function() {
             }
         });
 
-    function loadAgent() {
+    function loadNavire() {
         $.ajax({
-            url: '/get-agent',
+            url: '/get-navire',
             type: 'GET',
             success: function(data) {
                 $('#table-body').empty();
-                data.forEach(function(agent) {
-                    appendAgent(agent);
+                data.forEach(function(navire) {
+                    appendNavire(navire);
                 });
             },
             error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des réservations : ", error);
+                console.error("Erreur lors du chargement des navires : ", error);
             }
         });
     }
-    const sexes = @json($sexes);
-    const situations = @json($situations);
+    const type_navire = @json($type_navire);
 
-    const sexeMap = {};
-    sexes.forEach(sexe => {
-        sexeMap[sexe.id_sexe] = sexe.sexe;
+    const typeMap = {};
+    type_navire.forEach(navire => {
+        typeMap[navire.id_type_navire] = navire.type_navire; // Corrected this line
     });
 
-    const situationMap = {};
-    situations.forEach(situation => {
-        situationMap[situation.id_situation_familial] = situation.situation_familial;
-    });
-
-    function appendAgent(agent) {
+    function appendNavire(navire) {
         var row = '<tr>' +
-                '<td>' + agent.matricule  + '</td>' +
-                  '<td>' + agent.nom + ' ' + agent.prenom + '</td>' + // Added space
-                  '<td>' + agent.date_naissance + '</td>' +
-                  '<td>' + agent.cin + '</td>' +
-                  '<td>' + sexeMap[agent.sexe_id]+ '</td>' +
-                  '<td>' + situationMap[agent.situation_familial_id] + '</td>' +
-                  '<td>' + agent.created_at + '</td>' +
-                  '<td>' +
-                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_agent="' + agent.id_utilisateur + '">Modifier</button>' +
-                  '</td>' +
-                  '<td>' +
-                    '<button class="btn btn-danger btn-sm delete-btn" data-id_agent="' + agent.id_utilisateur + '">Supprimer</button>' +
-                  '</td>' +
-                  '</tr>';
+            '<td>' + navire.navire + '</td>' +
+            '<td>' + typeMap[navire.type_navire_id] + '</td>' +
+            '<td>' + navire.nb_compartiment + '</td>' +
+            '<td>' + navire.quantite_max + '</td>' +
+            '<td>' +
+                '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_navire="' + navire.id_navire + '">Modifier</button>' +
+            '</td>' +
+            '<td>' +
+                '<button class="btn btn-danger btn-sm delete-btn" data-id_navire="' + navire.id_navire + '">Supprimer</button>' +
+            '</td>' +
+        '</tr>';
         $('#table-body').append(row);
     }
 
+
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
-        var id = $(this).data('id_agent');
+        var id = $(this).data('id_navire');
         $.ajax({
-            url: '/get-agent/' + id,
+            url: '/get-navire/' + id,
             type: 'GET',
-            success: function(agentData) {
-                $('#id_utilisateur-modal').val(agentData.id_utilisateur);
-                $('#nom-modal').val(agentData.nom);
-                $('#prenom-modal').val(agentData.prenom);
-                $('#dateNaissance-modal').val(agentData.date_naissance);
-                $('#cin-modal').val(agentData.cin);
-                $('#sexe-modal').val(agentData.sexe_id).trigger('change');
-                $('#situation-modal').val(agentData.situation_familial_id).trigger('change');
+            success: function(navireData) {
+                $('#id_navire-modal').val(navireData.id_navire);
+                $('#nom-modal').val(navireData.navire);
+                $('#nb_compartiment-modal').val(navireData.nb_compartiment);
+                $('#quantite_max-modal').val(navireData.quantite_max);
+                $('#type_navire-modal').val(navireData.type_navire_id).trigger('change');
             },
             error: function(xhr, status, error) {
                 console.error("Erreur lors de la récupération de l'agent : ", error);
@@ -322,13 +272,13 @@ $(document).ready(function() {
         e.preventDefault();
         var formData = $('#modifier_agentForm').serialize();
         $.ajax({
-            url: '/update-agent',
+            url: '/update-navire',
             method: 'PUT',
             data: formData,
             success: function(response) {
                 alert('Modifications enregistrées avec succès !');
                 $('#modifierModal').modal('hide');
-                loadAgent();
+                loadNavire();
             },
             error: function(xhr) {
                 var errors = xhr.responseJSON.errors;

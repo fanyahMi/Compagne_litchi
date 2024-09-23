@@ -44,8 +44,8 @@ class Agent extends Model
                 ->first();
 
             if ($user) {
-                if (Hash::check($motDePasse, $user->mot_passe)) {
-                //if ($motDePasse == $user->mot_passe) {
+                //if (Hash::check($motDePasse, $user->mot_passe)) {
+                if ($motDePasse == $user->mot_passe) {
                     return [
                         'matricule' => $user->matricule,
                         'role' => $user->role,

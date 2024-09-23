@@ -130,8 +130,7 @@ class AgentController extends Controller
         }
     }
 
-    public function update(Request $request)
-    {
+    public function update(Request $request){
         $validatedData = $request->validate([
             'id_utilisateur' => 'required|integer|exists:utilisateur,id_utilisateur',
             'nom' => 'required|string|max:255',
