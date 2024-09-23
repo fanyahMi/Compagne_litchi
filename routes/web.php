@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\NavireController;
+use App\Http\Controllers\MagasinController;
 
 
 Route::get('/logout', [AgentController::class, 'logout'])->name('logout');
@@ -35,6 +36,10 @@ Route::middleware(['utilisateur'])->group(function () {
     Route::get('/get-navire', [NavireController::class, 'getNavire']);
     Route::get('/get-navire/{id}', [NavireController::class, 'getById']);
     Route::put('/update-navire', [NavireController::class, 'update']);
+
+
+
+    Route::get('/entree-magasin', [MagasinController::class, 'index']);
 });
 
 

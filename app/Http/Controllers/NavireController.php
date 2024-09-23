@@ -81,6 +81,7 @@ class NavireController extends Controller
             $id = $request->input('id_navire');
             $data = $request->only(['nom', 'nb_compartiment', 'quantite_max', 'type_navire']);
             $navire = Navire::updateNavire($id, $data);
+
             return response()->json(['status' => 'success', 'message' => 'Navire mis à jour avec succès!', 'navire' => $navire]);
         } catch (\Exception $e) {
             Log::error('Error updating agent: ' . $e->getMessage());
