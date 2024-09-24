@@ -51,6 +51,7 @@ class AgentController extends Controller
             $request->session()->put('agent', [
                 'matricule' => $result['matricule'],
                 'role' => $result['role'],
+                'id' => $result['id'],
             ]);
             return response()->json([
                 'redirect' => url('/'),

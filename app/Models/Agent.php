@@ -39,7 +39,7 @@ class Agent extends Model
     {
         try {
             $user = DB::table('v_utilisateur_global')
-                ->select('matricule', 'role', 'mot_passe')
+                ->select('matricule', 'role', 'mot_passe', 'id_utilisateur')
                 ->where('matricule', $matricule)
                 ->first();
 
@@ -49,6 +49,7 @@ class Agent extends Model
                     return [
                         'matricule' => $user->matricule,
                         'role' => $user->role,
+                        'id' => $user->id_utilisateur,
                     ];
                 } else {
                     throw new Exception('Mot de passe incorrect');
