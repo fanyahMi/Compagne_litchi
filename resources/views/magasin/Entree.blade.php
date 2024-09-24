@@ -3,25 +3,55 @@
     Entre magasin
 @endsection
 @section('page')
+
 <style>
+    .error-message {
+        color: red;
+        font-size: 14px;
+        padding: 5px;
+        margin-top: 5px;
+        display: none;
+    }
 
-    #error-message {
-    color: red;
-    display: block !important; /* Assurez-vous que le message est affiché */
-    font-size: 14px; /* Ajustez la taille de la police si nécessaire */
-    padding: 5px;
-    margin-top: 10px;
-}
+    .card-header {
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+    }
 
+    .card-body {
+        padding: 20px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .table th {
+        background-color: #007bff;
+        color: white;
+    }
 </style>
 
 <div class="row">
-    <!-- [ form-element ] start -->
+    <!-- [ Form and Table ] start -->
     <div class="col-sm-12">
         <div class="card">
+            <div class="card-header">
+                Insertion de nouvel agent
+            </div>
             <div class="card-body">
-                <h5 class="mt-5">Insertion de nouvel agent</h5>
-                <hr><form id="ajout_magasin" action="{{ url('insert-entree-magasin') }}" method="POST">
+                <form id="ajout_magasin" method="POST">
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-4">
@@ -32,88 +62,119 @@
                                     <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
                                 @endforeach
                             </select>
-                            <!-- Optional error message for 'navire' -->
-                            <div class="mb-3">
-                                <div id="error-navire" class="error-message text-danger"></div>
-                            </div>
+                            <div id="error-navire" class="error-message">Veuillez sélectionner un navire.</div>
                         </div>
-                    </div>
-                    <div class="form-row">
+
                         <div class="form-group col-md-4">
                             <label for="station">Station</label>
-                            <select id="station" name="station" class="form-control" required>
+                            <select id="station" name="station_id" class="form-control" required>
                                 @foreach($stations as $station)
                                     <option value="{{ $station->id_station }}">{{ $station->station }}</option>
                                 @endforeach
                             </select>
-                            <!-- Optional error message for 'station' -->
-                            <div class="mb-3">
-                                <div id="error-station" class="error-message text-danger"></div>
-                            </div>
+                            <div id="error-station" class="error-message">Veuillez sélectionner une station.</div>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label for="quantite">Quantite de palette</label>
-                            <input type="number" class="form-control" name="quantite" id="quantite" min="1">
-                            <div class="mb-3">
-                                <div id="error-quantite" class="error-message text-danger"></div>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="bl">Bon de livraison</label>
-                            <input type="file" class="form-control " name="bl" id="bl">
-                            <div class="mb-3">
-                                <div id="error-bl" class="error-message text-danger"></div>
-                            </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="quantite">Quantité de palette</label>
+                            <input type="number" class="form-control" name="quantite_palette" id="quantite" min="1" required>
+                            <div id="error-quantite" class="error-message">Veuillez entrer une quantité valide.</div>
                         </div>
                     </div>
+
                     <div class="form-row">
-                        <div class="form-group col-md-5">
-                            <label for="nom">Nom du chauffeur</label>
-                            <input type="text" class="form-control" name="nom" id="nom" placeholder="Nom">
-                            <div class="mb-3">
-                                <div id="error-nom" class="error-message text-danger"></div>
-                            </div>
+                        <div class="form-group col-md-4">
+                            <label for="bl">Bon de livraison</label>
+                            <input type="text" class="form-control" name="bon_livraison" id="bl" required>
+                            <div id="error-bl" class="error-message">Veuillez entrer un bon de livraison valide.</div>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label for="matricule_camion">Matricule camion</label>
-                            <input type="text" class="form-control" name="matricule_camion" id="matricule_camion" maxlength="12">
-                            <div class="mb-3">
-                                <div id="error-matricule_camion" class="error-message text-danger"></div>
-                            </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="fichier">Fichier</label>
+                            <input type="file" class="form-control" name="fichier" id="fichier" accept="application/pdf" required>
+                            <div id="error-fichier" class="error-message">Veuillez sélectionner un fichier.</div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="nom">Nom du chauffeur</label>
+                            <input type="text" class="form-control" name="chauffeur" id="nom" required>
+                            <div id="error-nom" class="error-message">Veuillez entrer le nom du chauffeur.</div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="matricule_camion">Numero camion</label>
+                            <input type="text" class="form-control" name="numero_camion" id="matricule_camion" maxlength="12" required>
+                            <div id="error-matricule_camion" class="error-message">Veuillez entrer une matricule valide.</div>
                         </div>
                     </div>
+
                     <button type="submit" class="btn btn-primary">Insérer</button>
                 </form>
-                <div id="error-message" class="error-message"></div>
-            </div>
-            <div class="card-body">
-                <h5 class="c-black-900"><b>Liste des réservations</b></h5>
-                <div class="mT-30">
-                    <div id="table-container">
-                        <table id="produitTable" class="table table-hover table-bordered ">
-                            <thead>
-                                <tr>
-                                    <th>Matricule</th>
-                                    <th>Nom et prénom</th>
-                                    <th>Date de naissance</th>
-                                    <th>matricule-camion</th>
-                                    <th>navire</th>
-                                    <th>station </th>
-                                    <th>Embaucher le</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
-    <!-- [ form-element ] end -->
+    <!-- [ Form and Table ] end -->
 </div>
 
 @endsection
-@section('script')
 
+@section('script')
+<script src="assets/js/plugins/jquery-ui.min.js"></script>
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#ajout_magasin').submit(function(e) {
+        e.preventDefault();
+
+        // Clear previous error messages
+        $('p.error-message').text('');
+
+        // Récupérer le fichier et le lire en base64
+        var fileInput = document.getElementById('fichier');
+        var file = fileInput.files[0];
+
+        if (file) {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                // Créez un objet FormData pour envoyer les données
+                var formData = new FormData($('#ajout_magasin')[0]);
+                // Ajoutez la chaîne base64 au FormData
+                formData.append('fichier_base64', reader.result);
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    contentType: false, // Important: Ne pas définir le contentType pour FormData
+                    processData: false, // Important: Ne pas traiter les données
+                    success: function(response) {
+                        console.log(response);
+                        alert('Données insérées avec succès !');
+                        $('#ajout_magasin')[0].reset();
+                    },
+                    error: function(xhr) {
+                        console.log(xhr);
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, messages) {
+                                $('#error-' + key).text(messages[0]);
+                            });
+                        } else {
+                            alert('Erreur : ' + xhr.responseJSON.error);
+                        }
+                    }
+                });
+            };
+            reader.readAsDataURL(file); // Lire le fichier en base64
+        } else {
+            alert('Veuillez sélectionner un fichier.');
+        }
+    });
+});
+</script>
 @endsection
