@@ -40,6 +40,7 @@ Route::middleware(['utilisateur'])->group(function () {
 
 
     Route::get('/entree-magasin', [MagasinController::class, 'index']);
+    Route::post('/entree-magasin', [MagasinController::class, 'insertEntrer']);
 });
 
 
