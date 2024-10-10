@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Station;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Log;
 
@@ -20,7 +21,7 @@ class StationController extends Controller
         return response()->json($station);
     }
 
-    public function addStation(Request $request) {
+    public function addStation(Request $request){
         $validatedData = $request->validate([
             'nom' => 'required|string|max:255',
             'nif_stat' => [
@@ -52,8 +53,7 @@ class StationController extends Controller
         }
     }
 
-    public function getById($id)
-    {
+    public function getById($id){
         try {
             $station = Station::getStationById($id);
             return response()->json($station);
@@ -64,8 +64,7 @@ class StationController extends Controller
     }
 
 
-    public function update(Request $request)
-    {
+    public function update(Request $request){
         $validatedData = $request->validate([
             'id_station' => 'required|integer|exists:station,id_station',
             'nom' => 'required|string|max:255',
@@ -92,5 +91,13 @@ class StationController extends Controller
             Log::error('Error updating station: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
+    }
+
+    public function quotas(){
+
+        $stations = DB::table('station')->select('id_station', 'station')->get();
+        $navires = DB::table('navire')->select('id_navire', 'navire')->get();
+
+        return view('station.Quotas', compact('navires','stations'));
     }
 }

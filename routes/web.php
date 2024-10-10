@@ -29,6 +29,7 @@ Route::middleware(['utilisateur'])->group(function () {
     Route::get('/get-station', [StationController::class, 'getStation']);
     Route::get('/get-station/{id}', [StationController::class, 'getById']);
     Route::put('/update-station', [StationController::class, 'update']);
+    Route::get('/list-quotas', [StationController::class, 'quotas']);
 
 
     Route::get('/list-navire', [NavireController::class, 'index']);
@@ -41,6 +42,7 @@ Route::middleware(['utilisateur'])->group(function () {
 
     Route::get('/entree-magasin', [MagasinController::class, 'index']);
     Route::post('/entree-magasin', [MagasinController::class, 'insertEntrer']);
+    Route::get('/sortie-magasin', [MagasinController::class, 'sortie']);
 });
 
 

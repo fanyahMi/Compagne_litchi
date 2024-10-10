@@ -53,8 +53,13 @@ class MagasinController extends Controller
         }
     }
 
-    public function test(){
+    public function sortie(){
+        $camion = DB::table('navire')
+                    ->select('id_navire', 'navire','quantite_max')
+                    ->get();
 
+
+        return view('magasin.Sortie', compact('navires', 'stations'));
     }
 
 }
