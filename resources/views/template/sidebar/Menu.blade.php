@@ -10,8 +10,13 @@
 					<li class="nav-item">
 					    <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Agent</span></a>
 					</li>
-					<li class="nav-item">
-					    <a href="{{ url('list-Station') }}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Station</span></a>
+                    <li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Station</span></a>
+						<ul class="pcoded-submenu">
+							<li><a href="{{ url('list-Station') }}">Liste</a></li>
+							<li><a href="{{ url('list-quotas') }}">Quotas</a></li>
+							<li><a href="{{ url('sortie-magasin') }}">Historique</a></li>
+						</ul>
 					</li>
 					<li class="nav-item">
 					    <a href="{{ url('list-navire') }}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-align-justify"></i></span><span class="pcoded-mtext">Navire</span></a>

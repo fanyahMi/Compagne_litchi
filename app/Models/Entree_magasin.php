@@ -29,39 +29,41 @@ class Entree_magasin extends Model
     protected $primaryKey = "id_entree_magasin";
     public $incrementing = true;
     public static function ajouterEntrer(array $data, string $base64File = null, $id)
-{
-    $path = '';
-    if ($base64File) {
-        if (strpos($base64File, 'data:application/pdf;base64,') === 0) {
-            $base64File = str_replace('data:application/pdf;base64,', '', $base64File);
-            $fileData = base64_decode($base64File);
-            if ($fileData === false) {
-                throw new \Exception("Erreur lors du décodage du fichier.");
+    {
+        $path = '';
+        if ($base64File) {
+            if (strpos($base64File, 'data:application/pdf;base64,') === 0) {
+                $base64File = str_replace('data:application/pdf;base64,', '', $base64File);
+                $fileData = base64_decode($base64File);
+                if ($fileData === false) {
+                    throw new \Exception("Erreur lors du décodage du fichier.");
+                }
+                $filename = $data['bon_livraison'] . '_' . time() . '.pdf';
+                $path = 'bon_livraison/' . $filename;
+                Storage::disk('public')->put($path, $fileData);
+            } else {
+                throw new \Exception("Le fichier doit être au format PDF.");
             }
-            $filename = $data['bon_livraison'] . '_' . time() . '.pdf';
-            $path = 'bon_livraison/' . $filename;
-            Storage::disk('public')->put($path, $fileData);
-        } else {
-            throw new \Exception("Le fichier doit être au format PDF.");
+        }
+
+        $data['path_bon_livraison'] = $path;
+        $data['date_entrant'] = Carbon::now()->toDateString();
+        $data['agent_id'] = $id;
+        $data['magasin_id'] = 1;
+
+        try {
+            DB::beginTransaction();
+            $entreeMagasin = self::create($data);
+            DB::commit();
+            return $entreeMagasin;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception("Erreur lors de l'insertion des données : " . $e->getMessage());
         }
     }
 
-    $data['path_bon_livraison'] = $path;
-    $data['date_entrant'] = Carbon::now()->toDateString();
-    $data['agent_id'] = $id;
-    $data['magasin_id'] = 1;
+    public function getCamionStock(){
 
-    try {
-        DB::beginTransaction();
-        // Créez l'entrée dans la base de données
-        $entreeMagasin = self::create($data);
-        DB::commit();
-        return $entreeMagasin; // Retourne l'entité créée
-    } catch (\Exception $e) {
-        DB::rollBack();
-        // Ajoutez une exception personnalisée avec le message d'erreur
-        throw new \Exception("Erreur lors de l'insertion des données : " . $e->getMessage());
     }
-}
 
 }
