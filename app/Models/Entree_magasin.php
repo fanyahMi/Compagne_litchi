@@ -62,8 +62,26 @@ class Entree_magasin extends Model
         }
     }
 
-    public function getCamionStock(){
+    public  static function getCamionMagasin(){
+        $data = DB::table('v_mouvement_magasin')
+                ->select('navire', 'station', 'numero_camion', 'chauffeur', 'date_entrant', 'date_sortie')
+                ->get();
+                return $data;
+    }
 
+    public static function getCamionNonSortie(){
+        $data = DB::table('v_mouvement_magasin')
+            ->select('numero_camion', 'id_entree_magasin')
+            ->whereNull('id_sortant_magasin')
+            ->get();
+        return $data;
+    }
+    public static function getQuantiteEntrant($idEntreMagasin){
+        $data = DB::table('v_mouvement_magasin')
+            ->select('quantite_palette', 'id_entree_magasin')
+            ->where('id_entree_magasin', $idEntreMagasin)
+            ->first();
+        return $data;
     }
 
 }

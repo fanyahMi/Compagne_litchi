@@ -56,7 +56,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="navire">Navire</label>
-                            <select id="navire" name="navire" class="form-control" required>
+                            <select id="navire" name="navire_id" class="form-control" required>
                                 <option value="">Sélectionner</option>
                                 @foreach($navires as $navire)
                                     <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
@@ -131,31 +131,24 @@ $(document).ready(function() {
     $('#ajout_magasin').submit(function(e) {
         e.preventDefault();
 
-        // Clear previous error messages
         $('p.error-message').text('');
 
-        // Récupérer le fichier et le lire en base64
         var fileInput = document.getElementById('fichier');
         var file = fileInput.files[0];
 
         if (file) {
             var reader = new FileReader();
             reader.onloadend = function() {
-                // Créez un objet FormData pour envoyer les données
                 var formData = new FormData($('#ajout_magasin')[0]);
-                // Ajoutez la chaîne base64 au FormData
                 formData.append('fichier_base64', reader.result);
-
                 $.ajax({
                     url: $(this).attr('action'),
                     method: 'POST',
                     data: formData,
-                    contentType: false, // Important: Ne pas définir le contentType pour FormData
-                    processData: false, // Important: Ne pas traiter les données
+                    contentType: false,
+                    processData: false,
                     success: function(response) {
-                        console.log(response);
-                        alert('Données insérées avec succès !');
-                        $('#ajout_magasin')[0].reset();
+                        location.reload();
                     },
                     error: function(xhr) {
                         console.log(xhr);
@@ -170,7 +163,7 @@ $(document).ready(function() {
                     }
                 });
             };
-            reader.readAsDataURL(file); // Lire le fichier en base64
+            reader.readAsDataURL(file);
         } else {
             alert('Veuillez sélectionner un fichier.');
         }
