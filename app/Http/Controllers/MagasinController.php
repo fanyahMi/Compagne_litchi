@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Exception;
 use App\Models\Entree_magasin;
+use App\Models\Sorti_magasin;
 use Log;
 
 class MagasinController extends Controller
@@ -60,6 +61,39 @@ class MagasinController extends Controller
 
 
         return view('magasin.Sortie', compact('navires', 'stations'));
+    }
+
+    public function listeCamion(){
+        $camions = Entree_magasin::getCamionMagasin();
+        return view('magasin.camion', compact('camions'));
+    }
+
+    public function formSortie(){
+        $camions = Entree_magasin::getCamionNonSortie();
+        return view('magasin.sortie', compact('camions'));
+    }
+
+    public function ajouteSortie(Request $request)
+    {
+        $request->validate([
+            'entree_magasin_id' => 'required|exists:entree_magasin,id_entree_magasin',
+            'quantite_sortie' => 'required|integer|min:1',
+        ]);
+        $id = session('agent.id');
+
+        $data = [
+            'entree_magasin_id' => $request->entree_magasin_id,
+            'quantite_sortie' => $request->quantite_sortie,
+            'agent_id' => $id,
+        ];
+        Sorti_magasin::createSortie($data);
+        return response()->json(['success' => 'Sortie enregistrée avec succès.']);
+    }
+
+    public function getQuantiteEntrant($idEntreMagasin)
+    {
+        $data = Entree_Magasin::getQuantiteEntrant($idEntreMagasin);
+        return response()->json($data);
     }
 
 }

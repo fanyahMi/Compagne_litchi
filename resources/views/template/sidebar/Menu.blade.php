@@ -26,6 +26,7 @@
 						<ul class="pcoded-submenu">
 							<li><a href="{{ url('entree-magasin') }}">Entree</a></li>
 							<li><a href="{{ url('sortie-magasin') }}">Sortie</a></li>
+                            <li><a href="{{ url('magasin-camion') }}">Camion</a></li>
 						</ul>
 					</li>
 
