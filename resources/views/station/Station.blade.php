@@ -46,7 +46,7 @@
                     <div class="card-body">
                         <h5 class="c-black-900"><b>Liste des stations</b></h5>
                         <div class="mT-30">
-                            <div id="table-container">
+                            <div id="table-container table-responsive">
                                 <table id="produitTable" class="table table-hover table-bordered ">
                                     <thead>
                                         <tr>
