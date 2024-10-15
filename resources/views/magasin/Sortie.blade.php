@@ -18,7 +18,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                Sortie de Magasin
+                <h4>Sortie de Magasin</h4>
             </div>
             <div class="card-body">
                 <form id="sortie_magasin_form" method="POST">
@@ -42,10 +42,27 @@
                         </div>
                     </div>
 
-                    <h3 id="quantite-affiche">Quantité Entrant : <span id="quantite-valeur"></span></h3>
+                    <b id="quantite-affiche">Quantité Entrant : <span id="quantite-valeur"></span></b><br>
 
                     <button type="submit" class="btn btn-primary">Enregistrer la Sortie</button>
                 </form>
+            </div>
+            <div class="card-body">
+                <div class="mT-30">
+                    <div id="table-container">
+                        <table id="" class="table table-hover table-bordered ">
+                            <thead>
+                                <tr>
+                                    <th>Numero de camion</th>
+                                    <th>Quantité sortant</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -61,7 +78,7 @@ $(document).ready(function() {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
+    loadSortie();
     $('#entree_magasin_id').change(function() {
         var idEntreMagasin = $(this).val();
         if (idEntreMagasin) {
@@ -91,7 +108,7 @@ $(document).ready(function() {
             success: function(response) {
                 $('#sortie_magasin_form')[0].reset();
                 $('#quantite-valeur').text('');
-                location.reload();
+                loadSortie();
             },
             error: function(xhr) {
                 console.log(xhr);
@@ -106,6 +123,31 @@ $(document).ready(function() {
             }
         });
     });
+
+    function loadSortie() {
+        $.ajax({
+            url: '/get-sortie',
+            type: 'GET',
+            success: function(data) {
+                $('#table-body').empty();
+                data.forEach(function(sortie) {
+                    appendSortie(sortie);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des sortant du magasin : ", error);
+            }
+        });
+    }
+
+    function appendSortie(sortie) {
+        var row = '<tr>' +
+                    '<td>' + sortie.matricule_sortant + '</td>' +
+                    '<td>' + sortie.quantite_sortie + '</td>' +
+                    '<td>' + sortie.date_sortie + '</td>' +
+                   '</tr>';
+        $('#table-body').append(row);
+    }
 });
 </script>
 @endsection
