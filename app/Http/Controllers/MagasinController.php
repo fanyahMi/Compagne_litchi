@@ -90,10 +90,36 @@ class MagasinController extends Controller
         return response()->json(['success' => 'Sortie enregistrée avec succès.']);
     }
 
-    public function getQuantiteEntrant($idEntreMagasin)
-    {
+    public function getQuantiteEntrant($idEntreMagasin){
         $data = Entree_Magasin::getQuantiteEntrant($idEntreMagasin);
         return response()->json($data);
+    }
+
+    public function getEntree() {
+        $entree = Entree_magasin::orderBy('date_entrant', 'desc')->limit(5)->get();
+
+        return response()->json($entree);
+    }
+
+    public function getSortie() {
+        $sortie = DB::table('v_mouvement_magasin')
+                    ->select('matricule_sortant', 'quantite_sortie','date_sortie')
+                    ->whereNotNull('quantite_sortie')
+                    ->whereNotNull('date_sortie')
+                    ->limit(5)
+                    ->get();
+
+        return response()->json($sortie);
+    }
+
+    public function getById($id){
+        try {
+            $entree = Entree_magasin::getStationById($id);
+            return response()->json($entree);
+        } catch (\Exception $e) {
+            Log::error('Error fetching entree: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 404);
+        }
     }
 
 }

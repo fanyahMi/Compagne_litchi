@@ -27,16 +27,6 @@
         font-weight: bold;
     }
 
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    }
-
     .table th {
         background-color: #007bff;
         color: white;
@@ -111,9 +101,97 @@
                     <button type="submit" class="btn btn-primary">Insérer</button>
                 </form>
             </div>
+            <div class="card-body">
+                <h5 class="c-black-900"><b>Liste des réservations</b></h5>
+                <div class="mT-30">
+                    <div id="table-container">
+                        <table id="" class="table table-hover table-bordered ">
+                            <thead>
+                                <tr>
+                                    <th>Numero de camion</th>
+                                    <th>Bon de livraison</th>
+                                    <th>Quantité de palette</th>
+                                    <th>Station</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <!-- [ Form and Table ] end -->
+</div>
+
+<div id="modifierModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModificationEntree" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="modifier_agentForm" action="" method="POST">
+                    @csrf
+                    <input type="hidden" id="id_entree-modal" name="id_entree">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="station-modal">Station</label>
+                            <select id="station-modal" name="station_id" class="form-control" required>
+                                @foreach($stations as $station)
+                                    <option value="{{ $station->id_station }}">{{ $station->station }}</option>
+                                @endforeach
+                            </select>
+                            <div id="error-modal-station" class="error-message text-danger"></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="navire">Navire</label>
+                            <select id="navire-modal" name="navire_id" class="form-control" required>
+                                <option value="">Sélectionner</option>
+                                @foreach($navires as $navire)
+                                    <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
+                                @endforeach
+                            </select>
+                            <div id="error-modal-navire" class="error-message">Veuillez sélectionner un navire.</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantite-modal">Quantité de palette</label>
+                        <input type="number" class="form-control" name="quantite_palette" id="quantite-modal" min="1" required>
+                        <div id="error-modal-quantite" class="error-message">Veuillez entrer une quantité valide.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="bl-modal">Bon de livraison</label>
+                        <input type="text" class="form-control" name="bon_livraison" id="bl-modal" required>
+                        <div id="error-modal-bl" class="error-message">Veuillez entrer un bon de livraison valide.</div>
+                    </div>
+                    <div class="form-group ">
+                        <label for="fichier-modal">Fichier</label>
+                        <input type="text" class="form-control" id="current-file" readonly>
+                        <input type="file" class="form-modal-control" name="fichier" id="fichier-modal" accept="application/pdf" >
+                        <div id="error-modal-fichier" class="error-message"></div>
+                    </div>
+                    <div class="form-group ">
+                        <label for="nom-modal">Nom du chauffeur</label>
+                        <input type="text" class="form-control" name="chauffeur" id="nom-modal" required>
+                        <div id="error-modal-nom" class="error-message"></div>
+                    </div>
+                    <div class="form-group ">
+                        <label for="matricule-modal_camion">Numero camion</label>
+                        <input type="text" class="form-control" name="numero_camion" id="matricule-modal_camion" maxlength="12" required>
+                        <div id="error-matricule-modal_camion" class="error-message">Veuillez entrer une matricule valide.</div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn  btn-primary" id="saveChangesBtn">Modifier</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @endsection
@@ -127,7 +205,7 @@ $(document).ready(function() {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
+    loadEntree();
     $('#ajout_magasin').submit(function(e) {
         e.preventDefault();
 
@@ -148,7 +226,9 @@ $(document).ready(function() {
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        location.reload();
+                        alert('Vous avez effectué un entré');
+                        $('#ajout_magasin')[0].reset();
+                        loadEntree();
                     },
                     error: function(xhr) {
                         console.log(xhr);
@@ -168,6 +248,71 @@ $(document).ready(function() {
             alert('Veuillez sélectionner un fichier.');
         }
     });
+
+    function loadEntree() {
+        $.ajax({
+            url: '/get-entree',
+            type: 'GET',
+            success: function(data) {
+                $('#table-body').empty();
+                data.forEach(function(entree) {
+                    appendEntree(entree);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des entree en magasin : ", error);
+            }
+        });
+    }
+
+    const stations = @json($stations);
+    const station = {};
+
+    // Remplir l'objet 'station' avec des clés basées sur l'id_station
+    stations.forEach(s => {
+        station[s.id_station] = s.station; // Utilisation correcte de 's' pour accéder aux propriétés
+    });
+
+    function appendEntree(entree) {
+        var row = '<tr>' +
+                    '<td>' + entree.numero_camion + '</td>' +
+                    '<td>' + entree.bon_livraison + ' (' + entree.path_bon_livraison + ')</td>' +
+                    '<td>' + entree.quantite_palette + '</td>' +
+                    '<td>' + (station[entree.station_id] || 'Station inconnue') + '</td>' + // Vérifie si la station existe
+                    '<td>' +
+                        '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_entree="' + entree.id_entree_magasin + '">Modifier</button>' +
+                    '</td>' +
+                    '</tr>';
+        $('#table-body').append(row);
+    }
+
+    $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
+        var id = $(this).data('id_entree');
+        $.ajax({
+            url: '/get-entree/' + id,
+            type: 'GET',
+            success: function(entree_magasin) {
+                $('#id_entree-modal').val(entree_magasin.id_entree_magasin);
+                $('#station-modal').val(entree_magasin.station_id).trigger('change');
+                $('#navire-modal').val(entree_magasin.navire_id).trigger('change');
+                $('#quantite-modal').val(entree_magasin.quantite_palette);
+                $('#bl-modal').val(entree_magasin.bon_livraison);
+                $('#nom-modal').val(entree_magasin.chauffeur);
+                $('#matricule-modal_camion').val(entree_magasin.numero_camion);
+                if (entree_magasin.path_bon_livraison) {
+                    $('#current-file').val(entree_magasin.path_bon_livraison);
+                } else {
+                    $('#current-file').val('Aucun fichier sélectionné.');
+            }
+
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors de la récupération de l'entree en magasin : ", error);
+            }
+        });
+    });
+
+
 });
 </script>
 @endsection

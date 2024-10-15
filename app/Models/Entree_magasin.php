@@ -84,4 +84,13 @@ class Entree_magasin extends Model
         return $data;
     }
 
+    public static function getStationById($id){
+        try {
+            return Entree_magasin::findOrFail($id);
+        } catch (\Exception $e) {
+            Log::error('Error fetching entree magasin: ' . $e->getMessage());
+            throw new \Exception('Entrée en magasin non trouvé.');
+        }
+    }
+
 }
