@@ -45,7 +45,10 @@ Route::middleware(['utilisateur'])->group(function () {
     Route::get('/sortie-magasin', [MagasinController::class, 'formSortie']);
     Route::get('/magasin-camion', [MagasinController::class, 'listeCamion']);
     Route::post('/sortie-magasin', [MagasinController::class, 'ajouteSortie'])->name('sortie.store');
+    Route::get('/get-sortie', [MagasinController::class, 'getSortie']);
     Route::get('/quantite-entree/{id}', [MagasinController::class, 'getQuantiteEntrant'])->name('quantite.entrant');
+    Route::get('/get-entree', [MagasinController::class, 'getEntree']);
+    Route::get('/get-entree/{id}', [MagasinController::class, 'getById']);
 
 });
 
