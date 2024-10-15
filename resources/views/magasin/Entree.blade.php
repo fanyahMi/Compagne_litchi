@@ -81,7 +81,7 @@
 
                         <div class="form-group col-md-4">
                             <label for="fichier">Fichier</label>
-                            <input type="file" class="form-control" name="fichier" id="fichier" accept="application/pdf" required>
+                            <input type="file" class="form-control" name="fichier" id="fichier" accept="application/pdf" >
                             <div id="error-fichier" class="error-message">Veuillez sélectionner un fichier.</div>
                         </div>
 
