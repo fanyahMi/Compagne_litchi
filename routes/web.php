@@ -41,7 +41,7 @@ Route::middleware(['utilisateur'])->group(function () {
 
 
     Route::get('/entree-magasin', [MagasinController::class, 'index']);
-    Route::post('/entree-magasin', [MagasinController::class, 'insertEntrer']);
+    Route::post('/entree-magasin', [MagasinController::class, 'insertEntrer'])->name('entre.store');
     Route::get('/sortie-magasin', [MagasinController::class, 'formSortie']);
     Route::get('/magasin-camion', [MagasinController::class, 'listeCamion']);
     Route::post('/sortie-magasin', [MagasinController::class, 'ajouteSortie'])->name('sortie.store');
@@ -49,7 +49,7 @@ Route::middleware(['utilisateur'])->group(function () {
     Route::get('/quantite-entree/{id}', [MagasinController::class, 'getQuantiteEntrant'])->name('quantite.entrant');
     Route::get('/get-entree', [MagasinController::class, 'getEntree']);
     Route::get('/get-entree/{id}', [MagasinController::class, 'getById']);
-
+    Route::post('/entree-magasin/modifier', [MagasinController::class, 'modifierEntrer'])->name('entre.modifier');
 });
 
 
