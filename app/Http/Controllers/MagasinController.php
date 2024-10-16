@@ -122,5 +122,40 @@ class MagasinController extends Controller
         }
     }
 
+
+    public function modifierEntrer(Request $request){
+
+        $validatedData = $request->validate([
+            'numero_camion' => 'required|string|max:50',
+            'encien' => 'string',
+            'id_entree' => 'required',
+            'bon_livraison' => 'required|string|max:50',
+            'chauffeur' => 'required|string|max:60',
+            'quantite_palette' => 'required|integer|min:1',
+            'station_id' => 'required|integer|exists:station,id_station',
+            'navire_id' => 'nullable|integer|exists:navire,id_navire',
+        ], [
+            'numero_camion.required' => 'Le numéro du camion est obligatoire.',
+            'bon_livraison.required' => 'Le bon de livraison est obligatoire.',
+            'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
+            'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
+        ]);
+
+        try {
+            $base64File = $request->input('fichier_base64');
+            $num =  $request->input('numero_camion');
+            $id = session('agent.id');
+            Entree_magasin::modifierEntrer($validatedData, $base64File);
+
+            return response()->json([
+                'message' =>   $num,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'Erreur lors de l\'insertion des données: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+
 }
 

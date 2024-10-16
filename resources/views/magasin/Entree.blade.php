@@ -12,21 +12,17 @@
         margin-top: 5px;
         display: none;
     }
-
     .card-header {
         padding: 15px;
         font-size: 18px;
         font-weight: bold;
     }
-
     .card-body {
         padding: 20px;
     }
-
     .form-group label {
         font-weight: bold;
     }
-
     .table th {
         background-color: #007bff;
         color: white;
@@ -34,7 +30,6 @@
 </style>
 
 <div class="row">
-    <!-- [ Form and Table ] start -->
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
@@ -81,7 +76,7 @@
 
                         <div class="form-group col-md-4">
                             <label for="fichier">Fichier</label>
-                            <input type="file" class="form-control" name="fichier" id="fichier" accept="application/pdf" >
+                            <input type="file" class="form-control" name="fichier" id="fichier" accept="application/pdf">
                             <div id="error-fichier" class="error-message">Veuillez sélectionner un fichier.</div>
                         </div>
 
@@ -101,11 +96,13 @@
                     <button type="submit" class="btn btn-primary">Insérer</button>
                 </form>
             </div>
+
+            <!-- [Liste des réservations] -->
             <div class="card-body">
                 <h5 class="c-black-900"><b>Liste des réservations</b></h5>
                 <div class="mT-30">
                     <div id="table-container">
-                        <table id="" class="table table-hover table-bordered ">
+                        <table id="" class="table table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th>Numero de camion</th>
@@ -122,8 +119,8 @@
             </div>
         </div>
     </div>
-    <!-- [ Form and Table ] end -->
 </div>
+
 
 <div id="modifierModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModificationEntree" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -133,9 +130,10 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <form id="modifier_agentForm" action="" method="POST">
+                <form id="modifier"  method="POST">
                     @csrf
                     <input type="hidden" id="id_entree-modal" name="id_entree">
+                    <input type="hidden" id="encien-fichier" name="encien">
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="station-modal">Station</label>
@@ -183,16 +181,16 @@
                         <input type="text" class="form-control" name="numero_camion" id="matricule-modal_camion" maxlength="12" required>
                         <div id="error-matricule-modal_camion" class="error-message">Veuillez entrer une matricule valide.</div>
                     </div>
-
-                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn  btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn  btn-primary" id="saveChangesBtn">Modifier</button>
+                <button type="submit" class="btn btn-primary">Insérer</button>
             </div>
+        </form>
         </div>
     </div>
 </div>
+
 
 @endsection
 
@@ -200,54 +198,103 @@
 <script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
 $(document).ready(function() {
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
     loadEntree();
+
     $('#ajout_magasin').submit(function(e) {
         e.preventDefault();
 
         $('p.error-message').text('');
-
         var fileInput = document.getElementById('fichier');
         var file = fileInput.files[0];
+        var formData = new FormData($('#ajout_magasin')[0]);
 
         if (file) {
             var reader = new FileReader();
             reader.onloadend = function() {
-                var formData = new FormData($('#ajout_magasin')[0]);
                 formData.append('fichier_base64', reader.result);
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        alert('Vous avez effectué un entré');
-                        $('#ajout_magasin')[0].reset();
-                        loadEntree();
-                    },
-                    error: function(xhr) {
-                        console.log(xhr);
-                        if (xhr.status === 422) {
-                            var errors = xhr.responseJSON.errors;
-                            $.each(errors, function(key, messages) {
-                                $('#error-' + key).text(messages[0]);
-                            });
-                        } else {
-                            alert('Erreur : ' + xhr.responseJSON.error);
-                        }
-                    }
-                });
+                submitForm(formData);
             };
             reader.readAsDataURL(file);
         } else {
-            alert('Veuillez sélectionner un fichier.');
+            submitForm(formData); // Envoyer sans fichier
         }
     });
+
+    $('#modifier').submit(function(e) {
+        e.preventDefault();
+        $('p.error-message').text('');
+        var fileInput = document.getElementById('fichier-modal');
+        var file = fileInput.files[0];
+        var formData = new FormData($('#modifier')[0]);
+
+        if (file) {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                formData.append('fichier_base64', reader.result);
+                submitUpdate(formData);
+            };
+           reader.readAsDataURL(file);
+        } else {
+            submitUpdate(formData);
+
+        }
+        location.reload();
+
+    });
+
+    function submitForm(formData) {
+        $.ajax({
+            url: "{{ route('entre.store') }}",
+            method: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                alert('Vous avez effectué un entré');
+                $('#ajout_magasin')[0].reset();
+                loadEntree();
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+                    $.each(errors, function(key, messages) {
+                        $('#error-' + key).text(messages[0]).show();
+                    });
+                }
+            }
+        });
+    }
+
+    function submitUpdate(formData) {
+        $.ajax({
+            url: "{{ route('entre.modifier') }}",
+            method: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                alert('Vous avez effectué un entré');
+                $('#modifier')[0].reset();
+                loadEntree();
+            },
+            error: function(xhr) {
+                console.log(xhr);
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+                    $.each(errors, function(key, messages) {
+                        $('#error-modal-' + key).text(messages[0]).show();
+                    });
+                }
+            }
+        });
+    }
 
     function loadEntree() {
         $.ajax({
@@ -268,9 +315,8 @@ $(document).ready(function() {
     const stations = @json($stations);
     const station = {};
 
-    // Remplir l'objet 'station' avec des clés basées sur l'id_station
     stations.forEach(s => {
-        station[s.id_station] = s.station; // Utilisation correcte de 's' pour accéder aux propriétés
+        station[s.id_station] = s.station;
     });
 
     function appendEntree(entree) {
@@ -293,6 +339,12 @@ $(document).ready(function() {
             type: 'GET',
             success: function(entree_magasin) {
                 $('#id_entree-modal').val(entree_magasin.id_entree_magasin);
+                if(entree_magasin.path_bon_livraison){
+                    $('#encien-fichier').val(entree_magasin.path_bon_livraison);
+                }else{
+                    $('#encien-fichier').val("Aucun");
+                }
+
                 $('#station-modal').val(entree_magasin.station_id).trigger('change');
                 $('#navire-modal').val(entree_magasin.navire_id).trigger('change');
                 $('#quantite-modal').val(entree_magasin.quantite_palette);
@@ -311,6 +363,30 @@ $(document).ready(function() {
             }
         });
     });
+
+    /*('#modifier_entreForm').submit(function(e) {
+        e.preventDefault();
+
+        console.log('fhdghjq');
+        $('p.error-message').text('');
+        var fileInput = document.getElementById('fichier-modal');
+        var file = fileInput.files[0];
+        var formData = new FormData($('#modifier_entreForm')[0]);
+
+        if (file) {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                formData.append('fichier_base64', reader.result);
+                console.log(reader.result);
+               // submitUpdate(formData);
+            };
+            reader.readAsDataURL(file);
+        } else {
+           // submitUpdate(formData); // Envoyer sans fichier
+        }
+    });*/
+
+
 
 
 });
