@@ -93,6 +93,10 @@ class StationController extends Controller
         }
     }
 
+    public function compagne(){
+        return view('station.Compagne');
+    }
+
     public function quotas(){
 
         $stations = DB::table('station')->select('id_station', 'station')->get();

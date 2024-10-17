@@ -29,6 +29,8 @@ CREATE TABLE type_navire(
 CREATE TABLE compagne(
    id_compagne INT AUTO_INCREMENT,
    annee int NOT NULL,
+   debut date not null,
+   fin date not null,
    PRIMARY KEY(id_compagne),
    UNIQUE(annee)
 );
@@ -39,6 +41,29 @@ CREATE TABLE station(
    nif_stat VARCHAR(50) NOT NULL,
    PRIMARY KEY(id_station),
    UNIQUE(station)
+);
+
+create table numero_station(
+    id_numero_station Int AUTO_INCREMENT,
+    compagne_id INt not null,
+    station_id int not null,
+    numero_station INT not null,
+    PRIMARY KEY(id_numero_station),
+    UNIQUE(compagne_id,numero_station),
+    FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne)
+);
+
+create table quotas(
+    id_quotas INT AUTO_INCREMENT,
+    compagne_id INt not null,
+    navire_id int not null,
+    numero_station_id int not null,
+    quotas real not null,
+    PRIMARY KEY(id_quotas),
+    UNIQUE(navire_id,numero_station),
+    FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne),
+    FOREIGN KEY(navire_id) REFERENCES navire(id_navire),
+    FOREIGN KEY(numero_station_id) REFERENCES numero_station(id_numero_station_id)
 );
 
 CREATE TABLE magasin(
@@ -110,7 +135,7 @@ CREATE TABLE entree_magasin(
    bon_livraison VARCHAR(50) NOT NULL,
    path_bon_livraison text NOT NULL;
    chauffeur VARCHAR(60) NOT NULL,
-   quantite_palette INT NOT NULL,
+   quantite_palette real NOT NULL,
    date_entrant DATE NOT NULL,
    agent_id INT NOT NULL,
    prevision_id INT NOT NULL,

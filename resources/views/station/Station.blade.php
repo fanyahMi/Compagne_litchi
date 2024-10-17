@@ -46,7 +46,7 @@
                     <div class="card-body">
                         <h5 class="c-black-900"><b>Liste des stations</b></h5>
                         <div class="mT-30">
-                            <div id="table-container table-responsive">
+                            <div id="table-responsive">
                                 <table id="produitTable" class="table table-hover table-bordered ">
                                     <thead>
                                         <tr>
@@ -166,7 +166,7 @@ $(document).ready(function() {
                   '<td>' + station.station + '</td>' +
                   '<td>' + station.nif_stat + '</td>' +
                   '<td class="col-md-2">' +
-                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_station="' + station.id_station + '">Modifier</button>' +
+                    '<button  class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_station="' + station.id_station + '"><i class="fas fa-edit"></i></button>' +
                   '</td>' +
                   '</tr>';
         $('#table-body').append(row);
