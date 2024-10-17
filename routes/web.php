@@ -44,6 +44,7 @@ Route::middleware(['agent.entree'])->group(function () {
 
     Route::get('/list-compagne', [CompagneController::class, 'compagne']);
     Route::post('/ajout-compagne', [CompagneController::class, 'addAnnee_compagne']);
+    Route::get('/get-compagne', [CompagneController::class, 'getCompagne']);
 
 
     Route::get('/list-navire', [NavireController::class, 'index']);

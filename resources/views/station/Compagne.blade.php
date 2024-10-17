@@ -74,9 +74,10 @@
         }
     });
 
-    loadAnnee();
+    //loadAnnee();
     $('#create_compagne_form').on('submit', function(event) {
         event.preventDefault();
+
         $.ajax({
             url: $(this).attr('action'),
             method: 'POST',
@@ -84,17 +85,24 @@
             success: function(response) {
                 alert('Agent ajouté avec succès !');
                 console.log(response);
-                $('p.error-message').text('');
-                $('#create_compagne_form')[0].reset();
-                loadAnnee();
+                $('p.error-message').text(''); // Réinitialiser les messages d'erreur
+                $('#create_compagne_form')[0].reset(); // Réinitialiser le formulaire
+                //loadAnnee(); // Recharger les années ou autres données pertinentes
             },
             error: function(xhr) {
-                $('p.error-message').text('');
-                $('#error-message').text('');
+                $('p.error-message').text(''); // Réinitialiser les messages d'erreur
+                $('#error-message').text(''); // Réinitialiser le message global d'erreur
+
                 if (xhr.status === 422) {
                     var errors = xhr.responseJSON.errors;
+
+                    // Pour chaque champ ayant une erreur, afficher tous les messages d'erreur
                     $.each(errors, function(key, messages) {
-                        $('#error-' + key).text(messages[0]);
+                        var errorMessages = '';
+                        $.each(messages, function(index, message) {
+                            errorMessages += message + '<br>'; // Concatenation des messages d'erreur
+                        });
+                        $('#error-' + key).html(errorMessages); // Afficher toutes les erreurs pour le champ
                     });
                 }
             }
@@ -107,34 +115,22 @@
             type: 'GET',
             success: function(data) {
                 $('#table-body').empty();
-                data.forEach(function(agent) {
-                    appendAnneCompagne(agent);
+                data.forEach(function(compagne) {
+                    appendAnneCompagne(compagne);
                 });
             },
             error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des réservations : ", error);
+                console.error("Erreur lors du chargement des années de compagnes : ", error);
             }
         });
     }
 
-    function appendAnneCompagne(agent) {
+    function appendAnneCompagne(compagne) {
         var row = '<tr>' +
-                '<td>' + agent.matricule  + '</td>' +
-                  '<td>' + agent.nom + ' ' + agent.prenom + '</td>' + // Added space
-                  '<td>' + agent.date_naissance + '</td>' +
-                  '<td>' + agent.cin + '</td>' +
-                  '<td>' + sexeMap[agent.sexe_id]+ '</td>' +
-                  '<td>' + situationMap[agent.situation_familial_id] + '</td>' +
-                  '<td>' + agent.created_at + '</td>' +
-                  '<td>' + roleMap[agent.role_id] + '</td>' +
-                  '<td>' +
-                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_agent="' + agent.id_utilisateur + '">' +
-                    '<i class="fas fa-edit"></i></button>' +
-                  '</td>' +
-                  '<td>' +
-                    '<button class="btn btn-danger btn-sm delete-btn" data-id_agent="' + agent.id_utilisateur + '">' +
-                    '<i class="fas fa-trash-alt"></i></button>' +
-                  '</td>' +
+                    '<td>' + compagne.annee  + '</td>' +
+                    '<td>' + compagne.debut + '</td>' + // Added space
+                    '<td>' + compagne.fin + '</td>' +
+                    '<td>' + compagne.etat + '</td>' +
                   '</tr>';
         $('#table-body').append(row);
     }
