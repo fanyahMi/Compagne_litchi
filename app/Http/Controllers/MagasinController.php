@@ -22,6 +22,7 @@ class MagasinController extends Controller
         return view('magasin.Entree', compact('navires', 'stations'));
     }
 
+
     public function insertEntrer(Request $request){
         $validatedData = $request->validate([
             'numero_camion' => 'required|string|max:50',

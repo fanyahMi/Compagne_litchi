@@ -16,7 +16,16 @@ Route::get('/login', [AgentController::class, 'login'])->name('login');
 Route::middleware(['admin'])->group(function () {
     Route::get('/', [AgentController::class, 'index'])->name('admin.index');
 });
-Route::middleware(['utilisateur'])->group(function () {
+
+Route::middleware(['agent.sortie'])->group(function () {
+
+});
+
+Route::middleware(['agent.embarquement'])->group(function () {
+
+});
+
+Route::middleware(['agent.entree'])->group(function () {
     Route::get('/', [AgentController::class, 'index'])->name('admin.index');
     Route::post('/ajout-agent', [AgentController::class, 'addAgent']) ->name('utilisateur.addAgent');
     Route::get('/get-agent', [AgentController::class, 'getAgent']);

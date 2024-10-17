@@ -7,8 +7,12 @@ INSERT INTO sexe (sexe) VALUES
 ('Femme');
 
 INSERT INTO role (role) VALUES
-('Administrateur'),
-('Utilisateur');
+('Administrateur');
+INSERT INTO role (role) VALUES
+('Agent_entree'),
+('Agent_sortie');
+INSERT INTO role (role) VALUES
+('Agent_embarquement');
 
 INSERT INTO type_navire (type_navire) VALUES
 ('Cargo'),
@@ -21,7 +25,7 @@ INSERT INTO station (station, nif_stat) VALUES
 INSERT INTO magasin (magasin) VALUES
 ('Magasin B1');
 
--- Exemple de données pour la table 'utilisateur' avec bcrypt
+
 INSERT INTO utilisateur (matricule, nom, prenom, date_naissance, cin, mot_passe, sexe_id, role_id, situation_familial_id,created_at)
 VALUES
 ('20240901', 'Doe', 'John', '1985-06-15', '12345678', 'Doe', 1, 1, 1,now()),
