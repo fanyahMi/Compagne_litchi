@@ -21,23 +21,23 @@
                 <h4>Ajouter l'anné de compagne</h4>
             </div>
             <div class="card-body">
-                <form id="create_compagne_form" method="POST">
+                <form id="create_compagne_form" action="ajout-compagne" method="POST">
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-2">
                             <label for="annee">Annee de compagne</label>
                             <input type="number" class="form-control" name="annee" id="annee" min="1800" required>
-                            <div id="error-annee" class="error-message">Veuillez entrer une date.</div>
+                            <div id="error-annee" class="error-message"></div>
                         </div>
                         <div class="form-group col-md-5">
                             <label for="debut">Debut</label>
-                            <input type="date" class="form-control" name="debut" id="debut" min="1" required>
-                            <div id="error-debut" class="error-message">Veuillez entrer une date.</div>
+                            <input type="month" class="form-control" name="debut" id="debut" min="1" required>
+                            <div id="error-debut" class="error-message"></div>
                         </div>
                         <div class="form-group col-md-5">
                             <label for="fin">Fin</label>
-                            <input type="date" class="form-control" name="fin" id="fin" min="1" required>
-                            <div id="error-fin" class="error-message">Veuillez entrer une date.</div>
+                            <input type="month" class="form-control" name="fin" id="fin" min="1" required>
+                            <div id="error-fin" class="error-message"></div>
                         </div>
                     </div>
 
@@ -74,7 +74,7 @@
         }
     });
 
-    loadAgent();
+    loadAnnee();
     $('#create_compagne_form').on('submit', function(event) {
         event.preventDefault();
         $.ajax({
@@ -85,8 +85,8 @@
                 alert('Agent ajouté avec succès !');
                 console.log(response);
                 $('p.error-message').text('');
-                $('#ajout_agentForm')[0].reset();
-                loadAgent();
+                $('#create_compagne_form')[0].reset();
+                loadAnnee();
             },
             error: function(xhr) {
                 $('p.error-message').text('');
@@ -101,14 +101,14 @@
         });
     });
 
-    function loadAgent() {
+    function loadAnnee() {
         $.ajax({
-            url: '/get-agent',
+            url: '/get-compagne',
             type: 'GET',
             success: function(data) {
                 $('#table-body').empty();
                 data.forEach(function(agent) {
-                    appendAgent(agent);
+                    appendAnneCompagne(agent);
                 });
             },
             error: function(xhr, status, error) {
@@ -117,7 +117,7 @@
         });
     }
 
-    function appendAgent(agent) {
+    function appendAnneCompagne(agent) {
         var row = '<tr>' +
                 '<td>' + agent.matricule  + '</td>' +
                   '<td>' + agent.nom + ' ' + agent.prenom + '</td>' + // Added space
