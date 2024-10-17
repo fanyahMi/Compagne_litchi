@@ -5,6 +5,7 @@ use App\Http\Controllers\AgentController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\NavireController;
 use App\Http\Controllers\MagasinController;
+use App\Http\Controllers\CompagneController;
 
 
 Route::get('/logout', [AgentController::class, 'logout'])->name('logout');
@@ -32,7 +33,8 @@ Route::middleware(['utilisateur'])->group(function () {
     Route::get('/list-quotas', [StationController::class, 'quotas']);
 
 
-    Route::get('/list-compagne', [StationController::class, 'compagne']);
+    Route::get('/list-compagne', [CompagneController::class, 'compagne']);
+    Route::post('/ajout-compagne', [CompagneController::class, 'addAnnee_compagne']);
 
 
     Route::get('/list-navire', [NavireController::class, 'index']);

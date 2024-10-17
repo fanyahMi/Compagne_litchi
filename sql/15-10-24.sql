@@ -55,8 +55,6 @@ create table numero_station(
     FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne)
 );
 
-
-
 CREATE TABLE magasin(
    id_magasin INT AUTO_INCREMENT,
    magasin VARCHAR(50) NOT NULL,
@@ -116,8 +114,6 @@ CREATE TABLE mouvement_navire(
    FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne),
    FOREIGN KEY(navire_id) REFERENCES navire(id_navire)
 );
-
-
 
 CREATE TABLE entree_magasin(
    id_entree_magasin INT AUTO_INCREMENT,
