@@ -134,4 +134,21 @@ class Entree_magasin extends Model
         }
     }
 
+
+    public static function getEntrerMagasin(){
+        $data = DB::table('v_mouvement_magasin')
+        ->select('*')
+        ->orderBy('date_entrant', 'desc')
+        ->limit(5)
+        ->get();
+        return $data;
+    }
+    public static function getEntrerMagasinByIdEntree($id){
+        $data = DB::table('v_mouvement_magasin')
+        ->select('*')
+        ->where('id_entree_magasin', $id)
+        ->first();
+        return $data;
+    }
+
 }

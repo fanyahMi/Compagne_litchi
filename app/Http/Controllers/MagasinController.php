@@ -28,7 +28,7 @@ class MagasinController extends Controller
             'bon_livraison' => 'required|string|max:50|unique:entree_magasin,bon_livraison',
             'chauffeur' => 'required|string|max:60',
             'quantite_palette' => 'required|integer|min:1',
-            'station_id' => 'required|integer|exists:station,id_station',
+            'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
             'navire_id' => 'nullable|integer|exists:navire,id_navire',
         ], [
             'numero_camion.required' => 'Le numéro du camion est obligatoire.',
@@ -95,7 +95,7 @@ class MagasinController extends Controller
     }
 
     public function getEntree() {
-        $entree = Entree_magasin::orderBy('date_entrant', 'desc')->limit(5)->get();
+        $entree = Entree_magasin::getEntrerMagasin();
 
         return response()->json($entree);
     }
@@ -113,7 +113,7 @@ class MagasinController extends Controller
 
     public function getById($id){
         try {
-            $entree = Entree_magasin::getStationById($id);
+            $entree = Entree_magasin::getEntrerMagasinByIdEntree($id);
             return response()->json($entree);
         } catch (\Exception $e) {
             Log::error('Error fetching entree: ' . $e->getMessage());
@@ -131,7 +131,7 @@ class MagasinController extends Controller
             'bon_livraison' => 'required|string|max:50',
             'chauffeur' => 'required|string|max:60',
             'quantite_palette' => 'required|integer|min:1',
-            'station_id' => 'required|integer|exists:station,id_station',
+            'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
             'navire_id' => 'nullable|integer|exists:navire,id_navire',
         ], [
             'numero_camion.required' => 'Le numéro du camion est obligatoire.',

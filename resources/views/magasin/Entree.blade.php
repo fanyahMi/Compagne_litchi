@@ -52,7 +52,7 @@
 
                         <div class="form-group col-md-4">
                             <label for="station">Station</label>
-                            <select id="station" name="station_id" class="form-control" required>
+                            <select id="station" name="numero_station_id" class="form-control" required>
                                 @foreach($stations as $station)
                                 <option value="{{ $station->id_numero_station }}">{{ $station->station }} / {{ $station->numero_station }}</option>
                                 @endforeach
@@ -138,7 +138,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="station-modal">Station</label>
-                            <select id="station-modal" name="station_id" class="form-control" required>
+                            <select id="station-modal" name="numero_station_id" class="form-control" required>
                                 @foreach($stations as $station)
                                     <option value="{{ $station->id_numero_station }}">{{ $station->station }} / {{ $station->numero_station }}</option>
                                 @endforeach
@@ -246,7 +246,7 @@ $(document).ready(function() {
             submitUpdate(formData);
 
         }
-        //location.reload();
+        location.reload();
 
     });
 
@@ -304,7 +304,7 @@ $(document).ready(function() {
             success: function(data) {
                 $('#table-body').empty();
                 data.forEach(function(entree) {
-                    appendEntree(entree);
+                   appendEntree(entree);
                 });
             },
             error: function(xhr, status, error) {
@@ -313,19 +313,14 @@ $(document).ready(function() {
         });
     }
 
-    const stations = @json($stations);
-    const station = {};
 
-    stations.forEach(s => {
-        station[s.id_station] = s.station;
-    });
 
     function appendEntree(entree) {
-        var row = '<tr>' +
+       var row = '<tr>' +
                     '<td>' + entree.numero_camion + '</td>' +
                     '<td>' + entree.bon_livraison + ' (' + entree.path_bon_livraison + ')</td>' +
                     '<td>' + entree.quantite_palette + '</td>' +
-                    '<td>' + (station[entree.station_id] || 'Station inconnue') + '</td>' + // Vérifie si la station existe
+                    '<td>' + ( entree.station || 'Station inconnue') + '</td>' + // Vérifie si la station existe
                     '<td>' +
                         '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_entree="' + entree.id_entree_magasin + '">Modifier</button>' +
                     '</td>' +
@@ -339,6 +334,7 @@ $(document).ready(function() {
             url: '/get-entree/' + id,
             type: 'GET',
             success: function(entree_magasin) {
+                console.log(entree_magasin.numero_station_id);
                 $('#id_entree-modal').val(entree_magasin.id_entree_magasin);
                 if(entree_magasin.path_bon_livraison){
                     $('#encien-fichier').val(entree_magasin.path_bon_livraison);
@@ -346,7 +342,7 @@ $(document).ready(function() {
                     $('#encien-fichier').val("Aucun");
                 }
 
-                $('#station-modal').val(entree_magasin.station_id).trigger('change');
+                $('#station-modal').val(entree_magasin.numero_station_id).trigger('change');
                 $('#navire-modal').val(entree_magasin.navire_id).trigger('change');
                 $('#quantite-modal').val(entree_magasin.quantite_palette);
                 $('#bl-modal').val(entree_magasin.bon_livraison);
@@ -364,28 +360,6 @@ $(document).ready(function() {
             }
         });
     });
-
-    /*('#modifier_entreForm').submit(function(e) {
-        e.preventDefault();
-
-        console.log('fhdghjq');
-        $('p.error-message').text('');
-        var fileInput = document.getElementById('fichier-modal');
-        var file = fileInput.files[0];
-        var formData = new FormData($('#modifier_entreForm')[0]);
-
-        if (file) {
-            var reader = new FileReader();
-            reader.onloadend = function() {
-                formData.append('fichier_base64', reader.result);
-                console.log(reader.result);
-               // submitUpdate(formData);
-            };
-            reader.readAsDataURL(file);
-        } else {
-           // submitUpdate(formData); // Envoyer sans fichier
-        }
-    });*/
 
 
 
