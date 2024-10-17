@@ -24,16 +24,14 @@
                         <hr><form id="ajout_agentForm" action="{{ url('ajout-agent') }}" method="POST">
                             @csrf
                             <div class="form-row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <label for="nom">Nom</label>
                                     <input type="text" class="form-control" name="nom" id="nom" placeholder="Nom">
                                     <div class="mb-3">
                                         <div id="error-nom" class="error-message text-danger"></div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-5">
                                     <label for="prenom">Prénom</label>
                                     <input type="text" class="form-control" name="prenom" id="prenom" placeholder="Prénom">
                                     <!-- Optional error message for 'prenom' -->
@@ -82,6 +80,18 @@
                                         <div id="error-situation" class="error-message text-danger"></div>
                                     </div>
                                 </div>
+                                <div class="form-group col-md-4">
+                                    <label for="role">Role</label>
+                                    <select id="role" name="role" class="form-control" required>
+                                        @foreach($roles as $role)
+                                            <option value="{{ $role->id_role }}">{{ $role->role}}</option>
+                                        @endforeach
+                                    </select>
+                                    <!-- Optional error message for 'role' -->
+                                    <div class="mb-3">
+                                        <div id="error-role" class="error-message text-danger"></div>
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">Insérer</button>
                         </form>
@@ -90,7 +100,7 @@
                     <div class="card-body">
                         <h5 class="c-black-900"><b>Liste des réservations</b></h5>
                         <div class="mT-30">
-                            <div id="table-container table-responsive">
+                            <div id="table-responsive ">
                                 <table id="produitTable" class="table table-hover table-bordered ">
                                     <thead>
                                         <tr>
@@ -101,6 +111,7 @@
                                             <th>Sexe</th>
                                             <th>Situation patrimonial</th>
                                             <th>Embaucher le</th>
+                                            <th>Role</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body">
@@ -177,6 +188,17 @@
                             </div>
                             <div  class="form-group">
                                 <div id="error-modal-situation" class="error-message text-danger"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Role</label>
+                                <select id="role-modal" name="role" class="form-control">
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->id_role }}">{{ $role->role }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div  class="form-group">
+                                <div id="error-modal-role" class="error-message text-danger"></div>
                             </div>
                         </form>
                     </div>
@@ -267,11 +289,17 @@ $(document).ready(function() {
         });
     }
     const sexes = @json($sexes);
+    const roles = @json($roles);
     const situations = @json($situations);
 
     const sexeMap = {};
     sexes.forEach(sexe => {
         sexeMap[sexe.id_sexe] = sexe.sexe;
+    });
+
+    const roleMap = {};
+    roles.forEach(role => {
+        roleMap[role.id_role] = role.role;
     });
 
     const situationMap = {};
@@ -288,11 +316,14 @@ $(document).ready(function() {
                   '<td>' + sexeMap[agent.sexe_id]+ '</td>' +
                   '<td>' + situationMap[agent.situation_familial_id] + '</td>' +
                   '<td>' + agent.created_at + '</td>' +
+                  '<td>' + roleMap[agent.role_id] + '</td>' +
                   '<td>' +
-                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_agent="' + agent.id_utilisateur + '">Modifier</button>' +
+                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_agent="' + agent.id_utilisateur + '">' +
+                    '<i class="fas fa-edit"></i></button>' +
                   '</td>' +
                   '<td>' +
-                    '<button class="btn btn-danger btn-sm delete-btn" data-id_agent="' + agent.id_utilisateur + '">Supprimer</button>' +
+                    '<button class="btn btn-danger btn-sm delete-btn" data-id_agent="' + agent.id_utilisateur + '">' +
+                    '<i class="fas fa-trash-alt"></i></button>' +
                   '</td>' +
                   '</tr>';
         $('#table-body').append(row);
@@ -311,6 +342,7 @@ $(document).ready(function() {
                 $('#cin-modal').val(agentData.cin);
                 $('#sexe-modal').val(agentData.sexe_id).trigger('change');
                 $('#situation-modal').val(agentData.situation_familial_id).trigger('change');
+                $('#role-modal').val(agentData.role_id).trigger('change');
             },
             error: function(xhr, status, error) {
                 console.error("Erreur lors de la récupération de l'agent : ", error);
