@@ -93,9 +93,6 @@ class StationController extends Controller
         }
     }
 
-    public function compagne(){
-        return view('station.Compagne');
-    }
 
     public function quotas(){
 
