@@ -60,7 +60,7 @@ create table quotas(
     numero_station_id int not null,
     quotas real not null,
     PRIMARY KEY(id_quotas),
-    UNIQUE(navire_id,numero_station),
+    UNIQUE(navire_id,numero_station_id),
     FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne),
     FOREIGN KEY(navire_id) REFERENCES navire(id_navire),
     FOREIGN KEY(numero_station_id) REFERENCES numero_station(id_numero_station_id)
