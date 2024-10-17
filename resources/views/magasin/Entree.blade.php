@@ -246,7 +246,7 @@ $(document).ready(function() {
             submitUpdate(formData);
 
         }
-        location.reload();
+        //location.reload();
 
     });
 
