@@ -32,6 +32,9 @@ Route::middleware(['utilisateur'])->group(function () {
     Route::get('/list-quotas', [StationController::class, 'quotas']);
 
 
+    Route::get('/list-compagne', [StationController::class, 'compagne']);
+
+
     Route::get('/list-navire', [NavireController::class, 'index']);
     Route::post('/ajout-navire', [NavireController::class, 'addnavire']) ->name('utilisateur.addAgent');
     Route::get('/get-navire', [NavireController::class, 'getNavire']);

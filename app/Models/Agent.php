@@ -78,7 +78,7 @@ class Agent extends Model
             return $matricule;
     }
 
-    public  static function ajouterAgent($nom, $prenom, $dateNaissance, $cin, $sexeId, $situation,$roleId = 2){
+    public  static function ajouterAgent($nom, $prenom, $dateNaissance, $cin, $sexeId, $situation,$roleId){
         $matricule = Agent::generateMatricule();
         Agent::create([
             'matricule' => $matricule,
@@ -95,7 +95,7 @@ class Agent extends Model
     }
 
     public static function getAgentTableau() {
-        $agents = Agent::orderBy('created_at', 'desc')->get();
+        $agents = Agent::orderBy('created_at', 'desc')->where('role_id', '!=', '1')->get();
         if ($agents->contains(function ($agent) {
             return in_array(null, $agent->toArray(), true) || in_array('', $agent->toArray(), true);
         })) {

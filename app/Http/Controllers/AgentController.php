@@ -31,8 +31,9 @@ class AgentController extends Controller
     public function index(){
         $sexes = DB::table('sexe')->select('id_sexe', 'sexe')->get();
         $situations = DB::table('situation_familial')->select('id_situation_familial', 'situation_familial')->get();
+        $roles =  DB::table('role')->select('id_role', 'role')->where('role', '!=', 'Administrateur')->get();
 
-        return view('utilisateur.Agent', compact('sexes', 'situations'));
+        return view('utilisateur.Agent', compact('sexes', 'situations','roles'));
     }
 
     public function loginWeb(Request $request)
@@ -80,7 +81,8 @@ class AgentController extends Controller
                 Rule::unique('utilisateur')
             ],
             'sexe' => 'required|integer',
-            'situation' => 'required|integer'
+            'situation' => 'required|integer',
+            'role' => 'required|integer'
         ], [
             'nom.required' => 'Le champ nom est obligatoire.',
             'dateNaissance.required' => 'La date de naissance est obligatoire.',
@@ -93,7 +95,7 @@ class AgentController extends Controller
 
         try {
 
-            Agent::ajouterAgent( $validatedData['nom'], $validatedData['prenom'], $validatedData['dateNaissance'], $validatedData['cin'], $validatedData['sexe'], $validatedData['situation']);
+            Agent::ajouterAgent( $validatedData['nom'], $validatedData['prenom'], $validatedData['dateNaissance'], $validatedData['cin'], $validatedData['sexe'], $validatedData['situation'], $validatedData['role']);
             return response()->json([
                 'message' => 'Agent ajouté avec succès',
                        ], 200);
