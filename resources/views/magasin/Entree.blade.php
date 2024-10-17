@@ -54,7 +54,7 @@
                             <label for="station">Station</label>
                             <select id="station" name="station_id" class="form-control" required>
                                 @foreach($stations as $station)
-                                    <option value="{{ $station->id_station }}">{{ $station->station }}</option>
+                                <option value="{{ $station->id_numero_station }}">{{ $station->station }} / {{ $station->numero_station }}</option>
                                 @endforeach
                             </select>
                             <div id="error-station" class="error-message">Veuillez sélectionner une station.</div>
@@ -140,7 +140,7 @@
                             <label for="station-modal">Station</label>
                             <select id="station-modal" name="station_id" class="form-control" required>
                                 @foreach($stations as $station)
-                                    <option value="{{ $station->id_station }}">{{ $station->station }}</option>
+                                    <option value="{{ $station->id_numero_station }}">{{ $station->station }} / {{ $station->numero_station }}</option>
                                 @endforeach
                             </select>
                             <div id="error-modal-station" class="error-message text-danger"></div>
