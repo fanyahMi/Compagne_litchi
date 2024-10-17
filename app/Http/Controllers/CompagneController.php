@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class CompagneController extends Controller
 {
@@ -11,7 +13,13 @@ class CompagneController extends Controller
         return view('station.Compagne');
     }
 
-    public function addAnnee_compagne(){
+    public function getCompagne() {
+        $compagne = DB::table('compagne')->get();
+
+        return response()->json($compagne);
+    }
+
+    public function addAnnee_compagne(Request $request){
         $validatedData = $request->validate([
             'annee' => 'required|numeric|min:1800',
             'debut' => 'required|date_format:Y-m',
@@ -25,17 +33,24 @@ class CompagneController extends Controller
             'fin.after' => 'Le mois de fin doit être après le mois de départ.',
         ]);
 
+        $etat = Carbon::now()->lessThanOrEqualTo(Carbon::createFromFormat('Y-m', $validatedData['fin'])) ? 1 : 0;
+        $debutDate = Carbon::createFromFormat('Y-m', $validatedData['debut'])->startOfMonth();
+        $finDate = Carbon::createFromFormat('Y-m', $validatedData['fin'])->endOfMonth();
+
+
         try {
-            Station::create([
-                    'station' => $validatedData['nom'],
-                    'nif_stat' => $validatedData['nif_stat']
-                ]);
+            DB::table('compagne')->insert([
+                'annee' => $validatedData['annee'],
+                'debut' => $debutDate,
+                'fin' => $finDate,
+                'etat' => $etat
+            ]);
             return response()->json([
-                'message' => 'Station ajouté avec succès',
+                'message' => 'Compagne ajouté avec succès',
                        ], 200);
 
         } catch (Exception $e) {
-           return response()->json(['error' => 'Erreur lors de l\'ajout de station: ' . $e->getMessage()], 400);
+           return response()->json(['error' => 'Erreur lors de l\'ajout deu compagne: ' . $e->getMessage()], 400);
         }
     }
 }
