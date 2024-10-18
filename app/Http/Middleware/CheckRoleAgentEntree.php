@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class CheckRoleUtilisateur
+class CheckRoleAgentEntree
 {
     /**
      * Handle an incoming request.
@@ -20,7 +20,7 @@ class CheckRoleUtilisateur
             return redirect()->route('login');
         }
 
-        if ($request->session()->get('agent.role') !== "Utilisateur") {
+        if ($request->session()->get('agent.role') !== "Agent_entree" && $request->session()->get('agent.role') !== "Administrateur") {
             abort(403, 'Accès interdit');
         }
 
