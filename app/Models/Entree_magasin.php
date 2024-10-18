@@ -19,7 +19,7 @@ class Entree_magasin extends Model
         'quantite_palette',
         'date_entrant',
         'agent_id',
-        'station_id',
+        'numero_station_id',
         'magasin_id',
         'path_bon_livraison',
         'navire_id',
@@ -90,7 +90,7 @@ class Entree_magasin extends Model
             self::where('id_entree_magasin', $data['id_entree'])
             ->update([
                 'quantite_palette' => $data['quantite_palette'],
-                'station_id' => $data['station_id'],
+                'numero_station_id' => $data['numero_station_id'],
                 'navire_id' => $data['navire_id'],
                 'bon_livraison' => $data['bon_livraison'],
                 'numero_camion' => $data['numero_camion'],

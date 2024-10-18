@@ -31,6 +31,7 @@ CREATE TABLE compagne(
    annee int NOT NULL,
    debut date not null,
    fin date not null,
+   etat int default 0,
    PRIMARY KEY(id_compagne),
    UNIQUE(annee)
 );
@@ -50,21 +51,11 @@ create table numero_station(
     numero_station INT not null,
     PRIMARY KEY(id_numero_station),
     UNIQUE(compagne_id,numero_station),
+    FOREIGN KEY(station_id) REFERENCES station(id_station),
     FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne)
 );
 
-create table quotas(
-    id_quotas INT AUTO_INCREMENT,
-    compagne_id INt not null,
-    navire_id int not null,
-    numero_station_id int not null,
-    quotas real not null,
-    PRIMARY KEY(id_quotas),
-    UNIQUE(navire_id,numero_station),
-    FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne),
-    FOREIGN KEY(navire_id) REFERENCES navire(id_navire),
-    FOREIGN KEY(numero_station_id) REFERENCES numero_station(id_numero_station_id)
-);
+
 
 CREATE TABLE magasin(
    id_magasin INT AUTO_INCREMENT,
@@ -105,6 +96,16 @@ CREATE TABLE navire(
    FOREIGN KEY(type_navire_id) REFERENCES type_navire(id_type_navire)
 );
 
+CREATE TABLE quotas (
+    id_quotas INT AUTO_INCREMENT,
+    navire_id INT NOT NULL,
+    numero_station_id INT NOT NULL,
+    quotas DECIMAL(30,2) NOT NULL,
+    PRIMARY KEY (id_quotas),
+    FOREIGN KEY (navire_id) REFERENCES navire(id_navire),
+    FOREIGN KEY (numero_station_id) REFERENCES numero_station(id_numero_station)
+) ;
+
 CREATE TABLE mouvement_navire(
    id_mouvement_navire INT AUTO_INCREMENT,
    compagne_id int not null,
@@ -116,35 +117,24 @@ CREATE TABLE mouvement_navire(
    FOREIGN KEY(navire_id) REFERENCES navire(id_navire)
 );
 
-CREATE TABLE prevision(
-   id_prevision INT AUTO_INCREMENT,
-   compagne_id INT NOT NULL,
-   quota INT,
-   numero_station int,
-   station_id INT NOT NULL,
-   navire_id INT NOT NULL,
-   PRIMARY KEY(id_prevision),
-   FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne),
-   FOREIGN KEY(station_id) REFERENCES station(id_station),
-   FOREIGN KEY(navire_id) REFERENCES navire(id_navire)
-);
+
 
 CREATE TABLE entree_magasin(
    id_entree_magasin INT AUTO_INCREMENT,
    numero_camion VARCHAR(50) NOT NULL,
    bon_livraison VARCHAR(50) NOT NULL,
-   path_bon_livraison text NOT NULL;
+   path_bon_livraison text NOT NULL,
    chauffeur VARCHAR(60) NOT NULL,
    quantite_palette real NOT NULL,
    date_entrant DATE NOT NULL,
    agent_id INT NOT NULL,
-   prevision_id INT NOT NULL,
+   numero_station_id INT NOT NULL,
    magasin_id INT NOT NULL,
    navire_id INT NOT NULL,
    PRIMARY KEY(id_entree_magasin),
    UNIQUE(bon_livraison),
    FOREIGN KEY(agent_id) REFERENCES utilisateur(id_utilisateur),
-   FOREIGN KEY(prevision_id) REFERENCES prevision(id_prevision),
+   FOREIGN KEY( numero_station_id) REFERENCES  numero_station(id_numero_station),
     FOREIGN KEY ( navire_id ) REFERENCES navire( id_navire ),
    FOREIGN KEY(magasin_id) REFERENCES magasin(id_magasin)
 );
