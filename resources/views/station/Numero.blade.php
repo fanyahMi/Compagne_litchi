@@ -100,6 +100,52 @@
     </div>
 </div>
 
+<div id="modifierModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModificationAgent" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="modifier_numeroForm" action="" method="POST">
+                    @csrf
+                    <input type="hidden" id="id_numero_stations-modal" name="id_numero_stations">
+                    <div class="form-group">
+                        <label for="compagne">Compagne</label>
+                        <input type="text" class="form-control" id="compagne-modal" name="compagne" readonly>
+                    </div>
+                    <div  class="form-group">
+                        <div id="error-modal-compagne" class="error-message text-danger"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="station">Station</label>
+                        <select id="station-modal" name="station" class="form-control">
+                            <option value="">Sélectionner</option>
+                            @foreach($stations as $station)
+                                <option value="{{ $station->id_station }}">{{ $station->station }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div  class="form-group">
+                        <div id="error-modal-station" class="error-message text-danger"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="numero">Numero</label>
+                        <input type="text" class="form-control" id="numero-modal" name="numero">
+                    </div>
+                    <div  class="form-group">
+                        <div id="error-modal-numero" class="error-message text-danger"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn  btn-primary" id="saveChangesBtn">Modifier</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -167,12 +213,10 @@ $(document).ready(function() {
         });
     }
 
-
-
     function appendNumero(numero_stations) {
     // Check if the etat is 0 (modifiable) or not
     var button = numero_stations.etat === 1
-        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_stations_magasin + '">Modifier</button>'
+        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_station + '">Modifier</button>'
         : ''; // Hide the button if etat is not 0
 
     var row = '<tr>' +
@@ -182,13 +226,25 @@ $(document).ready(function() {
                 '<td>' + button + '</td>' +
               '</tr>';
 
-    $('#table-body').append(row);
-}
+        $('#table-body').append(row);
+    }
 
-
-
-
-
+    $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
+        var id = $(this).data('id_numero_stations');
+        $.ajax({
+            url: '/get-numero-station/' + id,
+            type: 'GET',
+            success: function(numero_stationData) {
+                $('#id_numero_stations-modal').val(numero_stationData.id_numero_station);
+                $('#compagne-modal').val(numero_stationData.annee);
+                $('#station-modal').val(numero_stationData.id_station).trigger('change');
+                $('#numero-modal').val(numero_stationData.numero_station);
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors de la récupération de l'agent : ", xhr);
+            }
+        });
+    });
 
 });
 </script>

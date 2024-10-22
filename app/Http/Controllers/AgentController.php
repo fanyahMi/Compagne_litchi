@@ -122,8 +122,7 @@ class AgentController extends Controller
         ], 404);
     }
 
-    public function getById($id)
-    {
+    public function getById($id)    {
         try {
             $agent = Agent::getAgentById($id);
             return response()->json($agent);

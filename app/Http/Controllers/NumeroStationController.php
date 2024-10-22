@@ -38,7 +38,7 @@ class NumeroStationController extends Controller
             NumeroStation::ajouteNumeroStation($validatedData);
 
             return response()->json([
-                'message' =>  "oj",
+                'message' =>  "Numéro de station ajouté avec succès",
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -48,8 +48,18 @@ class NumeroStationController extends Controller
     }
 
     public function getNumero_station() {
-        $numero_stations = DB::table('v_numero_station')->get();
+        $numero_stations = NumeroStation::getListeNumeroStationCompagneEncoure();
 
         return response()->json($numero_stations);
+    }
+
+    public function getById($id){
+        try {
+            $numero_station = NumeroStation::findNumeroStation($id);
+            return response()->json($numero_station);
+
+        } catch (ModelNotFoundException $e) {
+            echo $e->getMessage();
+        }
     }
 }
