@@ -31,12 +31,12 @@
                         </div>
                         <div class="form-group col-md-5">
                             <label for="debut">Debut</label>
-                            <input type="month" class="form-control" name="debut" id="debut" min="1" required>
+                            <input type="month" class="form-control" name="debut" id="debut" min="1" placeholder="YYYY-MM" required>
                             <div id="error-debut" class="error-message"></div>
                         </div>
                         <div class="form-group col-md-5">
                             <label for="fin">Fin</label>
-                            <input type="month" class="form-control" name="fin" id="fin" min="1" required>
+                            <input type="month" class="form-control" name="fin" id="fin" min="1" placeholder="YYYY-MM" required>
                             <div id="error-fin" class="error-message"></div>
                         </div>
                     </div>
@@ -74,7 +74,7 @@
         }
     });
 
-    //loadAnnee();
+    loadAnnee();
     $('#create_compagne_form').on('submit', function(event) {
         event.preventDefault();
 
@@ -87,7 +87,7 @@
                 console.log(response);
                 $('p.error-message').text(''); // Réinitialiser les messages d'erreur
                 $('#create_compagne_form')[0].reset(); // Réinitialiser le formulaire
-                //loadAnnee(); // Recharger les années ou autres données pertinentes
+                loadAnnee(); // Recharger les années ou autres données pertinentes
             },
             error: function(xhr) {
                 $('p.error-message').text(''); // Réinitialiser les messages d'erreur
@@ -126,13 +126,31 @@
     }
 
     function appendAnneCompagne(compagne) {
+        var etatText = compagne.etat === 1 ? 'En cours...' : 'Terminé';
+
+        // If "En cours", add a "Terminer" button next to the status text
+        var etatCellContent = compagne.etat === 1
+            ? etatText + ' <button class="btn-terminer" data-id="' + compagne.id + '">Terminer</button>'
+            : etatText;
+
         var row = '<tr>' +
-                    '<td>' + compagne.annee  + '</td>' +
-                    '<td>' + compagne.debut + '</td>' + // Added space
+                    '<td>' + compagne.annee + '</td>' +
+                    '<td>' + compagne.debut + '</td>' +
                     '<td>' + compagne.fin + '</td>' +
-                    '<td>' + compagne.etat + '</td>' +
-                  '</tr>';
+                    '<td>' + etatCellContent + '</td>' + // Add status and button in the same column
+                '</tr>';
+
         $('#table-body').append(row);
     }
+
+    // Event listener to handle the "Terminer" button click
+    $(document).on('click', '.btn-terminer', function() {
+        var compagneId = $(this).data('id');
+        // Add logic here to update the compagne's status to "Terminé"
+        console.log("Compagne terminé");
+        // Example: send an AJAX request to update the status on the server
+    });
+
+
 </script>
 @endsection

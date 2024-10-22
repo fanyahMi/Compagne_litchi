@@ -240,7 +240,8 @@ $(document).ready(function() {
             '<td>' + navire.nb_compartiment + '</td>' +
             '<td>' + navire.quantite_max + '</td>' +
             '<td>' +
-                '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_navire="' + navire.id_navire + '">Modifier</button>' +
+                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_agent="' + navire.id_navire + '">' +
+                    '<i class="fas fa-edit"></i></button>' +
             '</td>' +
         '</tr>';
         $('#table-body').append(row);
