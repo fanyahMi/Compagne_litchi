@@ -33,31 +33,37 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                Insertion de nouvel agent
+                Insertion des numero de station
             </div>
             <div class="card-body">
-                <form id="ajout_magasin" method="POST">
+                <form id="ajout_numero_station" action="ajout-numero" method="POST">
                     @csrf
-                    <!-- Champ pour sélectionner une station -->
-                    <div class="form-group col-md-4">
-                        <label for="station">Station</label>
-                        <select id="station" name="station_id" class="form-control" required>
-                            @foreach($stations as $station)
-                                <option value="{{ $station->id_station }}">{{ $station->station }}</option>
-                            @endforeach
-                        </select>
-                        <div id="error-station" class="error-message">Veuillez sélectionner une station.</div>
+                    <!-- Champ pour sélectionner une anne de compagne -->
+
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="compagne">compagne</label>
+                            <select id="compagne" name="compagne_id" class="form-control" required>
+                                @foreach($compagnes as $compagne)
+                                    <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
+                                @endforeach
+                            </select>
+                            <div id="error-compagne" class="error-message">Veuillez sélectionner une compagne.</div>
+                        </div>
                     </div>
 
-                    <!-- Champ pour afficher la compagne, en mode readonly -->
-                    <div class="form-group col-md-4">
-                        <label for="compagne">Compagne (Année)</label>
-                        <input type="text" class="form-control" value="{{ $compagne->annee }}" readonly>
-                        <input type="hidden" name="compagne_id" value="{{ $compagne->id_compagne }}">
-                    </div>
 
                     <!-- Champ pour entrer le numéro de station -->
                     <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="station">Station</label>
+                            <select id="station" name="station_id" class="form-control" required>
+                                @foreach($stations as $station)
+                                    <option value="{{ $station->id_station }}">{{ $station->station }}</option>
+                                @endforeach
+                            </select>
+                            <div id="error-station" class="error-message">Veuillez sélectionner une station.</div>
+                        </div>
                         <div class="form-group col-md-4">
                             <label for="numero_station">Numero Station</label>
                             <input type="number" class="form-control" name="numero_station" id="numero_station" required>
@@ -108,74 +114,77 @@ $(document).ready(function() {
         }
     });
 
-    loadEntree();
+    loadNumero_station();
 
-    $('#ajout_magasin').submit(function(e) {
-        e.preventDefault();
+    $('#ajout_numero_station').on('submit', function(event) {
+        event.preventDefault();
 
-        $('p.error-message').text('');
-        var fileInput = document.getElementById('fichier');
-        var file = fileInput.files[0];
-        var formData = new FormData($('#ajout_magasin')[0]);
-        submitForm(formData);
-    });
-
-
-
-    function submitForm(formData) {
         $.ajax({
-            url: "{{ route('numero.store') }}",
+            url: $(this).attr('action'),
             method: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
+            data: $(this).serialize(),
             success: function(response) {
-                alert('Vous avez effectué un entré');
-                $('#ajout_magasin')[0].reset();
-                loadEntree();
+                alert('Numéro de station ajouté avec succès !');
+                console.log(response);
+                $('p.error-message').text(''); // Réinitialiser les messages d'erreur
+                $('#ajout_numero_station')[0].reset(); // Réinitialiser le formulaire
+                loadNumero_station(); // Recharger les années ou autres données pertinentes
             },
             error: function(xhr) {
-                console.log(xhr);
+                $('p.error-message').text(''); // Réinitialiser les messages d'erreur
+                $('#error-message').text(''); // Réinitialiser le message global d'erreur
+
                 if (xhr.status === 422) {
                     var errors = xhr.responseJSON.errors;
+
+                    // Pour chaque champ ayant une erreur, afficher tous les messages d'erreur
                     $.each(errors, function(key, messages) {
-                        $('#error-' + key).text(messages[0]).show();
+                        var errorMessages = '';
+                        $.each(messages, function(index, message) {
+                            errorMessages += message + '<br>'; // Concatenation des messages d'erreur
+                        });
+                        $('#error-' + key).html(errorMessages); // Afficher toutes les erreurs pour le champ
                     });
                 }
             }
         });
-    }
+    });
 
 
-    function loadEntree() {
+    function loadNumero_station() {
         $.ajax({
-            url: '/get-numero-station/',
+            url: '/get-numero-station',
             type: 'GET',
             success: function(data) {
                 $('#table-body').empty();
-                data.forEach(function(entree) {
-                   appendEntree(entree);
+                data.forEach(function(numero_stations) {
+                   appendNumero(numero_stations);
                 });
             },
             error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des entree en magasin : ", error);
+                console.error("Erreur lors du chargement des numéros de station : ", xhr);
             }
         });
     }
 
 
 
-    function appendEntree(entree) {
-       var row = '<tr>' +
-                    '<td>' + entree.annee + '</td>' +
-                    '<td>' + entree.station + '</td>' +
-                    '<td>' + entree.numero_station + '</td>' + // Vérifie si la station existe
-                    '<td>' +
-                        '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_entree="' + entree.id_entree_magasin + '">Modifier</button>' +
-                    '</td>' +
-                    '</tr>';
-        $('#table-body').append(row);
-    }
+    function appendNumero(numero_stations) {
+    // Check if the etat is 0 (modifiable) or not
+    var button = numero_stations.etat === 1
+        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_stations_magasin + '">Modifier</button>'
+        : ''; // Hide the button if etat is not 0
+
+    var row = '<tr>' +
+                '<td>' + numero_stations.annee + '</td>' +
+                '<td>' + numero_stations.station + '</td>' +
+                '<td>' + numero_stations.numero_station + '</td>' +
+                '<td>' + button + '</td>' +
+              '</tr>';
+
+    $('#table-body').append(row);
+}
+
 
 
 

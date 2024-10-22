@@ -17,7 +17,10 @@ class MagasinController extends Controller
         $navires = DB::table('navire')
                     ->select('id_navire', 'navire','quantite_max')
                     ->get();
-        $stations = NumeroStation::getListeNumeroStationCompagneEncoure();
+        $stations = DB::table('v_station_numero_compagne')
+                    ->select('*')
+                    ->where('etat', '!=', 0)
+                    ->get();
 
         return view('magasin.Entree', compact('navires', 'stations'));
     }

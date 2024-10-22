@@ -14,15 +14,20 @@
 						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Station</span></a>
 						<ul class="pcoded-submenu">
 							<li><a href="{{ url('list-Station') }}">Liste</a></li>
+							<li><a href="{{ url('list-numero-station') }}">Numero station</a></li>
 							<li><a href="{{ url('list-compagne') }}">Compagne</a></li>
 							<li><a href="{{ url('list-quotas') }}">Quotas</a></li>
 							<li><a href="{{ url('sortie-magasin') }}">Historique</a></li>
 						</ul>
 					</li>
-					<li class="nav-item">
-					    <a href="{{ url('list-navire') }}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-align-justify"></i></span><span class="pcoded-mtext">Navire</span></a>
-					</li>
 					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Navire</span></a>
+						<ul class="pcoded-submenu">
+							<li><a href="{{ url('list-navire') }}">Liste navire</a></li>
+							<li><a href="{{ url('list-navire') }}">Mouvement navire</a></li>
+						</ul>
+					</li>
+                    <li class="nav-item pcoded-hasmenu">
 						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Magasin</span></a>
 						<ul class="pcoded-submenu">
 							<li><a href="{{ url('entree-magasin') }}">Entree</a></li>

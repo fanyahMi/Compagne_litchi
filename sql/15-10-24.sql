@@ -46,13 +46,11 @@ CREATE TABLE station(
 
 create table numero_station(
     id_numero_station Int AUTO_INCREMENT,
-    compagne_id INt not null,
-    station_id int not null,
+    compagne_id INt not null REFERENCES compagne(id_compagne),
+    station_id int not null REFERENCES station(id_station),
     numero_station INT not null,
     PRIMARY KEY(id_numero_station),
-    UNIQUE(compagne_id,numero_station),
-    FOREIGN KEY(station_id) REFERENCES station(id_station),
-    FOREIGN KEY(compagne_id) REFERENCES compagne(id_compagne)
+    UNIQUE(compagne_id,numero_station)
 );
 
 CREATE TABLE magasin(

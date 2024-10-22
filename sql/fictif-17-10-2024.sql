@@ -12,9 +12,10 @@ INSERT INTO sexe (sexe) VALUES
 
 -- Table role
 INSERT INTO role (role) VALUES
-('Admin'),
-('Utilisateur'),
-('Gestionnaire');
+('Administrateur'),
+('Agent_entree'),
+('Agent_sortie'),
+('Agent_embarquement');
 
 -- Table type_navire
 INSERT INTO type_navire (type_navire) VALUES
@@ -45,8 +46,8 @@ INSERT INTO magasin (magasin) VALUES
 
 -- Table utilisateur
 INSERT INTO utilisateur (matricule, nom, prenom, date_naissance, cin, mot_passe, sexe_id, role_id, situation_familial_id, created_at) VALUES
-('M1234', 'Dupont', 'Jean', '1990-05-15', 'CIN1234', 'password123', 1, 1, 1, CURRENT_TIMESTAMP),
-('M5678', 'Durand', 'Marie', '1985-03-22', 'CIN5678', 'password456', 2, 2, 2, CURRENT_TIMESTAMP);
+('M1234', 'Dupont', 'Jean', '1990-05-15', 'CIN1234', 'password123', 1, 8, 1, CURRENT_TIMESTAMP),
+('M5678', 'Durand', 'Marie', '1985-03-22', 'CIN5678', 'password456', 2, 9, 2, CURRENT_TIMESTAMP);
 
 -- Table navire
 INSERT INTO navire (navire, nb_compartiment, quantite_max, type_navire_id) VALUES

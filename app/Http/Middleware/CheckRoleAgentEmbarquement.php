@@ -20,10 +20,10 @@ class CheckRoleAgentEmbarquement
         if (!$request->session()->has('agent')) {
             return redirect()->route('login');
         }
-
+/*
         if ($request->session()->get('agent.role') !== "Agent_embarquement" && $request->session()->get('agent.role') !== "Administrateur") {
             abort(403, 'Accès interdit');
         }
-
+*/
         return $next($request);    }
 }
