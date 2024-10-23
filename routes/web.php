@@ -51,6 +51,7 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::get('/list-numero-station', [NumeroStationController::class, 'index']);
     Route::post('/ajout-numero', [NumeroStationController::class, 'ajouteNumeroSation']);
     Route::get('/get-numero-station', [NumeroStationController::class, 'getNumero_station']);
+    Route::get('/get-numero-station/{id}', [NumeroStationController::class, 'getById']);
 
 
     Route::get('/list-navire', [NavireController::class, 'index']);
