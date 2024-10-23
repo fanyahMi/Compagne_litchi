@@ -11,16 +11,16 @@ use Exception;
 class NumeroStationController extends Controller
 {
     public function index(){
-        $compagne = DB::table('compagne')
+        $compagnes = DB::table('compagne')
                     ->select('id_compagne', 'annee')
-                    ->where('etat', '=', 0)
-                    ->first();
+                    ->where('etat', '!=', 0)
+                    ->get();
 
         $stations = DB::table('station')
                     ->select('id_station', 'station')
                     ->get();
 
-        return view('station.Numero', compact('compagne', 'stations'));
+        return view('station.Numero', compact('compagnes', 'stations'));
     }
 
     public function ajouteNumeroSation(Request $request){
@@ -38,12 +38,28 @@ class NumeroStationController extends Controller
             NumeroStation::ajouteNumeroStation($validatedData);
 
             return response()->json([
-                'message' =>  "oj",
+                'message' =>  "Numéro de station ajouté avec succès",
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'Erreur lors de l\'insertion des données: ' . $e->getMessage()
             ], 400);
+        }
+    }
+
+    public function getNumero_station() {
+        $numero_stations = NumeroStation::getListeNumeroStationCompagneEncoure();
+
+        return response()->json($numero_stations);
+    }
+
+    public function getById($id){
+        try {
+            $numero_station = NumeroStation::findNumeroStation($id);
+            return response()->json($numero_station);
+
+        } catch (ModelNotFoundException $e) {
+            echo $e->getMessage();
         }
     }
 }

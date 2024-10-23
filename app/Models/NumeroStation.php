@@ -20,11 +20,10 @@ class NumeroStation extends Model
     public $timestamps = false;
     protected $primaryKey = "id_numero_station";
     public $incrementing = true;
+
     public static function getListeNumeroStationCompagneEncoure() {
         $data = DB::table('v_station_numero_compagne')
-            ->select('id_station', 'station', 'annee', 'numero_station', 'id_numero_station')
-            ->where('etat', '!=', 1)
-            ->get();
+                    ->get();
         return $data;
     }
 
@@ -39,5 +38,19 @@ class NumeroStation extends Model
         }
     }
 
+    public static function findNumeroStation($id) {
+        // Query the table using the query builder
+        $result = DB::table('v_station_numero_compagne')
+                            ->where('id_numero_station', $id)
+                            ->first();
+
+        // If no result is found, throw an exception
+        if (!$result) {
+            throw new ModelNotFoundException("Aucun numéro n'est atribué à cette station.");
+        }
+
+        // Return the found result
+        return $result;
+    }
 }
 

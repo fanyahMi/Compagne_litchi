@@ -6,6 +6,7 @@ use App\Http\Controllers\StationController;
 use App\Http\Controllers\NavireController;
 use App\Http\Controllers\MagasinController;
 use App\Http\Controllers\CompagneController;
+use App\Http\Controllers\NumeroStationController;
 
 
 Route::get('/logout', [AgentController::class, 'logout'])->name('logout');
@@ -14,7 +15,7 @@ Route::get('/login', [AgentController::class, 'login'])->name('login');
 
 
 Route::middleware(['admin'])->group(function () {
-    Route::get('/', [AgentController::class, 'index'])->name('admin.index');
+   // Route::get('/', [AgentController::class, 'index'])->name('admin.index');
 });
 
 Route::middleware(['agent.sortie'])->group(function () {
@@ -45,6 +46,12 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::get('/list-compagne', [CompagneController::class, 'compagne']);
     Route::post('/ajout-compagne', [CompagneController::class, 'addAnnee_compagne']);
     Route::get('/get-compagne', [CompagneController::class, 'getCompagne']);
+
+
+    Route::get('/list-numero-station', [NumeroStationController::class, 'index']);
+    Route::post('/ajout-numero', [NumeroStationController::class, 'ajouteNumeroSation']);
+    Route::get('/get-numero-station', [NumeroStationController::class, 'getNumero_station']);
+    Route::get('/get-numero-station/{id}', [NumeroStationController::class, 'getById']);
 
 
     Route::get('/list-navire', [NavireController::class, 'index']);

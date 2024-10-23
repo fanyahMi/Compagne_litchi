@@ -109,7 +109,7 @@
                                     <th>Numero de camion</th>
                                     <th>Bon de livraison</th>
                                     <th>Quantité de palette</th>
-                                    <th>Station</th>
+                                    <th>Nº station</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body">
@@ -320,7 +320,7 @@ $(document).ready(function() {
                     '<td>' + entree.numero_camion + '</td>' +
                     '<td>' + entree.bon_livraison + ' (' + entree.path_bon_livraison + ')</td>' +
                     '<td>' + entree.quantite_palette + '</td>' +
-                    '<td>' + ( entree.station || 'Station inconnue') + '</td>' + // Vérifie si la station existe
+                    '<td>' + entree.numero_station + '<small> ( ' + ( entree.station || 'Station inconnue') + ' )</small></td>' + // Vérifie si la station existe
                     '<td>' +
                         '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_entree="' + entree.id_entree_magasin + '">Modifier</button>' +
                     '</td>' +

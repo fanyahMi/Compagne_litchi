@@ -8,3 +8,4 @@ from utilisateur u
 join sexe s on s.id_sexe = u.sexe_id
 join role r on r.id_role = u.role_id
 join situation_familial st on st.id_situation_familial = u.situation_familial_id ;
+

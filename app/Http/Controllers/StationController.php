@@ -98,7 +98,8 @@ class StationController extends Controller
 
         $stations = DB::table('station')->select('id_station', 'station')->get();
         $navires = DB::table('navire')->select('id_navire', 'navire')->get();
+        $compagnes = DB::table('compagne')->get();
 
-        return view('station.Quotas', compact('navires','stations'));
+        return view('station.Quotas', compact('navires','stations','compagnes'));
     }
 }
