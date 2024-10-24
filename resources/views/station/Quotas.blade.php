@@ -21,6 +21,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="mt-5">Insertion des quotas </h5>
+                        <a href="{{ url('export-model-navire-station') }}">Exporté model</a>
                         <hr><form id="ajout_stationForm" action="{{ url('ajout-station') }}" method="POST">
                             @csrf
                             <div class="form-row">
