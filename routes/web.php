@@ -7,6 +7,7 @@ use App\Http\Controllers\NavireController;
 use App\Http\Controllers\MagasinController;
 use App\Http\Controllers\CompagneController;
 use App\Http\Controllers\NumeroStationController;
+use App\Http\Controllers\ImportExportController;
 
 
 Route::get('/logout', [AgentController::class, 'logout'])->name('logout');
@@ -72,6 +73,10 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::get('/get-entree', [MagasinController::class, 'getEntree']);
     Route::get('/get-entree/{id}', [MagasinController::class, 'getById']);
     Route::post('/entree-magasin/modifier', [MagasinController::class, 'modifierEntrer'])->name('entre.modifier');
+
+
+    Route::get('/export-model-navire-station', [ImportExportController::class, 'exportModelStationNavire']);
+    Route::post('/import-excel', [ImportExportController::class, 'importQuotasNumero'])->name('import.excel');
 });
 
 
