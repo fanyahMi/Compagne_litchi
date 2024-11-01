@@ -96,10 +96,97 @@ class StationController extends Controller
 
     public function quotas(){
 
-        $stations = DB::table('station')->select('id_station', 'station')->get();
+        $stations = DB::table('v_station_numero_compagne')
+                        ->select('id_numero_station','numero_station','annee', 'station')
+                        ->where('etat', '!=', '0')
+                        ->get();
         $navires = DB::table('navire')->select('id_navire', 'navire')->get();
         $compagnes = DB::table('compagne')->get();
 
-        return view('station.Importation', compact('navires','stations','compagnes'));
+        return view('station.Quotas', compact('navires','stations','compagnes'));
     }
+
+    public function getQuotas() {
+        $quotas = DB::table('v_quotas_station')->get();
+
+        return response()->json($quotas);
+    }
+
+    public function addQuotas(Request $request){
+        $validatedData = $request->validate([
+            'navire_id' => 'required|integer|exists:navire,id_navire',
+            'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
+            'quotas' => 'required|integer|min:1',
+        ], [
+            'navire_id.required' => 'Le champ navire est obligatoire.',
+            'navire_id.integer' => 'Le champ navire doit être un nombre entier.',
+            'navire_id.exists' => 'Le navire sélectionné est invalide.',
+
+            'numero_station_id.required' => 'Le champ numéro de station est obligatoire.',
+            'numero_station_id.integer' => 'Le champ numéro de station doit être un nombre entier.',
+            'numero_station_id.exists' => 'Le numéro de station sélectionné est invalide.',
+
+            'quotas.required' => 'Le champ quotas est obligatoire.',
+            'quotas.integer' => 'Le champ quotas doit être un nombre entier.',
+            'quotas.min' => 'Le nombre de quotas doit être au moins 1.',
+        ]);
+
+
+
+        try {
+            DB::table('quotas')->insert([
+                'navire_id' => $validatedData['navire_id'],
+                'numero_station_id' => $validatedData['numero_station_id'],
+                'quotas' => $validatedData['quotas'],
+            ]);
+            return response()->json([
+                'message' => 'Quotas ajouté avec succès',
+                       ], 200);
+
+        } catch (Exception $e) {
+           return response()->json(['error' => 'Erreur lors de l\'ajout du quotas : ' . $e->getMessage()], 400);
+        }
+    }
+
+    public function getQuotasById($id){
+        $quotas = DB::table('quotas')->where('id_quotas', $id)->first();
+
+        if ($quotas) {
+            return response()->json($quotas);
+        } else {
+            return response()->json(['message' => 'Quotas not found'], 404);
+        }
+    }
+
+    public function updateQuotas(Request $request){
+        $validatedData = $request->validate([
+            'id_quotas' => 'required|integer|exists:quotas,id_quotas',
+            'navire_id' => 'required|integer|exists:navire,id_navire',
+            'numero_station' => 'required|integer|exists:numero_station,id_numero_station',
+            'quotas' => 'required|integer|min:1',
+        ], [
+            'navire_id.required' => 'Le champ navire est obligatoire.',
+            'navire_id.integer' => 'Le champ navire doit être un nombre entier.',
+            'navire_id.exists' => 'Le navire sélectionné est invalide.',
+
+            'numero_station_id.required' => 'Le champ numéro de station est obligatoire.',
+            'numero_station_id.integer' => 'Le champ numéro de station doit être un nombre entier.',
+            'numero_station_id.exists' => 'Le numéro de station sélectionné est invalide.',
+
+            'quotas.required' => 'Le champ quotas est obligatoire.',
+            'quotas.integer' => 'Le champ quotas doit être un nombre entier.',
+            'quotas.min' => 'Le nombre de quotas doit être au moins 1.',
+        ]);
+
+        try {
+            $id = $request->input('id_quotas');
+            $data = $request->only(['navire_id', 'numero_station','quotas']);
+            $quotas = Station::updateQuotas($id, $data);
+            return response()->json(['status' => 'success', 'message' => 'Quotas mis à jour avec succès!', 'quotas' => $quotas]);
+        } catch (\Exception $e) {
+            Log::error('Error updating station: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
 }

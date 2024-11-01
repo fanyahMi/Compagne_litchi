@@ -39,12 +39,10 @@ class NumeroStation extends Model
     }
 
     public static function findNumeroStation($id) {
-        // Query the table using the query builder
         $result = DB::table('v_station_numero_compagne')
                             ->where('id_numero_station', $id)
                             ->first();
 
-        // If no result is found, throw an exception
         if (!$result) {
             throw new ModelNotFoundException("Aucun numéro n'est atribué à cette station.");
         }
@@ -52,5 +50,21 @@ class NumeroStation extends Model
         // Return the found result
         return $result;
     }
+
+    public static function updateNumeroStation($id, array $data)    {
+        try {
+            $numero = NumeroStation::findOrFail($id);
+            $numero->update([
+                'compagne_id' => $data['compagne_id'],
+                'station_id' => $data['station_id'],
+                'numero_station' => $data['numero_station'],
+            ]);
+            return $station;
+        } catch (\Exception $e) {
+            Log::error('Error updating numero station: ' . $e->getMessage());
+            throw new \Exception('Erreur lors de la mise à jour du numéro de station .');
+        }
+    }
+
 }
 

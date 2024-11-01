@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Log;
 
 class Station extends Model
@@ -40,4 +41,26 @@ class Station extends Model
             throw new \Exception('Erreur lors de la mise à jour de la station.');
         }
     }
+
+    public static function updateQuotas($id, array $data){
+        try {
+            $updated = DB::table('quotas')
+                ->where('id_quotas', $id)
+                ->update([
+                    'navire_id' => $data['navire_id'],
+                    'numero_station_id' => $data['numero_station_id'],
+                    'quotas' => $data['quotas'],
+                ]);
+
+            if ($updated) {
+                return DB::table('quotas')->where('id_quotas', $id)->first();
+            } else {
+                throw new \Exception('Record not found or update failed.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error updating quotas: ' . $e->getMessage());
+            throw new \Exception('Erreur lors de la mise à jour du quotas.');
+        }
+    }
+
 }

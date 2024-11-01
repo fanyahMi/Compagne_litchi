@@ -160,7 +160,6 @@ $(document).ready(function() {
     }
 
 
-
     function appendStation(station) {
         var row = '<tr>' +
                   '<td>' + station.station + '</td>' +
@@ -171,6 +170,7 @@ $(document).ready(function() {
                   '</tr>';
         $('#table-body').append(row);
     }
+
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
         var id = $(this).data('id_station');
@@ -187,6 +187,7 @@ $(document).ready(function() {
             }
         });
     });
+
 
     $('#saveChangesBtn').on('click', function(e) {
         e.preventDefault();
@@ -210,13 +211,7 @@ $(document).ready(function() {
     });
 
 
-    $('#exampleModal').on('show.bs.modal', function(event) {
-		var button = $(event.relatedTarget)
-		var recipient = button.data('whatever')
-		var modal = $(this)
-		modal.find('.modal-title').text('New message to ' + recipient)
-		modal.find('.modal-body input').val(recipient)
-	})
+
 
 });
 
