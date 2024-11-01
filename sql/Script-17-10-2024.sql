@@ -11,7 +11,7 @@ join compagne c on c.id_compagne = ns.compagne_id;
 create or replace view v_quotas_station as
 select
      v.id_station, v.station, v.id_compagne, v.annee,
-     n.id_navire, n.navire, q.quotas
+     n.id_navire, n.navire,q.id_quotas, q.quotas
 from quotas q
 join v_station_numero_compagne v on v.id_numero_station = q.numero_station_id
 join navire n on n.id_navire = q.navire_id;

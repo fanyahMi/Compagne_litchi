@@ -104,11 +104,11 @@
                         @csrf
                         <div class="mb-3">
                             <label class="text-normal text-dark form-label">Nº matricule</label>
-                            <input type="text" class="form-control" name="matricule" id="matricule" value="20240902">
+                            <input type="text" class="form-control" name="matricule" id="matricule" value="M1234">
                         </div>
                         <div class="mb-3">
                             <label class="text-normal text-dark form-label">Mot de passe</label>
-                            <input type="password" class="form-control" name="motDePasse" id="motDePasse" value="Smith" required>
+                            <input type="password" class="form-control" name="motDePasse" id="motDePasse" value="password123" required>
                         </div>
                         <div class="mb-3">
                             <div id="generalError" class="error-message text-danger"></div>

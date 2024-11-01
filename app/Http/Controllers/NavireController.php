@@ -88,4 +88,14 @@ class NavireController extends Controller
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
+
+    public function mouvement(){
+        $compagnes = DB::table('compagne')
+                    ->select('id_compagne', 'annee')
+                    ->where('etat', '!=', 0)
+                    ->get();
+        $navires = Navire::all();
+        return view('navire.Mouvement', compact('compagnes','navires'));
+    }
+
 }

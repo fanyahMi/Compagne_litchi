@@ -1,6 +1,6 @@
 @extends('template.Layout')
 @section('titre')
-    Entre magasin
+    Numero des stations
 @endsection
 @section('page')
 
@@ -42,13 +42,13 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label for="compagne">compagne</label>
-                            <select id="compagne" name="compagne_id" class="form-control" required>
+                            <label for="compagne_id">compagne</label>
+                            <select id="compagne_id" name="compagne_id" class="form-control" required>
                                 @foreach($compagnes as $compagne)
                                     <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
                                 @endforeach
                             </select>
-                            <div id="error-compagne" class="error-message">Veuillez sélectionner une compagne.</div>
+                            <div id="error-compagne_id" class="error-message">Veuillez sélectionner une compagne.</div>
                         </div>
                     </div>
 
@@ -56,18 +56,18 @@
                     <!-- Champ pour entrer le numéro de station -->
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label for="station">Station</label>
-                            <select id="station" name="station_id" class="form-control" required>
+                            <label for="station_id">Station</label>
+                            <select id="station_id" name="station_id" class="form-control" required>
                                 @foreach($stations as $station)
                                     <option value="{{ $station->id_station }}">{{ $station->station }}</option>
                                 @endforeach
                             </select>
-                            <div id="error-station" class="error-message">Veuillez sélectionner une station.</div>
+                            <div id="error-station_id" class="error-message"></div>
                         </div>
                         <div class="form-group col-md-4">
                             <label for="numero_station">Numero Station</label>
                             <input type="number" class="form-control" name="numero_station" id="numero_station" required>
-                            <div id="error-numero_station" class="error-message">Veuillez entrer un numéro de station.</div>
+                            <div id="error-numero_station" class="error-message"></div>
                         </div>
                     </div>
 
@@ -108,19 +108,24 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <form id="modifier_numeroForm" action="" method="POST">
+                <form id="modifier_numero-stationForm" action="" method="POST">
                     @csrf
-                    <input type="hidden" id="id_numero_stations-modal" name="id_numero_stations">
+                    <input type="hidden" id="id_numero_station-modal" name="id_numero_station">
                     <div class="form-group">
-                        <label for="compagne">Compagne</label>
-                        <input type="text" class="form-control" id="compagne-modal" name="compagne" readonly>
+                        <label for="compagne_id">Compagne</label>
+                        <select id="compagne_id-modal" name="compagne_id" class="form-control">
+                            <option value="">Sélectionner</option>
+                            @foreach($compagnes as $compagne)
+                                <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div  class="form-group">
-                        <div id="error-modal-compagne" class="error-message text-danger"></div>
+                        <div id="error-modal-compagne_id" class="error-message text-danger"></div>
                     </div>
                     <div class="form-group">
-                        <label for="station">Station</label>
-                        <select id="station-modal" name="station" class="form-control">
+                        <label for="station_id">Station</label>
+                        <select id="station_id-modal" name="station_id" class="form-control">
                             <option value="">Sélectionner</option>
                             @foreach($stations as $station)
                                 <option value="{{ $station->id_station }}">{{ $station->station }}</option>
@@ -128,14 +133,14 @@
                         </select>
                     </div>
                     <div  class="form-group">
-                        <div id="error-modal-station" class="error-message text-danger"></div>
+                        <div id="error-modal-station_id" class="error-message text-danger"></div>
                     </div>
                     <div class="form-group">
-                        <label for="numero">Numero</label>
-                        <input type="text" class="form-control" id="numero-modal" name="numero">
+                        <label for="numero_station">Numero</label>
+                        <input type="text" class="form-control" id="numero_station-modal" name="numero_station">
                     </div>
                     <div  class="form-group">
-                        <div id="error-modal-numero" class="error-message text-danger"></div>
+                        <div id="error-modal-numero_station" class="error-message text-danger"></div>
                     </div>
                 </form>
             </div>
@@ -177,19 +182,12 @@ $(document).ready(function() {
                 loadNumero_station(); // Recharger les années ou autres données pertinentes
             },
             error: function(xhr) {
-                $('p.error-message').text(''); // Réinitialiser les messages d'erreur
-                $('#error-message').text(''); // Réinitialiser le message global d'erreur
-
+                $('p.error-message').text('');
+                $('#error-message').text('');
                 if (xhr.status === 422) {
                     var errors = xhr.responseJSON.errors;
-
-                    // Pour chaque champ ayant une erreur, afficher tous les messages d'erreur
                     $.each(errors, function(key, messages) {
-                        var errorMessages = '';
-                        $.each(messages, function(index, message) {
-                            errorMessages += message + '<br>'; // Concatenation des messages d'erreur
-                        });
-                        $('#error-' + key).html(errorMessages); // Afficher toutes les erreurs pour le champ
+                        $('#error-' + key).text(messages[0]);
                     });
                 }
             }
@@ -216,7 +214,8 @@ $(document).ready(function() {
     function appendNumero(numero_stations) {
     // Check if the etat is 0 (modifiable) or not
     var button = numero_stations.etat === 1
-        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_station + '">Modifier</button>'
+        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_station + '">'+
+        '<i class="fas fa-edit"></i></button>'
         : ''; // Hide the button if etat is not 0
 
     var row = '<tr>' +
@@ -229,19 +228,41 @@ $(document).ready(function() {
         $('#table-body').append(row);
     }
 
+
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
         var id = $(this).data('id_numero_stations');
         $.ajax({
             url: '/get-numero-station/' + id,
             type: 'GET',
             success: function(numero_stationData) {
-                $('#id_numero_stations-modal').val(numero_stationData.id_numero_station);
-                $('#compagne-modal').val(numero_stationData.annee);
-                $('#station-modal').val(numero_stationData.id_station).trigger('change');
-                $('#numero-modal').val(numero_stationData.numero_station);
+                $('#id_numero_station-modal').val(numero_stationData.id_numero_station);
+                $('#compagne_id-modal').val(numero_stationData.id_compagne);
+                $('#station_id-modal').val(numero_stationData.id_station).trigger('change');
+                $('#numero_station-modal').val(numero_stationData.numero_station);
             },
             error: function(xhr, status, error) {
                 console.error("Erreur lors de la récupération de l'agent : ", xhr);
+            }
+        });
+    });
+
+    $('#saveChangesBtn').on('click', function(e) {
+        e.preventDefault();
+        var formData = $('#modifier_numero-stationForm').serialize();
+        $.ajax({
+            url: '/update-numero-station',
+            method: 'PUT',
+            data: formData,
+            success: function(response) {
+                alert('Modifications enregistrées avec succès !');
+                $('#modifierModal').modal('hide');
+                loadNumero_station();
+            },
+            error: function(xhr) {
+                var errors = xhr.responseJSON.errors;
+                $.each(errors, function(key, messages) {
+                    $('#error-modal-' + key).text(messages[0]);
+                });
             }
         });
     });
