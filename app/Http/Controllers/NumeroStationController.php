@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\NumeroStation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Log;
 use Exception;
 
 class NumeroStationController extends Controller
@@ -26,13 +27,28 @@ class NumeroStationController extends Controller
     public function ajouteNumeroSation(Request $request){
         $validatedData = $request->validate([
             'compagne_id' => 'required|integer|exists:compagne,id_compagne',
-            'station_id' => 'required|integer|exists:station,id_station',
-            'numero_station' => 'required|integer',
+            'station_id' => [
+                'required',
+                'integer',
+                'exists:station,id_station',
+                Rule::unique('numero_station')
+                    ->where('compagne_id', $request->compagne_id),
+            ],
+            'numero_station' => [
+                'required',
+                'integer',
+                Rule::unique('numero_station')->where(function ($query) use ($request) {
+                    return $query->where('compagne_id', $request->compagne_id);
+                }),
+            ],
         ], [
             'compagne_id.required' => 'Ce champ est obligatoire.',
             'station_id.required' => 'Ce champ est obligatoire.',
             'numero_station.required' => 'Ce champ est obligatoire.',
+            'station_id.unique' => 'Cette station est déjà utilisée pour cette compagne.',
+            'numero_station.unique' => 'Ce numéro de station est déjà utilisé pour cette compagne.',
         ]);
+
 
         try {
             NumeroStation::ajouteNumeroStation($validatedData);
@@ -60,6 +76,50 @@ class NumeroStationController extends Controller
 
         } catch (ModelNotFoundException $e) {
             echo $e->getMessage();
+        }
+    }
+
+    public function update(Request $request){
+
+        $validatedData = $request->validate([
+            'id_numero_station' => 'required|integer|exists:numero_station,id_numero_station',
+            'compagne_id' => 'required|integer|exists:compagne,id_compagne',
+            'station_id' => [
+                'required',
+                'integer',
+                'exists:station,id_station',
+                Rule::unique('numero_station')
+                    ->where('compagne_id', $request->compagne)
+                    ->ignore($request->input('id_numero_stations'), 'id_numero_stations'),
+            ],
+            'numero_station' => [
+                'required',
+                'integer',
+                Rule::unique('numero_station')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('compagne_id', $request->compagne_id);
+                    })
+                    ->ignore($request->input('id_numero_station'), 'id_numero_station'),
+            ],
+        ], [
+            'compagne_id.required' => 'Ce champ est obligatoire.',
+            'station_id.required' => 'Ce champ est obligatoire.',
+            'station_id.unique' => 'Cette station est déjà utilisée pour cette compagne.',
+            'numero_station.required' => 'Ce champ est obligatoire.',
+            'numero_station.unique' => 'Ce numéro de station est déjà utilisé pour cette compagne.',
+        ]);
+
+
+
+
+        try {
+            $id = $request->input('id_numero_station');
+            $data = $request->only(['compagne_id', 'station_id','numero_station']);
+            $numeroStation = NumeroStation::updateNumeroStation($id, $data);
+            return response()->json(['status' => 'success', 'message' => 'Numéro station mis à jour avec succès!', 'numeroStation' => $numeroStation]);
+        } catch (\Exception $e) {
+            Log::error('Error updating station: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 }

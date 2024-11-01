@@ -41,7 +41,12 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::get('/get-station', [StationController::class, 'getStation']);
     Route::get('/get-station/{id}', [StationController::class, 'getById']);
     Route::put('/update-station', [StationController::class, 'update']);
+
     Route::get('/list-quotas', [StationController::class, 'quotas']);
+    Route::post('/ajout-quotas', [StationController::class, 'addQuotas']);
+    Route::get('/get-quotas', [StationController::class, 'getQuotas']);
+    Route::get('/get-quotas/{id}', [StationController::class, 'getQuotasById']);
+    Route::put('/update-quotas', [StationController::class, 'updateQuotas']);
 
 
     Route::get('/list-compagne', [CompagneController::class, 'compagne']);
@@ -53,6 +58,7 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::post('/ajout-numero', [NumeroStationController::class, 'ajouteNumeroSation']);
     Route::get('/get-numero-station', [NumeroStationController::class, 'getNumero_station']);
     Route::get('/get-numero-station/{id}', [NumeroStationController::class, 'getById']);
+    Route::put('/update-numero-station', [NumeroStationController::class, 'update']);
 
 
     Route::get('/list-navire', [NavireController::class, 'index']);
@@ -60,6 +66,9 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::get('/get-navire', [NavireController::class, 'getNavire']);
     Route::get('/get-navire/{id}', [NavireController::class, 'getById']);
     Route::put('/update-navire', [NavireController::class, 'update']);
+
+
+    Route::get('/mouvement-navire', [NavireController::class, 'mouvement']);
 
 
 
