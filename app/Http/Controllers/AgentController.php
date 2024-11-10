@@ -8,7 +8,12 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Exception;
+use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Config;
 use Log;
+use Firebase\JWT\Key;
+use Firebase\JWT\ExpiredException;
+use Firebase\JWT\SignatureInvalidException;
 
 class AgentController extends Controller
 {
@@ -163,6 +168,44 @@ class AgentController extends Controller
             Log::error('Error updating agent: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
+    }
+
+
+    public function loginApi(Request $request)
+    {
+        // Valider les données de la requête
+        $request->validate([
+            'matricule' => 'required|string',
+            'mot_passe' => 'required|string',
+        ]);
+
+        try {
+            $result = Agent::checkLoginWeb($request->matricule, $request->mot_passe);
+
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 401);
+        }
+
+        $payload = [
+            'matricule' => $result['matricule'],
+            'role' => $result['role'],
+            'id' => $result['id'],
+            'exp' => time() + (60 * Config::get('jwt.expiration')) // durée de vie du token
+        ];
+
+        $token = JWT::encode($payload,  Config::get('jwt.secret'), 'HS256');
+        try {
+            $decoded = JWT::decode($token, new Key(Config::get('jwt.secret'), 'HS256'));
+        } catch (ExpiredException $e) {
+            return response()->json(['error' => 'Token has expired'], 401);
+        } catch (SignatureInvalidException $e) {
+            return response()->json(['error' => 'Invalid token signature'], 401);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 401);
+        }
+
+
+        return response()->json(['token' => $token, 'rep' => $decoded]);
     }
 
 }

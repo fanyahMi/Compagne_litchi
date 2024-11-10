@@ -29,7 +29,7 @@ class Navire extends Model
                 'navire' => $data['nom'],
                 'nb_compartiment' => $data['nb_compartiment'],
                 'quantite_max' => $data['quantite_max'],
-                'type_navire_id' => $data['type_navire_id'],
+                'type_navire_id' => $data['type_navire'],
             ]);
             return $navire;
         } catch (\Exception $e) {

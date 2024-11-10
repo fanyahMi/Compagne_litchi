@@ -8,6 +8,7 @@ use App\Http\Controllers\MagasinController;
 use App\Http\Controllers\CompagneController;
 use App\Http\Controllers\NumeroStationController;
 use App\Http\Controllers\ImportExportController;
+use App\Http\Controllers\ShiftController;
 
 
 Route::get('/logout', [AgentController::class, 'logout'])->name('logout');
@@ -86,6 +87,17 @@ Route::middleware(['agent.entree'])->group(function () {
 
     Route::get('/export-model-navire-station', [ImportExportController::class, 'exportModelStationNavire']);
     Route::post('/import-excel', [ImportExportController::class, 'importQuotasNumero'])->name('import.excel');
+
+
+    /****Shift ****/
+
+Route::get('/shifts', [ShiftController::class, 'index']);
+Route::post('/ajout-shift', [ShiftController::class, 'addShift']);
+Route::get('/get-shifts', [ShiftController::class, 'getShifts']);
+Route::get('/shift/{id}', [ShiftController::class, 'getById']);
+Route::put('/shift/{id}', [ShiftController::class, 'update']);
+Route::delete('/shift/{id}', [ShiftController::class, 'destroy']);
 });
+
 
 

@@ -10,6 +10,9 @@
 					<li class="nav-item">
 					    <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Agent</span></a>
 					</li>
+					<li class="nav-item">
+					    <a href="{{ url('shifts') }}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Shift</span></a>
+					</li>
                     <li class="nav-item pcoded-hasmenu">
 						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Station</span></a>
 						<ul class="pcoded-submenu">
