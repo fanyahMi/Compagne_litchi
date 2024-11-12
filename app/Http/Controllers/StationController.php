@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Log;
+use Illuminate\Support\Facades\Validator;
 
 class StationController extends Controller
 {
@@ -159,33 +160,37 @@ class StationController extends Controller
     }
 
     public function updateQuotas(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'id_quotas' => 'required|integer|exists:quotas,id_quotas',
             'navire_id' => 'required|integer|exists:navire,id_navire',
-            'numero_station' => 'required|integer|exists:numero_station,id_numero_station',
+            'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
             'quotas' => 'required|integer|min:1',
         ], [
             'navire_id.required' => 'Le champ navire est obligatoire.',
             'navire_id.integer' => 'Le champ navire doit être un nombre entier.',
             'navire_id.exists' => 'Le navire sélectionné est invalide.',
-
             'numero_station_id.required' => 'Le champ numéro de station est obligatoire.',
             'numero_station_id.integer' => 'Le champ numéro de station doit être un nombre entier.',
             'numero_station_id.exists' => 'Le numéro de station sélectionné est invalide.',
-
             'quotas.required' => 'Le champ quotas est obligatoire.',
             'quotas.integer' => 'Le champ quotas doit être un nombre entier.',
             'quotas.min' => 'Le nombre de quotas doit être au moins 1.',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $id = $request->input('id_quotas');
-            $data = $request->only(['navire_id', 'numero_station','quotas']);
+            $data = $request->only(['navire_id', 'numero_station_id','quotas']);
             $quotas = Station::updateQuotas($id, $data);
-            return response()->json(['status' => 'success', 'message' => 'Quotas mis à jour avec succès!', 'quotas' => $quotas]);
+            return response()->json(['status' => true, 'message' => 'Quotas mis à jour avec succès!', 'quotas' => $quotas]);
         } catch (\Exception $e) {
             Log::error('Error updating station: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+            return response()->json(['status' => false, 'message' => $e->getMessage()]);
         }
     }
 
