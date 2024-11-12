@@ -274,6 +274,7 @@ $(document).ready(function() {
             method: 'PUT',
             data: formData,
             success: function(response) {
+                console.log(response);
                 alert('Modifications enregistrées avec succès !');
                 $('#modifierModal').modal('hide');
                 loadNavire();
@@ -282,7 +283,7 @@ $(document).ready(function() {
                 var errors = xhr.responseJSON.errors;
                 $.each(errors, function(key, messages) {
                     $('#error-modal-' + key).text(messages[0]);
-                });
+                });r
             }
         });
     });

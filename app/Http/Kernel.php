@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'agent.entree' => \App\Http\Middleware\CheckRoleAgentEntree::class,
         'agent.sortie' => \App\Http\Middleware\CheckRoleAgentSortie::class,
         'agent.embarquement' => \App\Http\Middleware\CheckRoleAgentEmbarquement::class,
+        'jwt' => \App\Http\Middleware\JwtMiddleware::class,
     ];
 }
