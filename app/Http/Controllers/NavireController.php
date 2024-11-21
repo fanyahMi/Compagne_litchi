@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Navire;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 use Log;
 
@@ -36,7 +37,12 @@ class NavireController extends Controller
             'type_navire.required' => 'Le type de navire est obligatoire.'
         ]);
 
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
 
             Navire::create([
@@ -77,6 +83,12 @@ class NavireController extends Controller
             'type_navire.required' => 'Le type de navire est obligatoire.'
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $id = $request->input('id_navire');
             $data = $request->only(['nom', 'nb_compartiment', 'quantite_max', 'type_navire']);

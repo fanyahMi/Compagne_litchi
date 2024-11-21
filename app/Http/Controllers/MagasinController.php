@@ -9,6 +9,7 @@ use Exception;
 use App\Models\Entree_magasin;
 use App\Models\Sorti_magasin;
 use App\Models\NumeroStation;
+use Illuminate\Support\Facades\Validator;
 use Log;
 
 class MagasinController extends Controller
@@ -22,9 +23,25 @@ class MagasinController extends Controller
         return view('magasin.Entree', compact('navires', 'stations'));
     }
 
+    public function listeCamion(Request $request)
+    {
+        $search = $request->input('search');
+        $camions = DB::table('v_mouvement_magasin')
+                     ->select('navire', 'station', 'numero_camion', 'chauffeur', 'date_entrant', 'date_sortie')
+                     ->when($search, function ($query, $search) {
+            return $query->where('numero_camion', 'like', "%{$search}%");
+        })->get();
+
+        if ($request->ajax()) {
+            return view('camions.partials.table', compact('camions'))->render();
+        }
+
+        return view('magasin.camion', compact('camions'));
+    }
+
 
     public function insertEntrer(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'numero_camion' => 'required|string|max:50',
             'bon_livraison' => 'required|string|max:50|unique:entree_magasin,bon_livraison',
             'chauffeur' => 'required|string|max:60',
@@ -38,11 +55,16 @@ class MagasinController extends Controller
             'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
             'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
         ]);
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $base64File = $request->input('fichier_base64');
             $id = session('agent.id');
-            $entreeMagasin = Entree_magasin::ajouterEntrer($validatedData, $base64File, $id);
+            $entreeMagasin = Entree_magasin::ajouterEntrer($validator, $base64File, $id);
 
             return response()->json([
                 'message' =>  $base64File,
@@ -63,10 +85,6 @@ class MagasinController extends Controller
         return view('magasin.Sortie', compact('navires', 'stations'));
     }
 
-    public function listeCamion(){
-        $camions = Entree_magasin::getCamionMagasin();
-        return view('magasin.camion', compact('camions'));
-    }
 
     public function formSortie(){
         $camions = Entree_magasin::getCamionNonSortie();
@@ -125,7 +143,7 @@ class MagasinController extends Controller
 
     public function modifierEntrer(Request $request){
 
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'numero_camion' => 'required|string|max:50',
             'encien' => 'string',
             'id_entree' => 'required',
@@ -140,7 +158,12 @@ class MagasinController extends Controller
             'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
             'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
         ]);
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $base64File = $request->input('fichier_base64');
             $num =  $request->input('numero_camion');
