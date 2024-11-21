@@ -39,7 +39,12 @@ class StationController extends Controller
             'nif_stat.unique' => 'Le NIF existe déjà dans la base de données.'
         ]);
 
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             Station::create([
                     'station' => $validatedData['nom'],
@@ -83,6 +88,12 @@ class StationController extends Controller
             'nif_stat.unique' => 'Le NIF existe déjà dans la base de données.'
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $id = $request->input('id_station');
             $data = $request->only(['nom', 'nif_stat']);
@@ -132,8 +143,12 @@ class StationController extends Controller
             'quotas.min' => 'Le nombre de quotas doit être au moins 1.',
         ]);
 
-
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             DB::table('quotas')->insert([
                 'navire_id' => $validatedData['navire_id'],

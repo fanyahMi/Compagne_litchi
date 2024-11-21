@@ -77,6 +77,8 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::post('/entree-magasin', [MagasinController::class, 'insertEntrer'])->name('entre.store');
     Route::get('/sortie-magasin', [MagasinController::class, 'formSortie']);
     Route::get('/magasin-camion', [MagasinController::class, 'listeCamion']);
+
+
     Route::post('/sortie-magasin', [MagasinController::class, 'ajouteSortie'])->name('sortie.store');
     Route::get('/get-sortie', [MagasinController::class, 'getSortie']);
     Route::get('/quantite-entree/{id}', [MagasinController::class, 'getQuantiteEntrant'])->name('quantite.entrant');

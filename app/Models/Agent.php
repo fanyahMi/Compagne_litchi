@@ -94,7 +94,7 @@ class Agent extends Model
         ]);
     }
 
-    public static function getAgentTableau() {
+    /*public static function getAgentTableau() {
         $agents = Agent::orderBy('created_at', 'desc')->where('role_id', '!=', '1')->get();
         if ($agents->contains(function ($agent) {
             return in_array(null, $agent->toArray(), true) || in_array('', $agent->toArray(), true);
@@ -103,7 +103,40 @@ class Agent extends Model
         }
 
         return $agents;
+    }*/
+
+    public static function getAgentTableau($perPage = 10, $name = null, $sexe = null, $role = null) {
+        // Initialiser la requête
+        $query = Agent::orderBy('created_at', 'desc')
+            ->where('role_id', '!=', '1');
+
+        // Appliquer les filtres
+        if (!empty($name)) {
+            $query->where('nom', 'like', '%' . $name . '%');
+        }
+
+        if (!empty($sexe)) {
+            $query->where('sexe_id', $sexe);
+        }
+
+        if (!empty($role)) {
+            $query->where('role_id', $role);
+        }
+
+        // Récupérer les agents avec pagination
+        $agents = $query->paginate($perPage);
+
+        // Vérifier les champs vides ou null
+        foreach ($agents as $agent) {
+            if (in_array(null, $agent->toArray(), true) || in_array('', $agent->toArray(), true)) {
+                return ' ';
+            }
+        }
+
+        return $agents;
     }
+
+
 
     public static function getAgentById($id){
         try {

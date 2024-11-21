@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Shift;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 use Log;
 
@@ -23,7 +24,7 @@ class ShiftController extends Controller
 
     // Ajouter un nouveau shift
     public function addShift(Request $request) {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'description' => 'required|string|max:255',
             'debut' => 'required|date_format:H:i', // Validation du format HH:MM
             'fin' => 'required|date_format:H:i|after:debut', // Validation du format HH:MM et fin après début
@@ -35,7 +36,12 @@ class ShiftController extends Controller
             'fin.after' => 'L\'heure de fin doit être après l\'heure de début.',
         ]);
 
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             Shift::create([
                 'description' => $validatedData['description'],
@@ -64,7 +70,7 @@ class ShiftController extends Controller
 
     // Mettre à jour un shift
     public function update(Request $request) {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'id_shift' => 'required|integer|exists:shift,id_shift',
             'description' => 'required|string|max:255',
             'debut' => 'required|date_format:H:i', // Validation du format HH:MM
@@ -77,6 +83,12 @@ class ShiftController extends Controller
             'fin.date_format' => 'Le format de l\'heure de fin doit être HH:MM.',
             'fin.after' => 'L\'heure de fin doit être après l\'heure de début.',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $shift = Shift::findOrFail($validatedData['id_shift']);
             $shift->update([
