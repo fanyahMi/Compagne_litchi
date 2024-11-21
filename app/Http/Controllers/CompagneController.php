@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class CompagneController extends Controller
 {
@@ -20,7 +21,7 @@ class CompagneController extends Controller
     }
 
     public function addAnnee_compagne(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'annee' => 'required|numeric|min:1800',
             'debut' => 'required|date_format:Y-m',
             'fin' => ['required', 'date_format:Y-m', 'after:mois_depart'],
@@ -37,7 +38,12 @@ class CompagneController extends Controller
         $debutDate = Carbon::createFromFormat('Y-m', $validatedData['debut'])->startOfMonth();
         $finDate = Carbon::createFromFormat('Y-m', $validatedData['fin'])->endOfMonth();
 
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             DB::table('compagne')->insert([
                 'annee' => $validatedData['annee'],
