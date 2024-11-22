@@ -67,13 +67,29 @@ class AgentController extends Controller
         }
     }
 
-    public function getAgent() {
+    /*public function getAgent() {
         $agents = Agent::getAgentTableau();
         if ($agents === ' ') {
             return ' ';
         }
         return response()->json($agents);
+    }*/
+    public function getAgent(Request $request) {
+        $name = $request->input('name');
+        $sexe = $request->input('sexe');
+        $role = $request->input('role');
+        $perPage = $request->input('per_page', 2); // Par défaut, 10 éléments par page
+
+        $agents = Agent::getAgentTableau($perPage, $name, $sexe, $role);
+
+        if ($agents === ' ') {
+            return response()->json(['message' => 'Des champs sont vides ou null.'], 400);
+        }
+
+        return response()->json($agents);
     }
+
+
 
     public function addAgent(Request $request) {
         $validatedData = $request->validate([

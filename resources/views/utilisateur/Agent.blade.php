@@ -97,11 +97,40 @@
                         </form>
                         <div id="error-message" class="error-message"></div>
                     </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="filter-name">Nom</label>
+                            <input type="text" class="form-control" id="filter-name" placeholder="Filtrer par nom">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-sexe">Sexe</label>
+                            <select id="filter-sexe" class="form-control">
+                                <option value="">Sélectionner sexe</option>
+                                @foreach($sexes as $sexe)
+                                    <option value="{{ $sexe->id_sexe }}">{{ $sexe->sexe }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-role">Rôle</label>
+                            <select id="filter-role" class="form-control">
+                                <option value="">Sélectionner rôle</option>
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->id_role }}">{{ $role->role }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <button type="button" class="btn btn-secondary" id="filter-btn">Filtrer</button>
+                        </div>
+                    </div>
+
                     <div class="card-body">
                         <h5 class="c-black-900"><b>Liste des réservations</b></h5>
                         <div class="mT-30">
-                            <div id="table-responsive ">
-                                <table id="produitTable" class="table table-hover table-bordered ">
+                            <div id="table-responsive">
+                                <table id="produitTable" class="table table-hover table-bordered">
                                     <thead>
                                         <tr>
                                             <th>Matricule</th>
@@ -109,17 +138,19 @@
                                             <th>Date de naissance</th>
                                             <th>CIN</th>
                                             <th>Sexe</th>
-                                            <th>Situation patrimonial</th>
-                                            <th>Embaucher le</th>
-                                            <th>Role</th>
+                                            <th>Situation patrimoniale</th>
+                                            <th>Embauché le</th>
+                                            <th>Rôle</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="table-body">
-                                    </tbody>
+                                    <tbody id="table-body"></tbody>
                                 </table>
                             </div>
+                            <div id="pagination" class="mt-3 text-center"></div>
                         </div>
                     </div>
+
                 </div>
             </div>
             <!-- [ form-element ] end -->
@@ -216,78 +247,12 @@
 
 <script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
-$(document).ready(function() {
-    $.ajaxSetup({
+ $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    loadAgent();
-    $('#ajout_agentForm').on('submit', function(event) {
-        event.preventDefault();
-        $.ajax({
-            url: $(this).attr('action'),
-            method: 'POST',
-            data: $(this).serialize(),
-            success: function(response) {
-                alert('Agent ajouté avec succès !');
-                console.log(response);
-                $('p.error-message').text('');
-                $('#ajout_agentForm')[0].reset();
-                loadAgent();
-            },
-            error: function(xhr) {
-                $('p.error-message').text('');
-                $('#error-message').text('');
-                if (xhr.status === 422) {
-                    var errors = xhr.responseJSON.errors;
-                    $.each(errors, function(key, messages) {
-                        $('#error-' + key).text(messages[0]);
-                    });
-                }
-            }
-        });
-    });
-
-    $(document).on('click', '.delete-btn', function() {
-            var id = $(this).data('id_agent');
-
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette agent ?')) {
-                $.ajax({
-                    url: '/supp-agent/' + id,
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            alert(response.message);
-                            loadAgent();
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Erreur lors de la suppression : ", error);
-                    }
-                });
-            }
-        });
-
-    function loadAgent() {
-        $.ajax({
-            url: '/get-agent',
-            type: 'GET',
-            success: function(data) {
-                $('#table-body').empty();
-                data.forEach(function(agent) {
-                    appendAgent(agent);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des réservations : ", error);
-            }
-        });
-    }
     const sexes = @json($sexes);
     const roles = @json($roles);
     const situations = @json($situations);
@@ -328,6 +293,129 @@ $(document).ready(function() {
                   '</tr>';
         $('#table-body').append(row);
     }
+
+function appendPagination(data) {
+            let pagination = '';
+
+            // Bouton "Précédent"
+            if (data.prev_page_url) {
+                pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page - 1) + ')">Précédent</button>';
+            } else {
+                pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
+            }
+
+            // Numéros de pages
+            for (let i = 1; i <= data.last_page; i++) {
+                pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadAgent(' + i + ')">' + i + '</button>';
+            }
+
+            // Bouton "Suivant"
+            if (data.next_page_url) {
+                pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page + 1) + ')">Suivant</button>';
+            } else {
+                pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
+            }
+
+            $('#pagination').html(pagination);
+        }
+
+
+        function loadAgent(page = 1) {
+            const name = $('#filter-name').val(); // Valeur du champ de recherche par nom
+            const sexe = $('#filter-sexe').val(); // Valeur du filtre sexe
+            const role = $('#filter-role').val(); // Valeur du filtre rôle
+
+            $.ajax({
+                url: '/get-agent?page=' + page,
+                type: 'GET',
+                data: {
+                    name: name,
+                    sexe: sexe,
+                    role: role,
+                },
+                success: function(data) {
+                    // Effacer le tableau et les boutons de pagination
+                    $('#table-body').empty();
+                    $('#pagination').empty();
+
+                    // Ajouter les agents au tableau
+                    data.data.forEach(function(agent) {
+                        appendAgent(agent);
+                    });
+
+                    // Générer les boutons de pagination
+                    appendPagination(data);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erreur lors du chargement des réservations : ", error);
+                }
+            });
+        }
+
+
+$(document).ready(function() {
+
+    $('#filter-btn').on('click', function() {
+        loadAgent(1);
+    });
+
+    loadAgent(1);
+    $('#ajout_agentForm').on('submit', function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                alert('Agent ajouté avec succès !');
+                console.log(response);
+                $('p.error-message').text('');
+                $('#ajout_agentForm')[0].reset();
+                loadAgent();
+            },
+            error: function(xhr) {
+                $('p.error-message').text('');
+                $('#error-message').text('');
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+                    $.each(errors, function(key, messages) {
+                        $('#error-' + key).text(messages[0]);
+                    });
+                }
+            }
+        });
+    });
+
+
+
+    $(document).on('click', '.delete-btn', function() {
+            var id = $(this).data('id_agent');
+
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette agent ?')) {
+                $.ajax({
+                    url: '/supp-agent/' + id,
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert(response.message);
+                            loadAgent();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur lors de la suppression : ", error);
+                    }
+                });
+            }
+        });
+
+
+
+
+
+
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
         var id = $(this).data('id_agent');
