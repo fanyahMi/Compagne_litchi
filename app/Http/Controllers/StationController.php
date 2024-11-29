@@ -220,6 +220,14 @@ class StationController extends Controller
             Log::error('Error updating station: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => $e->getMessage()]);
         }
+
+    }
+
+    public function getNumeroStationCampagneEnCours(){
+        $compagne = DB::table('v_station_numero_compagne')
+                    ->where('etat', 1)
+                    ->get();
+        return response()->json($compagne);
     }
 
 }
