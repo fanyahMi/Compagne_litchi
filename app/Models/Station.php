@@ -31,13 +31,9 @@ class Station extends Model
         $stations = $query->paginate($perPage);
 
         // Vérifier les champs vides ou null
-        foreach ($stations as $station) {
-            if (in_array(null, $station->toArray(), true) || in_array('', $station->toArray(), true)) {
-                return ' ';
-            }
-        }
 
-        return $station;
+
+        return $stations;
     }
 
     public static function getStationById($id){
