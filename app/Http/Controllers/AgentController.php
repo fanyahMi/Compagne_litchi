@@ -84,7 +84,7 @@ class AgentController extends Controller
         $agents = Agent::getAgentTableau($perPage, $name, $sexe, $role);
 
         if ($agents === ' ') {
-            return response()->json(['message' => 'Des champs sont vides ou null.'], 400);
+            return response()->json(['message' => 'Les champs sont vides ou null.'], 400);
         }
 
         return response()->json($agents);

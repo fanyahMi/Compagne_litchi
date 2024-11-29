@@ -43,6 +43,23 @@
                         </form>
                         <div id="error-message" class="error-message"></div>
                     </div>
+
+                    <div class="card-body">
+                        <div class="mT-30">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="filter-name">Nom</label>
+                                    <input type="text" class="form-control" id="filter-name" placeholder="Filtrer par nom">
+                                </div>
+
+                                <div class="form-group col-md-2" style="align-content: flex-end">
+                                    <button type="button" class="btn btn-secondary" id="filter-btn">Filtrer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="card-body">
                         <h5 class="c-black-900"><b>Liste des stations</b></h5>
                         <div class="mT-30">
@@ -108,14 +125,81 @@
 
 <script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
-$(document).ready(function() {
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    loadstation();
+
+    function appendStation(station) {
+        var row = '<tr>' +
+                  '<td>' + station.station + '</td>' +
+                  '<td>' + station.nif_stat + '</td>' +
+                  '<td class="col-md-2">' +
+                    '<button  class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_station="' + station.id_station + '"><i class="fas fa-edit"></i></button>' +
+                  '</td>' +
+                  '</tr>';
+        $('#table-body').append(row);
+    }
+
+    function appendPagination(data) {
+        let pagination = '';
+
+        // Bouton "Précédent"
+        if (data.prev_page_url) {
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page - 1) + ')">Précédent</button>';
+        } else {
+            pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
+        }
+
+        // Numéros de pages
+        for (let i = 1; i <= data.last_page; i++) {
+            pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadAgent(' + i + ')">' + i + '</button>';
+        }
+
+        // Bouton "Suivant"
+        if (data.next_page_url) {
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page + 1) + ')">Suivant</button>';
+        } else {
+            pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
+        }
+
+        $('#pagination').html(pagination);
+    }
+
+    function loadstation(page = 1) {
+        const name = $('#filter-name').val();
+        $.ajax({
+            url: '/get-station?page=' + page,
+            type: 'GET',
+            data: {
+                    name: name,
+                },
+            success: function(data) {
+                $('#table-body').empty();
+                $('#pagination').empty();
+                console.log(data);/*
+                data.forEach(function(station) {
+                    appendStation(station);
+                });*/
+                appendPagination(data);
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des stations : ", error);
+            }
+        });
+    }
+
+
+$(document).ready(function() {
+
+    $('#filter-btn').on('click', function() {
+        loadstation(1);
+    });
+
+    loadstation(1);
     $('#ajout_stationForm').on('submit', function(event) {
         event.preventDefault();
         $.ajax({
@@ -142,34 +226,6 @@ $(document).ready(function() {
             }
         });
     });
-
-    function loadstation() {
-        $.ajax({
-            url: '/get-station',
-            type: 'GET',
-            success: function(data) {
-                $('#table-body').empty();
-                data.forEach(function(station) {
-                    appendStation(station);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des stations : ", error);
-            }
-        });
-    }
-
-
-    function appendStation(station) {
-        var row = '<tr>' +
-                  '<td>' + station.station + '</td>' +
-                  '<td>' + station.nif_stat + '</td>' +
-                  '<td class="col-md-2">' +
-                    '<button  class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_station="' + station.id_station + '"><i class="fas fa-edit"></i></button>' +
-                  '</td>' +
-                  '</tr>';
-        $('#table-body').append(row);
-    }
 
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
