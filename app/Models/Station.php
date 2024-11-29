@@ -18,6 +18,28 @@ class Station extends Model
     protected $primaryKey = "id_station";
     public $incrementing = true;
 
+    public static function getStationTableau($perPage = 10, $name = null) {
+        // Initialiser la requête
+        $query = Station::orderBy('station');
+
+        // Appliquer les filtres
+        if (!empty($name)) {
+            $query->where('station', 'like', '%' . $name . '%');
+        }
+
+
+        $stations = $query->paginate($perPage);
+
+        // Vérifier les champs vides ou null
+        foreach ($stations as $station) {
+            if (in_array(null, $station->toArray(), true) || in_array('', $station->toArray(), true)) {
+                return ' ';
+            }
+        }
+
+        return $station;
+    }
+
     public static function getStationById($id){
         try {
             return Station::findOrFail($id);

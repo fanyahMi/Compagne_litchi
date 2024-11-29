@@ -6,18 +6,31 @@ use Illuminate\Http\Request;
 use App\Models\Station;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 use Log;
-use Illuminate\Support\Facades\Validator;
 
 class StationController extends Controller
 {
     public function index(){
         return view('station.Station');
     }
-
+/*
     public function getStation() {
         $station = Station::all();
+
+        return response()->json($station);
+    }
+*/
+    public function getStation(Request $request) {
+        $name = $request->input('name');
+        $perPage = $request->input('per_page', 2); // Par défaut, 10 éléments par page
+
+        $station = Station::getStationTableau($perPage, $name);
+
+        if ($station === ' ') {
+            return response()->json(['message' => 'Les champs sont vides ou null.'], 400);
+        }
 
         return response()->json($station);
     }
