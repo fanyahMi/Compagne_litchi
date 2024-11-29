@@ -98,31 +98,35 @@
                         <div id="error-message" class="error-message"></div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="filter-name">Nom</label>
-                            <input type="text" class="form-control" id="filter-name" placeholder="Filtrer par nom">
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="filter-sexe">Sexe</label>
-                            <select id="filter-sexe" class="form-control">
-                                <option value="">Sélectionner sexe</option>
-                                @foreach($sexes as $sexe)
-                                    <option value="{{ $sexe->id_sexe }}">{{ $sexe->sexe }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="filter-role">Rôle</label>
-                            <select id="filter-role" class="form-control">
-                                <option value="">Sélectionner rôle</option>
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->id_role }}">{{ $role->role }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-2">
-                            <button type="button" class="btn btn-secondary" id="filter-btn">Filtrer</button>
+                    <div class="card-body">
+                        <div class="mT-30">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="filter-name">Nom</label>
+                                    <input type="text" class="form-control" id="filter-name" placeholder="Filtrer par nom">
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="filter-sexe">Sexe</label>
+                                    <select id="filter-sexe" class="form-control">
+                                        <option value="">Sélectionner sexe</option>
+                                        @foreach($sexes as $sexe)
+                                            <option value="{{ $sexe->id_sexe }}">{{ $sexe->sexe }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="filter-role">Rôle</label>
+                                    <select id="filter-role" class="form-control">
+                                        <option value="">Sélectionner rôle</option>
+                                        @foreach($roles as $role)
+                                            <option value="{{ $role->id_role }}">{{ $role->role }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-2" style="align-content: flex-end">
+                                    <button type="button" class="btn btn-secondary" id="filter-btn">Filtrer</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -410,11 +414,6 @@ $(document).ready(function() {
                 });
             }
         });
-
-
-
-
-
 
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
