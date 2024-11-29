@@ -7,11 +7,9 @@ INSERT INTO sexe (sexe) VALUES
 ('Femme');
 
 INSERT INTO role (role) VALUES
-('Administrateur');
-INSERT INTO role (role) VALUES
+('Administrateur'),
 ('Agent_entree'),
-('Agent_sortie');
-INSERT INTO role (role) VALUES
+('Agent_sortie'),
 ('Agent_embarquement');
 
 INSERT INTO type_navire (type_navire) VALUES

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\NumeroStation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 use Log;
 use Exception;
 
@@ -25,7 +26,7 @@ class NumeroStationController extends Controller
     }
 
     public function ajouteNumeroSation(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'compagne_id' => 'required|integer|exists:compagne,id_compagne',
             'station_id' => [
                 'required',
@@ -49,7 +50,12 @@ class NumeroStationController extends Controller
             'numero_station.unique' => 'Ce numéro de station est déjà utilisé pour cette compagne.',
         ]);
 
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             NumeroStation::ajouteNumeroStation($validatedData);
 
@@ -81,7 +87,7 @@ class NumeroStationController extends Controller
 
     public function update(Request $request){
 
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'id_numero_station' => 'required|integer|exists:numero_station,id_numero_station',
             'compagne_id' => 'required|integer|exists:compagne,id_compagne',
             'station_id' => [
@@ -109,9 +115,12 @@ class NumeroStationController extends Controller
             'numero_station.unique' => 'Ce numéro de station est déjà utilisé pour cette compagne.',
         ]);
 
-
-
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $id = $request->input('id_numero_station');
             $data = $request->only(['compagne_id', 'station_id','numero_station']);

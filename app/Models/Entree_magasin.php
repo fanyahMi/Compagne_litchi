@@ -28,8 +28,8 @@ class Entree_magasin extends Model
     public $timestamps = false;
     protected $primaryKey = "id_entree_magasin";
     public $incrementing = true;
-    public static function ajouterEntrer(array $data, string $base64File = null, $id)
-    {
+
+    public static function ajouterEntrer(array $data, string $base64File = null, $id) {
         $path = '';
         if ($base64File) {
             if (strpos($base64File, 'data:application/pdf;base64,') === 0) {

@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use Exception;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Validator;
 use Log;
 use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;
@@ -154,7 +155,7 @@ class AgentController extends Controller
     }
 
     public function update(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'id_utilisateur' => 'required|integer|exists:utilisateur,id_utilisateur',
             'nom' => 'required|string|max:255',
             'prenom' => 'nullable|string|max:255',
@@ -174,7 +175,12 @@ class AgentController extends Controller
             'cin.digits' => 'Le nº CIN doit contenir 12 chiffres.',
             'cin.unique' => 'Le nº CIN existe déjà dans la base de données.'
         ]);
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $id = $request->input('id_utilisateur');
             $data = $request->only(['nom', 'prenom', 'dateNaissance', 'cin', 'sexe', 'situation']);
@@ -194,7 +200,12 @@ class AgentController extends Controller
             'matricule' => 'required|string',
             'mot_passe' => 'required|string',
         ]);
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
         try {
             $result = Agent::checkLoginWeb($request->matricule, $request->mot_passe);
 
