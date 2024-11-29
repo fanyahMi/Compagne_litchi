@@ -9,3 +9,9 @@ php artisan make:middleware JwtMiddleware
 
 JWT_SECRET=121342
 JWT_EXPIRATION=60
+
+
+
+----------------------------
+composer require fruitcake/laravel-cors
+

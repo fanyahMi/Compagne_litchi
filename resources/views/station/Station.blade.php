@@ -75,6 +75,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="pagination" class="mt-3 text-center"></div>
                         </div>
                     </div>
                 </div>
@@ -149,19 +150,19 @@
 
         // Bouton "Précédent"
         if (data.prev_page_url) {
-            pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page - 1) + ')">Précédent</button>';
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadstation(' + (data.current_page - 1) + ')">Précédent</button>';
         } else {
             pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
         }
 
         // Numéros de pages
         for (let i = 1; i <= data.last_page; i++) {
-            pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadAgent(' + i + ')">' + i + '</button>';
+            pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadstation(' + i + ')">' + i + '</button>';
         }
 
         // Bouton "Suivant"
         if (data.next_page_url) {
-            pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page + 1) + ')">Suivant</button>';
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadstation(' + (data.current_page + 1) + ')">Suivant</button>';
         } else {
             pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
         }
@@ -180,10 +181,10 @@
             success: function(data) {
                 $('#table-body').empty();
                 $('#pagination').empty();
-                console.log(data);/*
-                data.forEach(function(station) {
+                console.log(data);
+                data.data.forEach(function(station) {
                     appendStation(station);
-                });*/
+                });
                 appendPagination(data);
             },
             error: function(xhr, status, error) {

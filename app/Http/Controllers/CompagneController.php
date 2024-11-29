@@ -16,9 +16,16 @@ class CompagneController extends Controller
 
     public function getCompagne() {
         $compagne = DB::table('compagne')->get();
-
         return response()->json($compagne);
     }
+    public function getCompagneEnCours()
+    {
+        $compagne = DB::table('compagne')
+                    ->where('etat', 1)
+                    ->first();
+        return response()->json($compagne);
+    }
+
 
     public function addAnnee_compagne(Request $request){
         $validator = Validator::make($request->all(),[
