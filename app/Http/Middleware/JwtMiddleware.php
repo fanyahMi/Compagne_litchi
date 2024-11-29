@@ -10,6 +10,8 @@ use Firebase\JWT\BeforeValidException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 
+use Firebase\JWT\Key;;
+
 class JwtMiddleware
 {
     public function handle(Request $request, Closure $next)
@@ -21,10 +23,9 @@ class JwtMiddleware
         }
 
         try {
-            // Décode le token avec la clé secrète
-            $decoded = JWT::decode($token, Config::get('jwt.secret') );
-            // Ajouter les informations de l'utilisateur à l'attribut de la requête
+            $decoded = JWT::decode($token, new Key(Config::get('jwt.secret'), 'HS256'));
             $request->attributes->add(['user' => $decoded]);
+
         } catch (ExpiredException $e) {
             return response()->json(['error' => 'Token expiré'], 401);
         } catch (SignatureInvalidException $e) {

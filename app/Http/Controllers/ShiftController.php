@@ -103,4 +103,24 @@ class ShiftController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Erreur lors de la suppression du shift'], 400);
         }
     }
+
+    public function getShiftEnCours()
+    {
+        $currentShift = DB::table('shift')
+            ->where(function ($query) {
+                // Shifts dans la même journée
+                $query->whereRaw('CURRENT_TIME >= debut AND CURRENT_TIME <= fin');
+            })
+            ->orWhere(function ($query) {
+                // Shifts traversant minuit
+                $query->whereRaw('debut > fin AND (CURRENT_TIME >= debut OR CURRENT_TIME <= fin)');
+            })
+            ->first();
+
+        if (!$currentShift) {
+            return response()->json(['error' => 'Aucun shift actif actuellement'], 404);
+        }
+
+        return response()->json($currentShift);
+    }
 }

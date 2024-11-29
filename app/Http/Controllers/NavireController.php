@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Exception;
 use Log;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 class NavireController extends Controller
 {
     public function index(){
@@ -98,4 +99,30 @@ class NavireController extends Controller
         return view('navire.Mouvement', compact('compagnes','navires'));
     }
 
+    public function getNaviresEnPlace()
+    {
+        $navires = DB::table('v_mouvement_navire')
+            ->whereNull('date_depart')
+            ->get();
+
+        return response()->json($navires);
+    }
+    public function getDetailNavireApi( $idNavire)
+    {
+        try {
+            // Récupérer le navire où la date_depart est null
+            $navire = Navire::where('id_navire', $idNavire)
+                                      ->firstOrFail(); // Utilise firstOrFail pour gérer les cas d'erreur
+
+            return response()->json($navire); // Retourne une réponse JSON avec les données du navire
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Navire non trouvé ou déja parti'], 404);
+        }
+    }
+
+
+
+
 }
+
+///
