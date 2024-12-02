@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Navire;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Validator;
 use Exception;
 use Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -25,6 +24,7 @@ class NavireController extends Controller
     }
 
     public function addnavire(Request $request) {
+
         $validator = Validator::make($request->all(),[
             'nom' => 'required|string|max:255',
             'nb_compartiment' => 'required|numeric',
@@ -46,10 +46,10 @@ class NavireController extends Controller
         try {
 
             Navire::create([
-                'navire' => $request['nom'],
-                'nb_compartiment' => $request['nb_compartiment'],
-                'quantite_max' => $request['quantite_max'],
-                'type_navire_id' => $request['type_navire']
+                'navire' =>  $request->input('nom'),
+                'nb_compartiment' =>  $request->input('nb_compartiment'),
+                'quantite_max' =>  $request->input('quantite_max'),
+                'type_navire_id' =>  $request->input('type_navire')
             ]);
             return response()->json([
                 'message' => 'Navire ajouté avec succès',
@@ -71,7 +71,8 @@ class NavireController extends Controller
     }
 
     public function update(Request $request){
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make([
+            $request->all(),
             'nom' => 'required|string|max:255',
             'nb_compartiment' => 'required|numeric',
             'quantite_max' => 'required|numeric',
@@ -121,11 +122,20 @@ class NavireController extends Controller
     public function getDetailNavireApi( $idNavire)
     {
         try {
-            // Récupérer le navire où la date_depart est null
             $navire = Navire::where('id_navire', $idNavire)
-                                      ->firstOrFail(); // Utilise firstOrFail pour gérer les cas d'erreur
-
-            return response()->json($navire); // Retourne une réponse JSON avec les données du navire
+                                      ->firstOrFail();
+            return response()->json($navire);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Navire non trouvé ou déja parti'], 404);
+        }
+    }
+    public function getQuatiteCalesApi( $idNavire)
+    {
+        try {
+            $navire = DB::table('v_quantite_cales')
+            ->where('id_navire', '=', $idNavire)
+            ->get();
+            return response()->json($navire);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Navire non trouvé ou déja parti'], 404);
         }

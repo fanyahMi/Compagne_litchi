@@ -31,10 +31,11 @@ Route::middleware('jwt')->group(function () {
     Route::get('/v1/campagnes/en-cours', [CompagneController::class, 'getCompagneEnCours']);
 
     // Récupérer les shifts en cours (si plusieurs shifts peuvent être en cours)
-    Route::get('/v1/shifts/en-cours', [ShiftController::class, 'getShiftsEnCours']);
+    Route::get('/v1/shifts/en-cours', [ShiftController::class, 'getShiftEnCours']);
 
     // Récupérer un navire spécifique par son ID
     Route::get('/v1/navires/{idNavire}', [NavireController::class, 'getDetailNavireApi']);
+    Route::get('/v1/navires/cales/{idNavire}', [NavireController::class, 'getQuatiteCalesApi']);
     Route::get('/v1/campagnes/stations/numero-stations', [StationController::class, 'getNumeroStationCampagneEnCours']);
     Route::post('/v1/embarquements/historiques/cale', [EmbarquementController::class, 'rechercherHistoriqueCale']);
     Route::post('/v1/embarquements/historiques/navires/embarquements', [EmbarquementController::class, 'rechercherHistoriqueNavire']);
