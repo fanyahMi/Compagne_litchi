@@ -9,7 +9,6 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 class NavireController extends Controller
 {
@@ -26,7 +25,7 @@ class NavireController extends Controller
     }
 
     public function addnavire(Request $request) {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'nom' => 'required|string|max:255',
             'nb_compartiment' => 'required|numeric',
             'quantite_max' => 'required|numeric',
@@ -47,10 +46,10 @@ class NavireController extends Controller
         try {
 
             Navire::create([
-                'navire' => $validatedData['nom'],
-                'nb_compartiment' => $validatedData['nb_compartiment'],
-                'quantite_max' => $validatedData['quantite_max'],
-                'type_navire_id' => $validatedData['type_navire']
+                'navire' => $request['nom'],
+                'nb_compartiment' => $request['nb_compartiment'],
+                'quantite_max' => $request['quantite_max'],
+                'type_navire_id' => $request['type_navire']
             ]);
             return response()->json([
                 'message' => 'Navire ajouté avec succès',
@@ -72,7 +71,7 @@ class NavireController extends Controller
     }
 
     public function update(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'nom' => 'required|string|max:255',
             'nb_compartiment' => 'required|numeric',
             'quantite_max' => 'required|numeric',
