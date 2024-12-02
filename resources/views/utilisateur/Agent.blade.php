@@ -134,7 +134,7 @@
                         <h5 class="c-black-900"><b>Liste des réservations</b></h5>
                         <div class="mT-30">
                             <div id="table-responsive">
-                                <table id="produitTable" class="table table-hover table-bordered">
+                                <table id="produitTable" class="table table-hover table-bordered table-responsive">
                                     <thead>
                                         <tr>
                                             <th>Matricule</th>

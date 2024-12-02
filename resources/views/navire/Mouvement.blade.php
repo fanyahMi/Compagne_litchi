@@ -32,7 +32,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                Insertion des numero de station
+                Insertion des mouvement des navires
             </div>
             <div class="card-body">
                 <form id="ajout_mouvementForm" action="ajout-mouvement" method="POST">
