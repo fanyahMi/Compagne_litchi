@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Exception;
 use Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 class NavireController extends Controller
 {
@@ -25,7 +24,8 @@ class NavireController extends Controller
     }
 
     public function addnavire(Request $request) {
-        $validator = Validator::make($request->all() ,[
+
+        $validator = Validator::make($request->all(),[
             'nom' => 'required|string|max:255',
             'nb_compartiment' => 'required|numeric',
             'quantite_max' => 'required|numeric',

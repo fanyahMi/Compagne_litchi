@@ -79,7 +79,7 @@ class AgentController extends Controller
         $name = $request->input('name');
         $sexe = $request->input('sexe');
         $role = $request->input('role');
-        $perPage = $request->input('per_page', 2); // Par défaut, 10 éléments par page
+        $perPage = $request->input('per_page', 10); // Par défaut, 10 éléments par page
 
         $agents = Agent::getAgentTableau($perPage, $name, $sexe, $role);
 
