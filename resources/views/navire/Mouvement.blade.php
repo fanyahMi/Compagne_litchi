@@ -151,9 +151,11 @@
                 <form id="modifier_mouvementForm" action="" method="POST">
                     @csrf
                     <input type="hidden" id="id_mouvement_navire-modal" name="id_mouvement_navire">
+
                     <div class="form-group">
                         <label for="compagne_id">Compagne</label>
-                        <select id="compagne_id-modal" name="compagne_id" class="form-control">
+                        <input type="hidden"  id="compagne_id-modal-hidden" name="compagne_id-modal">
+                        <select id="compagne_id-modal" name="compagne_id" class="form-control" disabled>
                             <option value="">Sélectionner</option>
                             @foreach($compagnes as $compagne)
                                 <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
@@ -166,7 +168,8 @@
 
                     <div class="form-group">
                         <label for="navire_id">Navire</label>
-                        <select id="navire_id-modal" name="navire_id" class="form-control">
+                        <input type="hidden" id="navire_id-modal-hidden" name="navire_id-modal" >
+                        <select id="navire_id-modal" name="navire_id" class="form-control" disabled>
                             <option value="">Sélectionner</option>
                             @foreach($navires as $navire)
                                 <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
@@ -179,18 +182,18 @@
 
                     <div class="form-group">
                         <label for="date_arrive">Date d'arrivée</label>
-                        <input type="date" class="form-control" id="date_arrive-modal" name="date_arrive">
+                        <input type="date" class="form-control" id="date_arrive-modal" name="date_arrive-modal">
                     </div>
                     <div  class="form-group">
-                        <div id="error-modal-date_arrive" class="error-message text-danger"></div>
+                        <div id="error-modal-date_arrive-modal" class="error-message text-danger"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="date_depart">Date de départ</label>
-                        <input type="date" class="form-control" id="date_depart-modal" name="dateNaissance">
+                        <input type="date" class="form-control" id="date_depart-modal" name="date_depart-modal">
                     </div>
                     <div  class="form-group">
-                        <div id="error-modal-date_depart class="error-message text-danger"></div>
+                        <div id="error-modal-date_depart-modal" class="error-message text-danger"></div>
                     </div>
 
                 </form>
@@ -216,18 +219,18 @@ $.ajaxSetup({
 });
 
 function appendMouvement(mouvement) {
-var button = mouvement.etat === 1
-    ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_mouvement="' + mouvement.id_mouvement_navire + '">'+
-    '<i class="fas fa-edit"></i></button>'
-    : ''; // Hide the button if etat is not 0
+    var button = mouvement.etat === 1
+        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_mouvement="' + mouvement.id_mouvement_navire + '">'+
+        '<i class="fas fa-edit"></i></button>'
+        : '';
 
-var row = '<tr>' +
-            '<td>' + mouvement.annee + '</td>' +
-            '<td>' + mouvement.navire + '</td>' +
-            '<td>' + mouvement.date_arriver + '</td>' +
-            '<td>' + mouvement.date_depart + '</td>' +
-            '<td>' + button + '</td>' +
-          '</tr>';
+    var row = '<tr>' +
+                '<td>' + mouvement.annee + '</td>' +
+                '<td>' + mouvement.navire + '</td>' +
+                '<td>' + mouvement.date_arriver + '</td>' +
+                '<td>' + mouvement.date_depart + '</td>' +
+                '<td>' + button + '</td>' +
+            '</tr>';
 
     $('#table-body').append(row);
 }
@@ -273,16 +276,13 @@ function loadMouvement(page = 1) {
             date_depart: date_depart,
         },
         success: function(data) {
-            // Effacer le tableau et les boutons de pagination
             $('#table-body').empty();
             $('#pagination').empty();
 
-            // Ajouter les agents au tableau
             data.data.forEach(function(mouvement) {
                 appendMouvement(mouvement);
             });
 
-            // Générer les boutons de pagination
             appendPagination(data);
         },
         error: function(xhr, status, error) {
@@ -308,8 +308,7 @@ $('#ajout_mouvementForm').on('submit', function(event) {
         data: $(this).serialize(),
         success: function(response) {
             alert('Mouvement ajouté avec succès !');
-            console.log(response);
-            $('p.error-message').text(''); // Réinitialiser les messages d'erreur
+            $('p.error-message').text('');
             $('#ajout_mouvementForm')[0].reset(); // Réinitialiser le formulaire
             loadMouvement(); // Recharger les années ou autres données pertinentes
         },
@@ -335,6 +334,8 @@ $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]
             $('#id_mouvement_navire-modal').val(mouvementData.id_mouvement_navire);
             $('#compagne_id-modal').val(mouvementData.compagne_id).trigger('change');
             $('#navire_id-modal').val(mouvementData.navire_id).trigger('change');
+            $('#compagne_id-modal-hidden').val(mouvementData.compagne_id);
+            $('#navire_id-modal-hidden').val(mouvementData.navire_id);
             $('#date_arrive-modal').val(mouvementData.date_arriver);
             $('#date_depart-modal').val(mouvementData.date_depart);
         },
@@ -351,6 +352,7 @@ $('#saveChangesBtn').on('click', function(e) {
         url: '/update-mouvement',
         method: 'PUT',
         data: formData,
+        contentType: 'application/x-www-form-urlencoded',
         success: function(response) {
             alert('Modifications enregistrées avec succès !');
             $('#modifierModal').modal('hide');
@@ -359,7 +361,9 @@ $('#saveChangesBtn').on('click', function(e) {
         error: function(xhr) {
             var errors = xhr.responseJSON.errors;
             $.each(errors, function(key, messages) {
-                $('#error-modal-' + key).text(messages[0]);
+                console.log('#error-modal-'+key + "  "+ messages);
+                $('#error-modal-' + key).text(messages);
+                $('#error-modal-' + key).css('display', 'block');
             });
         }
     });
