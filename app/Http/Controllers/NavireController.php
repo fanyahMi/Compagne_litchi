@@ -84,7 +84,6 @@ class NavireController extends Controller
 
     public function update(Request $request){
         $validator = Validator::make($request->all(),[
-            $request->all(),
             'nom' => 'required|string|max:255',
             'nb_compartiment' => 'required|numeric',
             'quantite_max' => 'required|numeric',
