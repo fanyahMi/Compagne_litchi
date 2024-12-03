@@ -23,15 +23,19 @@ class ShiftController extends Controller
     }
 
     // Ajouter un nouveau shift
-    public function addShift(Request $request) {
-        $validator = Validator::make($request->all(),[
+    public function addShift(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'description' => 'required|string|max:255',
-            'debut' => 'required|date_format:H:i', // Validation du format HH:MM
-            'fin' => 'required|date_format:H:i|after:debut', // Validation du format HH:MM et fin après début
+            'debut' => 'required|date_format:H:i',
+            'fin' => 'required|date_format:H:i|after:debut',
         ], [
+            'description.required' => 'La description est obligatoire.',
+            'description.string' => 'La description doit être une chaîne de caractères.',
+            'description.max' => 'La description ne peut pas dépasser 255 caractères.',
             'debut.required' => 'L\'heure de début est obligatoire.',
-            'fin.required' => 'L\'heure de fin est obligatoire.',
             'debut.date_format' => 'Le format de l\'heure de début doit être HH:MM.',
+            'fin.required' => 'L\'heure de fin est obligatoire.',
             'fin.date_format' => 'Le format de l\'heure de fin doit être HH:MM.',
             'fin.after' => 'L\'heure de fin doit être après l\'heure de début.',
         ]);
@@ -39,21 +43,33 @@ class ShiftController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'errors' => $validator->errors()
-            ], 422); // Code d'erreur 422 : Unprocessable Entity
+                'errors' => $validator->errors(),
+            ], 422);
         }
+
         try {
+            $validatedData = $validator->validated();
+
             Shift::create([
                 'description' => $validatedData['description'],
                 'debut' => $validatedData['debut'],
                 'fin' => $validatedData['fin'],
             ]);
-            return response()->json(['message' => 'Shift ajouté avec succès'], 200);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Shift ajouté avec succès.',
+            ], 201);
         } catch (Exception $e) {
             Log::error('Erreur lors de l\'ajout du shift: ' . $e->getMessage());
-            return response()->json(['error' => 'Erreur lors de l\'ajout du shift: ' . $e->getMessage()], 400);
+
+            return response()->json([
+                'status' => false,
+                'error' => 'Erreur lors de l\'ajout du shift: ' . $e->getMessage(),
+            ], 500);
         }
     }
+
 
     // Récupérer un shift par ID
     public function getById($id) {
@@ -68,39 +84,53 @@ class ShiftController extends Controller
         }
     }
 
-    // Mettre à jour un shift
-    public function update(Request $request) {
-        $validator = Validator::make($request->all(),[
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'id_shift' => 'required|integer|exists:shift,id_shift',
             'description' => 'required|string|max:255',
-            'debut' => 'required|date_format:H:i', // Validation du format HH:MM
-            'fin' => 'required|date_format:H:i|after:debut', // Validation du format HH:MM et fin après début
+            'debut' => 'required|date_format:H:i',
+            'fin' => 'required|date_format:H:i|after:debut',
         ], [
             'id_shift.required' => 'L\'ID du shift est obligatoire.',
+            'id_shift.exists' => 'Le shift avec cet ID n\'existe pas.',
             'debut.required' => 'L\'heure de début est obligatoire.',
-            'fin.required' => 'L\'heure de fin est obligatoire.',
             'debut.date_format' => 'Le format de l\'heure de début doit être HH:MM.',
+            'fin.required' => 'L\'heure de fin est obligatoire.',
             'fin.date_format' => 'Le format de l\'heure de fin doit être HH:MM.',
             'fin.after' => 'L\'heure de fin doit être après l\'heure de début.',
         ]);
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'errors' => $validator->errors()
-            ], 422); // Code d'erreur 422 : Unprocessable Entity
+                'errors' => $validator->errors(),
+            ], 422);
         }
+
         try {
+            $validatedData = $validator->validated();
+
             $shift = Shift::findOrFail($validatedData['id_shift']);
+
             $shift->update([
                 'description' => $validatedData['description'],
                 'debut' => $validatedData['debut'],
                 'fin' => $validatedData['fin'],
             ]);
 
-            return response()->json(['status' => 'success', 'message' => 'Shift mis à jour avec succès!', 'shift' => $shift]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Shift mis à jour avec succès!',
+                'shift' => $shift,
+            ], 200); // Code 200 : OK
         } catch (Exception $e) {
             Log::error('Erreur lors de la mise à jour du shift: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 400);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur lors de la mise à jour du shift: ' . $e->getMessage(),
+            ], 400); // Code 400 : Bad Request
         }
     }
 
