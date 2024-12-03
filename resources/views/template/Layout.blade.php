@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="{{ url('assets/css/style.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
@@ -41,9 +41,9 @@
 <!-- [ Main Content ] end -->
 
     <!-- Required Js -->
-    <script src="assets/js/vendor-all.min.js"></script>
-    <script src="assets/js/plugins/bootstrap.min.js"></script>
-    <script src="assets/js/pcoded.min.js"></script>
+    <script src=" {{ url('assets/js/vendor-all.min.js') }}"></script>
+    <script src=" {{ url('assets/js/plugins/bootstrap.min.js') }}"></script>
+    <script src=" {{ url('assets/js/pcoded.min.js') }}"></script>
 
 <!-- Apex Chart -->
 @yield('script')

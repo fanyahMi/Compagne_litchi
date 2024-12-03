@@ -60,7 +60,8 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::get('/get-numero-station', [NumeroStationController::class, 'getNumero_station']);
     Route::get('/get-numero-station/{id}', [NumeroStationController::class, 'getById']);
     Route::put('/update-numero-station', [NumeroStationController::class, 'update']);
-
+    Route::get('/station/historique-quotas', [StationController::class, 'historiqueQuotasStation'])->name('station.historique-quotas');
+    Route::get('/station/quotas', [StationController::class, 'getQuotasStationCampgane'])->name('station.quotas');
 
     Route::get('/list-navire', [NavireController::class, 'index']);
     Route::post('/ajout-navire', [NavireController::class, 'addnavire']) ->name('utilisateur.addAgent');

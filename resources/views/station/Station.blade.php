@@ -135,15 +135,16 @@
 
 
     function appendStation(station) {
-        var row = '<tr>' +
-                  '<td>' + station.station + '</td>' +
-                  '<td>' + station.nif_stat + '</td>' +
-                  '<td class="col-md-2">' +
-                    '<button  class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_station="' + station.id_station + '"><i class="fas fa-edit"></i></button>' +
-                  '</td>' +
-                  '</tr>';
-        $('#table-body').append(row);
-    }
+    var row = '<tr>' +
+              '<td><a href="{{ url("station/historique-quotas") }}?id_station=' + station.id_station + '">' + station.station + '</a></td>' +
+              '<td>' + station.nif_stat + '</td>' +
+              '<td class="col-md-2">' +
+                '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_station="' + station.id_station + '"><i class="fas fa-edit"></i></button>' +
+              '</td>' +
+              '</tr>';
+    $('#table-body').append(row);
+}
+
 
     function appendPagination(data) {
         let pagination = '';
