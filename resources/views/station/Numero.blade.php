@@ -76,6 +76,27 @@
 
             </div>
 
+            <div class="card-body">
+                <div class="mT-30">
+                    <div class="form-row">
+
+                        <div class="form-group col-md-3">
+                            <label for="filter-compagne">Compagne</label>
+                            <select id="filter-compagne" class="form-control">
+                                <option value="">Sélectionner l'année</option>
+                                @foreach($compagnes as $compagne)
+                                    <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2" style="align-content: flex-end">
+                            <button type="button" class="btn btn-secondary" id="filter-btn">Filtrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- [Liste des réservations] -->
             <div class="card-body">
                 <h5 class="c-black-900"><b>Liste numereo station</b></h5>
@@ -157,7 +178,7 @@
 @section('script')
 <script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
-$(document).ready(function() {
+
 
     $.ajaxSetup({
         headers: {
@@ -165,7 +186,77 @@ $(document).ready(function() {
         }
     });
 
-    loadNumero_station();
+    function appendNumero(numero_stations) {
+    // Check if the etat is 0 (modifiable) or not
+    var button = numero_stations.etat === 1
+        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_station + '">'+
+        '<i class="fas fa-edit"></i></button>'
+        : ''; // Hide the button if etat is not 0
+
+    var row = '<tr>' +
+                '<td>' + numero_stations.annee + '</td>' +
+                '<td>' + numero_stations.station + '</td>' +
+                '<td>' + numero_stations.numero_station + '</td>' +
+                '<td>' + button + '</td>' +
+              '</tr>';
+
+        $('#table-body').append(row);
+    }
+
+    function appendPagination(data) {
+        let pagination = '';
+
+        // Bouton "Précédent"
+        if (data.prev_page_url) {
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadNumero_station(' + (data.current_page - 1) + ')">Précédent</button>';
+        } else {
+            pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
+        }
+
+        // Numéros de pages
+        for (let i = 1; i <= data.last_page; i++) {
+            pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadNumero_station(' + i + ')">' + i + '</button>';
+        }
+
+        // Bouton "Suivant"
+        if (data.next_page_url) {
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadNumero_station(' + (data.current_page + 1) + ')">Suivant</button>';
+        } else {
+            pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
+        }
+
+        $('#pagination').html(pagination);
+    }
+
+    function loadNumero_station(page = 1) {
+        const compagne = $('#filter-compagne').val();
+        $.ajax({
+            url: '/get-numero-station?page=' + page,
+            type: 'GET',
+            data: {
+                compagne: compagne,
+            },
+            success: function(data) {
+                $('#table-body').empty();
+                $('#pagination').empty();
+
+                data.data.forEach(function(numero_stations) {
+                   appendNumero(numero_stations);
+                });
+                appendPagination(data);
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des numéros de station : ", xhr);
+            }
+        });
+    }
+
+$(document).ready(function() {
+
+    $('#filter-btn').on('click', function() {
+        loadNumero_station(1);
+    });
+    loadNumero_station(1);
 
     $('#ajout_numero_station').on('submit', function(event) {
         event.preventDefault();
@@ -194,39 +285,6 @@ $(document).ready(function() {
         });
     });
 
-
-    function loadNumero_station() {
-        $.ajax({
-            url: '/get-numero-station',
-            type: 'GET',
-            success: function(data) {
-                $('#table-body').empty();
-                data.forEach(function(numero_stations) {
-                   appendNumero(numero_stations);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des numéros de station : ", xhr);
-            }
-        });
-    }
-
-    function appendNumero(numero_stations) {
-    // Check if the etat is 0 (modifiable) or not
-    var button = numero_stations.etat === 1
-        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_station + '">'+
-        '<i class="fas fa-edit"></i></button>'
-        : ''; // Hide the button if etat is not 0
-
-    var row = '<tr>' +
-                '<td>' + numero_stations.annee + '</td>' +
-                '<td>' + numero_stations.station + '</td>' +
-                '<td>' + numero_stations.numero_station + '</td>' +
-                '<td>' + button + '</td>' +
-              '</tr>';
-
-        $('#table-body').append(row);
-    }
 
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {

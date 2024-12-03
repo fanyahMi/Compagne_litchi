@@ -32,15 +32,18 @@ class NumeroStationController extends Controller
                 'required',
                 'integer',
                 'exists:station,id_station',
-                Rule::unique('numero_station')
-                    ->where('compagne_id', $request->compagne_id),
+                Rule::unique('numero_station', 'station_id')
+                    ->where(function ($query) use ($request) {
+                        $query->where('compagne_id', $request->compagne_id);
+                    }),
             ],
             'numero_station' => [
                 'required',
                 'integer',
-                Rule::unique('numero_station')->where(function ($query) use ($request) {
-                    return $query->where('compagne_id', $request->compagne_id);
-                }),
+                Rule::unique('numero_station', 'numero_station')
+                    ->where(function ($query) use ($request) {
+                        $query->where('compagne_id', $request->compagne_id);
+                    }),
             ],
         ], [
             'compagne_id.required' => 'Ce champ est obligatoire.',
@@ -57,7 +60,8 @@ class NumeroStationController extends Controller
             ], 422); // Code d'erreur 422 : Unprocessable Entity
         }
         try {
-            NumeroStation::ajouteNumeroStation($validatedData);
+            $data = $request->only(['compagne_id', 'station_id', 'numero_station']);
+            NumeroStation::ajouteNumeroStation($data);
 
             return response()->json([
                 'message' =>  "Numéro de station ajouté avec succès",
@@ -69,8 +73,15 @@ class NumeroStationController extends Controller
         }
     }
 
-    public function getNumero_station() {
-        $numero_stations = NumeroStation::getListeNumeroStationCompagneEncoure();
+    public function getNumero_station(Request $request) {
+
+        $compagne = $request-> input('compagne');
+        $perPage = $request->input('per_page', 10);
+
+        $numero_stations = NumeroStation::getListeNumeroStation($perPage, $compagne);
+        if ($numero_stations === ' ') {
+            return response()->json(['message' => 'Les champs sont vides ou null.'], 400);
+        }
 
         return response()->json($numero_stations);
     }
