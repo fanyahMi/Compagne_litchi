@@ -259,6 +259,7 @@
                 condition: condition,
             },
             success: function(data) {
+                console.log(data);
                 $('#table-body').empty();
                 $('#pagination').empty();
 
@@ -327,21 +328,7 @@ $(document).ready(function() {
             }
         });
 
-    function loadNavire() {
-        $.ajax({
-            url: '/get-navire',
-            type: 'GET',
-            success: function(data) {
-                $('#table-body').empty();
-                data.forEach(function(navire) {
-                    appendNavire(navire);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des navires : ", error);
-            }
-        });
-    }
+
 
 
 

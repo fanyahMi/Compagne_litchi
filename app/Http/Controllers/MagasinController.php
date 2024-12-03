@@ -18,7 +18,10 @@ class MagasinController extends Controller
         $navires = DB::table('navire')
                     ->select('id_navire', 'navire','quantite_max')
                     ->get();
-        $stations = NumeroStation::getListeNumeroStationCompagneEncoure();
+                    $compagne = DB::table('compagne')
+                    ->where('etat', 1)
+                    ->first();
+        $stations = NumeroStation::getListeNumeroStation(-1, $compagne->id_compagne);
 
         return view('magasin.Entree', compact('navires', 'stations'));
     }
@@ -40,41 +43,53 @@ class MagasinController extends Controller
     }
 
 
-    public function insertEntrer(Request $request){
-        $validator = Validator::make($request->all(),[
-            'numero_camion' => 'required|string|max:50',
-            'bon_livraison' => 'required|string|max:50|unique:entree_magasin,bon_livraison',
-            'chauffeur' => 'required|string|max:60',
-            'quantite_palette' => 'required|integer|min:1',
-            'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
-            'navire_id' => 'nullable|integer|exists:navire,id_navire',
-        ], [
-            'numero_camion.required' => 'Le numéro du camion est obligatoire.',
-            'bon_livraison.required' => 'Le bon de livraison est obligatoire.',
-            'bon_livraison.unique' => 'Ce bon de livraison existe déjà.',
-            'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
-            'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422); // Code d'erreur 422 : Unprocessable Entity
-        }
-        try {
-            $base64File = $request->input('fichier_base64');
-            $id = session('agent.id');
-            $entreeMagasin = Entree_magasin::ajouterEntrer($validator, $base64File, $id);
+    public function insertEntrer(Request $request)
+{
+    // Validation des données d'entrée
+    $validator = Validator::make($request->all(), [
+        'numero_camion' => 'required|string|max:50',
+        'bon_livraison' => 'required|string|max:50|unique:entree_magasin,bon_livraison',
+        'chauffeur' => 'required|string|max:60',
+        'quantite_palette' => 'required|integer|min:1',
+        'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
+        'navire_id' => 'nullable|integer|exists:navire,id_navire',
+        'fichier_base64' => 'nullable|string', // Ajout de la validation pour le fichier Base64
+    ], [
+        'numero_camion.required' => 'Le numéro du camion est obligatoire.',
+        'bon_livraison.required' => 'Le bon de livraison est obligatoire.',
+        'bon_livraison.unique' => 'Ce bon de livraison existe déjà.',
+        'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
+        'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
+        'quantite_palette.min' => 'La quantité de palettes doit être au moins de 1.',
+        'numero_station_id.exists' => 'La station sélectionnée est invalide.',
+        'navire_id.exists' => 'Le navire sélectionné est invalide.',
+    ]);
 
-            return response()->json([
-                'message' =>  $base64File,
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'error' => 'Erreur lors de l\'insertion des données: ' . $e->getMessage()
-            ], 400);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    try {
+        $base64File = $request->input('fichier_base64');
+        $agentId = session('agent.id');
+        $entreeMagasin = Entree_magasin::ajouterEntrer($validator->validated(), $base64File, $agentId);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Entrée ajoutée avec succès.',
+            'data' => $entreeMagasin,
+        ], 201);
+    } catch (Exception $e) {
+       return response()->json([
+            'status' => false,
+            'error' => 'Erreur lors de l\'insertion des données: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
 
     public function sortie(){
         $camion = DB::table('navire')
