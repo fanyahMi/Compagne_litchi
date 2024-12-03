@@ -298,7 +298,7 @@
         $('#table-body').append(row);
     }
 
-function appendPagination(data) {
+    function appendPagination(data) {
             let pagination = '';
 
             // Bouton "Précédent"
@@ -458,14 +458,6 @@ $(document).ready(function() {
         });
     });
 
-
-    $('#exampleModal').on('show.bs.modal', function(event) {
-		var button = $(event.relatedTarget)
-		var recipient = button.data('whatever')
-		var modal = $(this)
-		modal.find('.modal-title').text('New message to ' + recipient)
-		modal.find('.modal-body input').val(recipient)
-	})
 
 });
 

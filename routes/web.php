@@ -70,7 +70,10 @@ Route::middleware(['agent.entree'])->group(function () {
 
 
     Route::get('/mouvement-navire', [NavireController::class, 'mouvement']);
-    Route::get('/get-mouvement', [NavireController::class, 'mouvement']);
+    Route::post('/ajout-mouvement', [NavireController::class, 'addmouvementnavire']);
+    Route::get('/get-mouvement', [NavireController::class, 'getmouvementnavire']);
+    Route::get('/get-mouvement/{id}', [NavireController::class, 'getmouvementId']);
+    Route::put('/update-mouvement', [NavireController::class, 'updateMouvement']);
 
 
 

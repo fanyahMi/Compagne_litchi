@@ -2,7 +2,7 @@ create or replace view v_mouvement_navire as
 select
     c.id_compagne, c.annee, c.debut, c.fin, c.etat,
     n.id_navire, n.navire, n.nb_compartiment, n.quantite_max,
-    mn.date_arriver, mn.date_depart
+    mn.date_arriver, mn.date_depart, mn.id_mouvement_navire
 from
     mouvement_navire mn
 join compagne c on c.id_compagne = mn.compagne_id
