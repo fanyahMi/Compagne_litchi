@@ -351,7 +351,7 @@
                     appendPagination(data);
                 },
                 error: function(xhr, status, error) {
-                    console.error("Erreur lors du chargement des réservations : ", error);
+                    console.error("Erreur lors du chargement  : ", error);
                 }
             });
         }
