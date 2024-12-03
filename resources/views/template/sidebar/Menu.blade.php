@@ -20,7 +20,6 @@
 							<li><a href="{{ url('list-numero-station') }}">Numero station</a></li>
 							<li><a href="{{ url('list-compagne') }}">Compagne</a></li>
 							<li><a href="{{ url('list-quotas') }}">Quotas</a></li>
-							<li><a href="{{ url('sortie-magasin') }}">Historique</a></li>
 						</ul>
 					</li>
 					<li class="nav-item pcoded-hasmenu">
@@ -36,6 +35,7 @@
 							<li><a href="{{ url('entree-magasin') }}">Entree</a></li>
 							<li><a href="{{ url('sortie-magasin') }}">Sortie</a></li>
                             <li><a href="{{ url('magasin-camion') }}">Camion</a></li>
+							<li><a href="{{ url('sortie-magasin') }}">Historique</a></li>
 						</ul>
 					</li>
 

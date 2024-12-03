@@ -24,7 +24,7 @@ class StationController extends Controller
 */
     public function getStation(Request $request) {
         $name = $request->input('name');
-        $perPage = $request->input('per_page', 2); // Par défaut, 10 éléments par page
+        $perPage = $request->input('per_page', 10); // Par défaut, 10 éléments par page
 
         $station = Station::getStationTableau($perPage, $name);
 
@@ -36,7 +36,7 @@ class StationController extends Controller
     }
 
     public function addStation(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'nom' => 'required|string|max:255',
             'nif_stat' => [
                 'required',
@@ -60,8 +60,8 @@ class StationController extends Controller
         }
         try {
             Station::create([
-                    'station' => $validatedData['nom'],
-                    'nif_stat' => $validatedData['nif_stat']
+                    'station' => $request['nom'],
+                    'nif_stat' => $request['nif_stat']
                 ]);
             return response()->json([
                 'message' => 'Station ajouté avec succès',
@@ -84,7 +84,7 @@ class StationController extends Controller
 
 
     public function update(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make([
             'id_station' => 'required|integer|exists:station,id_station',
             'nom' => 'required|string|max:255',
             'nif_stat' => [
@@ -138,7 +138,7 @@ class StationController extends Controller
     }
 
     public function addQuotas(Request $request){
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'navire_id' => 'required|integer|exists:navire,id_navire',
             'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
             'quotas' => 'required|integer|min:1',
@@ -164,9 +164,9 @@ class StationController extends Controller
         }
         try {
             DB::table('quotas')->insert([
-                'navire_id' => $validatedData['navire_id'],
-                'numero_station_id' => $validatedData['numero_station_id'],
-                'quotas' => $validatedData['quotas'],
+                'navire_id' => $request['navire_id'],
+                'numero_station_id' => $request['numero_station_id'],
+                'quotas' => $request['quotas'],
             ]);
             return response()->json([
                 'message' => 'Quotas ajouté avec succès',
@@ -188,11 +188,11 @@ class StationController extends Controller
     }
 
     public function updateQuotas(Request $request){
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make([
             'id_quotas' => 'required|integer|exists:quotas,id_quotas',
             'navire_id' => 'required|integer|exists:navire,id_navire',
             'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
-            'quotas' => 'required|integer|min:1',
+            'quotas' => 'required|numeric|min:1',
         ], [
             'navire_id.required' => 'Le champ navire est obligatoire.',
             'navire_id.integer' => 'Le champ navire doit être un nombre entier.',
@@ -201,7 +201,7 @@ class StationController extends Controller
             'numero_station_id.integer' => 'Le champ numéro de station doit être un nombre entier.',
             'numero_station_id.exists' => 'Le numéro de station sélectionné est invalide.',
             'quotas.required' => 'Le champ quotas est obligatoire.',
-            'quotas.integer' => 'Le champ quotas doit être un nombre entier.',
+            'quotas.numeric' => 'Le quota doit être un nombre.',
             'quotas.min' => 'Le nombre de quotas doit être au moins 1.',
         ]);
 

@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Navire;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 use Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -111,8 +112,116 @@ class NavireController extends Controller
         return view('navire.Mouvement', compact('compagnes','navires'));
     }
 
-    public function getNaviresEnPlace()
-    {
+    public function addmouvementnavire(Request $request) {
+
+        $validator = Validator::make($request->all(),[
+            'compagne_id' => 'required|numeric',
+            'navire_id' => 'required|numeric',
+            'date_arrive' => 'required|date',
+            'date_depart' => 'nullable|date|after_or_equal:date_arrive'
+        ], [
+            'compagne_id.required' => 'L\'identifiant de la campagne est obligatoire.',
+            'compagne_id.numeric' => 'L\'identifiant de la campagne doit être un nombre.',
+
+            'navire_id.required' => 'L\'identifiant du navire est obligatoire.',
+            'navire_id.numeric' => 'L\'identifiant du navire doit être un nombre.',
+
+            'date_arrive.required' => 'La date d’arrivée est obligatoire.',
+            'date_arrive.date' => 'La date d’arrivée doit être une date valide.',
+
+            'date_depart.date' => 'La date de départ doit être une date valide.',
+            'date_depart.after_or_equal' => 'La date de départ doit être après ou égale à la date d’arrivée.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
+        try {
+
+            DB::table('mouvement_navire')->insert([
+                'compagne_id' =>  $request->input('compagne_id'),
+                'date_arriver' =>  $request->input('date_arrive'),
+                'date_depart' =>  $request->input('date_depart',null),
+                'navire_id' =>  $request->input('navire_id')
+            ]);
+            return response()->json([
+                'message' => 'Navire ajouté avec succès',
+                       ], 200);
+
+        } catch (Exception $e) {
+           return response()->json(['error' => 'Erreur lors de l\'ajout du navire: ' . $e->getMessage()], 400);
+        }
+    }
+
+    public function getmouvementnavire(Request $request) {
+        $compagne = $request->input('compagne');
+        $navire = $request->input('navire');
+        $date_arriver = $request->input('date_arriver');
+        $date_depart = $request->input('date_depart');
+        $perPage = $request->input('per_page', 10);
+
+        $mouvement = Navire::getmouvementTableau($perPage,$compagne, $navire, $date_arriver, $date_depart);
+
+        if ($mouvement === ' ') {
+            return response()->json(['message' => 'Les champs sont vides ou null.'], 400);
+        }
+
+        return response()->json($mouvement);
+    }
+
+    public function getmouvementId($id){
+        try {
+            $mouvements = DB::table('mouvement_navire')->where('id_mouvement_navire', $id)->first();
+
+            return response()->json($mouvements);
+        } catch (\Exception $e) {
+            Log::error('Error fetching navire: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 404);
+        }
+    }
+
+    public function updateMouvement(Request $request){
+        $validator = Validator::make($request->all(),[
+            'compagne_id' => 'required|numeric',
+            'navire_id' => 'required|numeric',
+            'date_arrive' => 'required|date',
+            'date_depart' => 'nullable|date|after_or_equal:date_arrive'
+        ], [
+            'compagne_id.required' => 'L\'identifiant de la campagne est obligatoire.',
+            'compagne_id.numeric' => 'L\'identifiant de la campagne doit être un nombre.',
+
+            'navire_id.required' => 'L\'identifiant du navire est obligatoire.',
+            'navire_id.numeric' => 'L\'identifiant du navire doit être un nombre.',
+
+            'date_arrive.required' => 'La date d’arrivée est obligatoire.',
+            'date_arrive.date' => 'La date d’arrivée doit être une date valide.',
+
+            'date_depart.date' => 'La date de départ doit être une date valide.',
+            'date_depart.after_or_equal' => 'La date de départ doit être après ou égale à la date d’arrivée.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
+        try {
+            $id = $request->input('id_mouvement_navire');
+            $data = $request->only(['compagne_id', 'navire_id', 'date_arrive', 'date_depart']);
+            $mouvement = Navire::updateMouvement($id, $data);
+
+            return response()->json(['status' => 'success', 'message' => 'Mouvement mis à jour avec succès!', 'mouvement' => $mouvement]);
+        } catch (\Exception $e) {
+            Log::error('Erreur de modification : ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function getNaviresEnPlace() {
         $navires = DB::table('v_mouvement_navire')
             ->whereNull('date_depart')
             ->get();
