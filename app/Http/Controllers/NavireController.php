@@ -18,10 +18,21 @@ class NavireController extends Controller
         return view('navire.List_navire', compact('type_navire'));
     }
 
-    public function getNavire() {
-        $navire = Navire::all();
+    public function getNavire(Request $request) {
 
-        return response()->json($navire);
+        $nom = $request->input('navire');
+        $type = $request->input('type');
+        $capacite = $request->input('capacite');
+        $condition = $request->input('condition');
+        $perPage = $request->input('per_page', 10); // Par défaut, 10 éléments par page
+
+        $navires = Navire::getNavireTableau($perPage, $nom, $type, $capacite ,$condition);
+
+        if ($navires === ' ') {
+            return response()->json(['message' => 'Les champs sont vides ou null.'], 400);
+        }
+
+        return response()->json($navires);
     }
 
     public function addnavire(Request $request) {
@@ -72,7 +83,7 @@ class NavireController extends Controller
     }
 
     public function update(Request $request){
-        $validator = Validator::make([
+        $validator = Validator::make($request->all(),[
             $request->all(),
             'nom' => 'required|string|max:255',
             'nb_compartiment' => 'required|numeric',
@@ -184,7 +195,7 @@ class NavireController extends Controller
     }
 
     public function updateMouvement(Request $request){
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make([
             'compagne_id' => 'required|numeric',
             'navire_id' => 'required|numeric',
             'date_arrive' => 'required|date',
@@ -209,6 +220,7 @@ class NavireController extends Controller
                 'errors' => $validator->errors()
             ], 422); // Code d'erreur 422 : Unprocessable Entity
         }
+
         try {
             $id = $request->input('id_mouvement_navire');
             $data = $request->only(['compagne_id', 'navire_id', 'date_arrive', 'date_depart']);

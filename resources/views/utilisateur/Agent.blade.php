@@ -299,29 +299,29 @@
     }
 
     function appendPagination(data) {
-            let pagination = '';
+        let pagination = '';
 
-            // Bouton "Précédent"
-            if (data.prev_page_url) {
-                pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page - 1) + ')">Précédent</button>';
-            } else {
-                pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
-            }
-
-            // Numéros de pages
-            for (let i = 1; i <= data.last_page; i++) {
-                pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadAgent(' + i + ')">' + i + '</button>';
-            }
-
-            // Bouton "Suivant"
-            if (data.next_page_url) {
-                pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page + 1) + ')">Suivant</button>';
-            } else {
-                pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
-            }
-
-            $('#pagination').html(pagination);
+        // Bouton "Précédent"
+        if (data.prev_page_url) {
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page - 1) + ')">Précédent</button>';
+        } else {
+            pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
         }
+
+        // Numéros de pages
+        for (let i = 1; i <= data.last_page; i++) {
+            pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadAgent(' + i + ')">' + i + '</button>';
+        }
+
+        // Bouton "Suivant"
+        if (data.next_page_url) {
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadAgent(' + (data.current_page + 1) + ')">Suivant</button>';
+        } else {
+            pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
+        }
+
+        $('#pagination').html(pagination);
+    }
 
 
         function loadAgent(page = 1) {
@@ -351,7 +351,7 @@
                     appendPagination(data);
                 },
                 error: function(xhr, status, error) {
-                    console.error("Erreur lors du chargement des réservations : ", error);
+                    console.error("Erreur lors du chargement  : ", error);
                 }
             });
         }

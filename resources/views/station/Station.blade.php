@@ -182,7 +182,7 @@
             success: function(data) {
                 $('#table-body').empty();
                 $('#pagination').empty();
-                console.log(data);
+
                 data.data.forEach(function(station) {
                     appendStation(station);
                 });

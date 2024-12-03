@@ -21,10 +21,17 @@ class NumeroStation extends Model
     protected $primaryKey = "id_numero_station";
     public $incrementing = true;
 
-    public static function getListeNumeroStationCompagneEncoure() {
-        $data = DB::table('v_station_numero_compagne')
-                    ->get();
-        return $data;
+    public static function getListeNumeroStation($perPage = 10, $compagne = null) {
+        $query = DB::table('v_station_numero_compagne')
+                    ->orderBy('id_compagne','desc');
+
+        if (!empty($compagne)) {
+            $query->where('id_compagne', $compagne );
+        }
+
+        $numero_station = $query->paginate($perPage);
+
+        return $numero_station;
     }
 
     public static function ajouteNumeroStation(array $data){

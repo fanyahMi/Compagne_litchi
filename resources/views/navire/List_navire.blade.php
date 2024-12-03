@@ -72,26 +72,29 @@
                     <div class="card-body">
                         <div class="mT-30">
                             <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="filter-name">Nom</label>
-                                    <input type="text" class="form-control" id="filter-name" placeholder="Filtrer par nom">
+                                <div class="form-group mr-3">
+                                    <label for="filter-navire" class="mr-2">Nom:</label>
+                                    <input type="text" id="filter-navire" class="form-control" >
                                 </div>
-                                <div class="form-group col-md-3">
-                                    <label for="filter-sexe">Sexe</label>
-                                    <select id="filter-sexe" class="form-control">
-                                        <option value="">Sélectionner sexe</option>
-                                        @foreach($sexes as $sexe)
-                                            <option value="{{ $sexe->id_sexe }}">{{ $sexe->sexe }}</option>
+                                <div class="form-group mr-3">
+                                    <label for="filter-type">Type</label>
+                                    <select id="filter-type" class="form-control">
+                                        <option value="">Sélectionner type</option>
+                                        @foreach($type_navire as $type)
+                                            <option value="{{ $type->id_type_navire }}">{{ $type->type_navire }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3">
-                                    <label for="filter-role">Rôle</label>
-                                    <select id="filter-role" class="form-control">
-                                        <option value="">Sélectionner rôle</option>
-                                        @foreach($roles as $role)
-                                            <option value="{{ $role->id_role }}">{{ $role->role }}</option>
-                                        @endforeach
+                                <div class="form-group mr-3">
+                                    <label for="filter-capacite" class="mr-2">Capacité:</label>
+                                    <input type="number" id="filter-capacite" class="form-control" >
+                                </div>
+                                <div class="form-group mr-3">
+                                    <label for="filter-condition" class="mr-2">Condition:</label>
+                                    <select id="filter-condition" class="form-control">
+                                        <option value="">Sélectionner</option>
+                                        <option value="greater" > ≥ </option>
+                                        <option value="less" > ≤ </option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2" style="align-content: flex-end">
@@ -187,12 +190,92 @@
 
 <script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
-$(document).ready(function() {
+
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    const type_navire = @json($type_navire);
+
+    const typeMap = {};
+    type_navire.forEach(navire => {
+        typeMap[navire.id_type_navire] = navire.type_navire; // Corrected this line
+    });
+
+    function appendNavire(navire) {
+        var row = '<tr>' +
+            '<td>' + navire.navire + '</td>' +
+            '<td>' + typeMap[navire.type_navire_id] + '</td>' +
+            '<td>' + navire.nb_compartiment + '</td>' +
+            '<td>' + navire.quantite_max + '</td>' +
+            '<td>' +
+                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_navire="' + navire.id_navire + '">' +
+                    '<i class="fas fa-edit"></i></button>' +
+            '</td>' +
+        '</tr>';
+        $('#table-body').append(row);
+    }
+
+    function appendPagination(data) {
+            let pagination = '';
+
+            // Bouton "Précédent"
+            if (data.prev_page_url) {
+                pagination += '<button class="btn btn-primary mx-1" onclick="loadNavire(' + (data.current_page - 1) + ')">Précédent</button>';
+            } else {
+                pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
+            }
+
+            // Numéros de pages
+            for (let i = 1; i <= data.last_page; i++) {
+                pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadNavire(' + i + ')">' + i + '</button>';
+            }
+
+            // Bouton "Suivant"
+            if (data.next_page_url) {
+                pagination += '<button class="btn btn-primary mx-1" onclick="loadNavire(' + (data.current_page + 1) + ')">Suivant</button>';
+            } else {
+                pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
+            }
+
+            $('#pagination').html(pagination);
+        }
+
+        function loadNavire(page=1) {
+            const navire = $('#filter-navire').val();
+            const type = $('#filter-type').val();
+            const capacite = $('#filter-capacite').val();
+            const condition = $('#filter-condition').val();
+        $.ajax({
+            url: '/get-navire?page=' + page,
+            type: 'GET',
+            data: {
+                navire: navire,
+                type: type,
+                capacite: capacite,
+                condition: condition,
+            },
+            success: function(data) {
+                $('#table-body').empty();
+                $('#pagination').empty();
+
+                data.data.forEach(function(navires) {
+                    appendNavire(navires);
+                });
+                appendPagination(data);
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des navires : ", error);
+            }
+        });
+    }
+
+
+
+$(document).ready(function() {
 
     loadNavire();
     $('#ajout_navireForm').on('submit', function(event) {
@@ -259,26 +342,7 @@ $(document).ready(function() {
             }
         });
     }
-    const type_navire = @json($type_navire);
 
-    const typeMap = {};
-    type_navire.forEach(navire => {
-        typeMap[navire.id_type_navire] = navire.type_navire; // Corrected this line
-    });
-
-    function appendNavire(navire) {
-        var row = '<tr>' +
-            '<td>' + navire.navire + '</td>' +
-            '<td>' + typeMap[navire.type_navire_id] + '</td>' +
-            '<td>' + navire.nb_compartiment + '</td>' +
-            '<td>' + navire.quantite_max + '</td>' +
-            '<td>' +
-                    '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_navire="' + navire.id_navire + '">' +
-                    '<i class="fas fa-edit"></i></button>' +
-            '</td>' +
-        '</tr>';
-        $('#table-body').append(row);
-    }
 
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {

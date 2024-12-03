@@ -22,6 +22,31 @@ class Navire extends Model
     protected $primaryKey = "id_navire";
     public $incrementing = true;
 
+    public static function getNavireTableau($perPage = 10, $nom = null, $type = null, $capacite = null, $condition = 'greater') {
+        // Initialiser la requête
+        $query = Navire::orderBy('navire', 'asc');
+
+        // Appliquer les filtres
+        if (!empty($nom)) {
+            $query->where('navire', 'like', '%' . $nom . '%');
+        }
+
+        if (!empty($type)) {
+            $query->where('type_navire_id', $type);
+        }
+
+        if (!empty($capacite)) {
+            if ($condition === 'greater') {
+                $query->where('capacite', '>=', $capacite);
+            } elseif ($condition === 'less') {
+                $query->where('capacite', '<=', $capacite);
+            }
+        }
+
+        // Récupérer les navires avec pagination
+        return $query->paginate($perPage);
+    }
+
     public static function updateNavire($id, array $data) {
         try {
             $navire = Navire::findOrFail($id);
@@ -31,6 +56,7 @@ class Navire extends Model
                 'quantite_max' => $data['quantite_max'],
                 'type_navire_id' => $data['type_navire'],
             ]);
+            Log::info($data);
             return $navire;
         } catch (\Exception $e) {
             Log::error('Error updating navire: ' . $e->getMessage());
