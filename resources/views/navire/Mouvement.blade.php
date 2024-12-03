@@ -70,15 +70,47 @@
                             <div id="error-date_arrive" class="error-message"></div>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="depart">Date de depart</label>
-                            <input type="date" class="form-control" name="depart" id="depart" >
-                            <div id="error-depart" class="error-message"></div>
+                            <label for="date_depart">Date de depart</label>
+                            <input type="date" class="form-control" name="date_depart" id="date_depart" >
+                            <div id="error-date_depart" class="error-message"></div>
                         </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Insérer</button>
                 </form>
 
+            </div>
+
+            <!---filtre--->
+            <div class="card-body">
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="filter-navire">Navire</label>
+                            <input type="text" class="form-control" id="filter-navire">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="filter-compagne">compagne</label>
+                            <select id="filter-compagne" class="form-control">
+                                <option value="">Sélectionner compagne</option>
+                                @foreach($compagnes as $compagne)
+                                    <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="filter-date_arriver">Date d'arrivée</label>
+                            <input type="date" class="form-control" id="filter-date_arriver">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="filter-date_depart">Date de depart</label>
+                            <input type="date" class="form-control" id="filter-date_depart">
+                        </div>
+                        <div class="form-group col-md-2" style="align-content: flex-end">
+                            <button type="button" class="btn btn-secondary" id="filter-btn">Filtrer</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- [Liste des réservations] -->
@@ -105,11 +137,76 @@
         </div>
     </div>
 </div>
+
+<!-- [ modal ] start -->
+<div id="modifierModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModificationAgent" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="modifier_mouvementForm" action="" method="POST">
+                    @csrf
+                    <input type="hidden" id="id_mouvement_navire-modal" name="id_mouvement_navire">
+                    <div class="form-group">
+                        <label for="compagne_id">Compagne</label>
+                        <select id="compagne_id-modal" name="compagne_id" class="form-control">
+                            <option value="">Sélectionner</option>
+                            @foreach($compagnes as $compagne)
+                                <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div  class="form-group">
+                        <div id="error-modal-compagne_id" class="error-message text-danger"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="navire_id">Navire</label>
+                        <select id="navire_id-modal" name="navire_id" class="form-control">
+                            <option value="">Sélectionner</option>
+                            @foreach($navires as $navire)
+                                <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div  class="form-group">
+                        <div id="error-modal-navire_id" class="error-message text-danger"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_arrive">Date d'arrivée</label>
+                        <input type="date" class="form-control" id="date_arrive-modal" name="date_arrive">
+                    </div>
+                    <div  class="form-group">
+                        <div id="error-modal-date_arrive" class="error-message text-danger"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_depart">Date de départ</label>
+                        <input type="date" class="form-control" id="date_depart-modal" name="dateNaissance">
+                    </div>
+                    <div  class="form-group">
+                        <div id="error-modal-date_depart class="error-message text-danger"></div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn  btn-primary" id="saveChangesBtn">Modifier</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- [ modal ] end -->
+
 @endsection
 @section('script')
 <script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
-$(document).ready(function() {
 
 $.ajaxSetup({
     headers: {
@@ -117,7 +214,89 @@ $.ajaxSetup({
     }
 });
 
-loadMouvement();
+function appendMouvement(mouvement) {
+var button = mouvement.etat === 1
+    ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_mouvement="' + mouvement.id_mouvement_navire + '">'+
+    '<i class="fas fa-edit"></i></button>'
+    : ''; // Hide the button if etat is not 0
+
+var row = '<tr>' +
+            '<td>' + mouvement.annee + '</td>' +
+            '<td>' + mouvement.navire + '</td>' +
+            '<td>' + mouvement.date_arriver + '</td>' +
+            '<td>' + mouvement.date_depart + '</td>' +
+            '<td>' + button + '</td>' +
+          '</tr>';
+
+    $('#table-body').append(row);
+}
+
+function appendPagination(data) {
+    let pagination = '';
+
+    // Bouton "Précédent"
+    if (data.prev_page_url) {
+        pagination += '<button class="btn btn-primary mx-1" onclick="loadMouvement(' + (data.current_page - 1) + ')">Précédent</button>';
+    } else {
+        pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
+    }
+
+    // Numéros de pages
+    for (let i = 1; i <= data.last_page; i++) {
+        pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadMouvement(' + i + ')">' + i + '</button>';
+    }
+
+    // Bouton "Suivant"
+    if (data.next_page_url) {
+        pagination += '<button class="btn btn-primary mx-1" onclick="loadMouvement(' + (data.current_page + 1) + ')">Suivant</button>';
+    } else {
+        pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
+    }
+
+    $('#pagination').html(pagination);
+}
+
+function loadMouvement(page = 1) {
+    const navire = $('#filter-navire').val();
+    const compagne = $('#filter-compagne').val();
+    const date_arriver = $('#filter-date_arriver').val();
+    const date_depart = $('#filter-date_depart').val();
+
+    $.ajax({
+        url: '/get-mouvement?page=' + page,
+        type: 'GET',
+        data: {
+            navire: navire,
+            compagne: compagne,
+            date_arriver: date_arriver,
+            date_depart: date_depart,
+        },
+        success: function(data) {
+            // Effacer le tableau et les boutons de pagination
+            $('#table-body').empty();
+            $('#pagination').empty();
+
+            // Ajouter les agents au tableau
+            data.data.forEach(function(mouvement) {
+                appendMouvement(mouvement);
+            });
+
+            // Générer les boutons de pagination
+            appendPagination(data);
+        },
+        error: function(xhr, status, error) {
+            console.error("Erreur lors du chargement des réservations : ", error);
+        }
+    });
+}
+
+
+$(document).ready(function() {
+    $('#filter-btn').on('click', function() {
+        loadMouvement(1)
+    });
+
+    loadMouvement(1)
 
 $('#ajout_mouvementForm').on('submit', function(event) {
     event.preventDefault();
@@ -146,39 +325,44 @@ $('#ajout_mouvementForm').on('submit', function(event) {
     });
 });
 
-
-function loadMouvement() {
+$(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
+    var id = $(this).data('id_mouvement');
     $.ajax({
-        url: '/get-mouvement',
+        url: '/get-mouvement/' + id,
         type: 'GET',
-        success: function(data) {
-            $('#table-body').empty();
-            data.forEach(function(mouvement) {
-               appendMouvement(mouvement);
-            });
+        success: function(mouvementData) {
+            $('#id_mouvement_navire-modal').val(mouvementData.id_mouvement_navire);
+            $('#compagne_id-modal').val(mouvementData.compagne_id).trigger('change');
+            $('#navire_id-modal').val(mouvementData.navire_id).trigger('change');
+            $('#date_arrive-modal').val(mouvementData.date_arriver);
+            $('#date_depart-modal').val(mouvementData.date_depart);
         },
         error: function(xhr, status, error) {
-            console.error("Erreur lors du chargement des numéros de station : ", xhr);
+            console.error("Erreur lors de la récupération du mouvement : ", error);
         }
     });
-}
+});
 
-function appendMouvement(mouvement) {
-var button = mouvement.etat === 1
-    ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_mouvement="' + mouvement.id_numero_station + '">'+
-    '<i class="fas fa-edit"></i></button>'
-    : ''; // Hide the button if etat is not 0
-
-var row = '<tr>' +
-            '<td>' + mouvement.annee + '</td>' +
-            '<td>' + mouvement.navire + '</td>' +
-            '<td>' + mouvement.date_arrive + '</td>' +
-            '<td>' + mouvement.date_depart + '</td>' +
-            '<td>' + button + '</td>' +
-          '</tr>';
-
-    $('#table-body').append(row);
-}
+$('#saveChangesBtn').on('click', function(e) {
+    e.preventDefault();
+    var formData = $('#modifier_mouvementForm').serialize();
+    $.ajax({
+        url: '/update-mouvement',
+        method: 'PUT',
+        data: formData,
+        success: function(response) {
+            alert('Modifications enregistrées avec succès !');
+            $('#modifierModal').modal('hide');
+            loadMouvement();
+        },
+        error: function(xhr) {
+            var errors = xhr.responseJSON.errors;
+            $.each(errors, function(key, messages) {
+                $('#error-modal-' + key).text(messages[0]);
+            });
+        }
+    });
+});
 
 
 });
