@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Station;
+use App\Models\Campagne;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -24,7 +25,7 @@ class StationController extends Controller
 */
     public function getStation(Request $request) {
         $name = $request->input('name');
-        $perPage = $request->input('per_page', 10); // Par défaut, 10 éléments par page
+        $perPage = $request->input('per_page', 10);
 
         $station = Station::getStationTableau($perPage, $name);
 
@@ -188,7 +189,9 @@ class StationController extends Controller
     }
 
     public function updateQuotas(Request $request){
-        $validator = Validator::make([
+        $validator = Validator::make(
+            $request->all(),
+            [
             'id_quotas' => 'required|integer|exists:quotas,id_quotas',
             'navire_id' => 'required|integer|exists:navire,id_navire',
             'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
@@ -229,5 +232,40 @@ class StationController extends Controller
                     ->get();
         return response()->json($compagne);
     }
+
+    public function historiqueQuotasStation(Request $request){
+        $validator = Validator::make($request->all(),
+        [
+            'id_station' => 'required|integer|exists:station,id_station'
+        ], [
+            'id_station.required' => 'Le champ id_station est obligatoire.',
+            'id_station.integer' => 'Le champ id_station doit être un nombre entier.',
+            'id_station.exists' => 'Le station sélectionné est invalide.',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $id_station = $request->input('id_station');
+        $station = Station::where('id_station', $id_station)->first();
+        $campagnes = Campagne::all();
+        return view('station.HistoriqueQuotas', compact('station' , 'campagnes'));
+    }
+
+    public function getQuotasStationCampgane(Request $request){
+        $idStation = $request->input('id_station');
+        $idCampagne = $request->input('id_campagne');
+        $perPage = $request->input('per_page', 10);
+        $query = DB::table('v_quotas_station')
+                    ->where('id_station', $idStation);
+        if (!empty($idCampagne)) {
+            $query->where('id_compagne', $idCampagne);
+        }
+        $data = $query->paginate($perPage);
+        return response()->json($data);
+    }
+
 
 }
