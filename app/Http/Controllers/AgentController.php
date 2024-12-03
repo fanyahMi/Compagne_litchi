@@ -195,44 +195,51 @@ class AgentController extends Controller
 
     public function loginApi(Request $request)
     {
-        // Valider les données de la requête
-        $request->validate([
+
+        $validator = Validator::make($request->all(), [
             'matricule' => 'required|string',
             'mot_passe' => 'required|string',
-        ]);
+        ],
+        [
+            'matricule.required' => 'Le matricule est requis et doit être une chaîne de caractères.',
+            'mot_passe.required' => 'Le mot de passe est requis et doit être une chaîne de caractères.'
+        ]
+    );
+
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422); // Code d'erreur 422 : Unprocessable Entity
+            return response()->json(['errors' => $validator->errors()]);
         }
+
         try {
             $result = Agent::checkLoginWeb($request->matricule, $request->mot_passe);
 
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            return response()->json(['error' => $e->getMessage()]);
         }
 
         $payload = [
             'matricule' => $result['matricule'],
             'role' => $result['role'],
             'id' => $result['id'],
-            'exp' => time() + (60 * Config::get('jwt.expiration')) // durée de vie du token
+            'exp' => time() + (100 * Config::get('jwt.expiration')) // durée de vie du token
         ];
 
         $token = JWT::encode($payload,  Config::get('jwt.secret'), 'HS256');
         try {
             $decoded = JWT::decode($token, new Key(Config::get('jwt.secret'), 'HS256'));
         } catch (ExpiredException $e) {
-            return response()->json(['error' => 'Token has expired'], 401);
+            return response()->json(['error' => 'session expiré']);
         } catch (SignatureInvalidException $e) {
-            return response()->json(['error' => 'Invalid token signature'], 401);
+            return response()->json(['error' => 'session inconnue']);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            return response()->json(['error' => $e->getMessage()]);
         }
 
+        $campagne = DB::table('compagne')
+                    ->where('etat', 1)
+                    ->first();
 
-        return response()->json(['token' => $token, 'rep' => $decoded]);
+        return response()->json(['token' => $token, 'campagne' => $campagne, 'agent' => $decoded ]);
     }
 
 
