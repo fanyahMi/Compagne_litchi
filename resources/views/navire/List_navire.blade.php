@@ -121,6 +121,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="pagination" class="mt-3 text-center"></div>
                         </div>
                     </div>
                 </div>
@@ -276,8 +277,11 @@
 
 
 $(document).ready(function() {
+    $('#filter-btn').on('click', function() {
+        loadNavire(1)
+    });
 
-    loadNavire();
+    loadNavire(1);
     $('#ajout_navireForm').on('submit', function(event) {
         event.preventDefault();
         $.ajax({
@@ -326,23 +330,6 @@ $(document).ready(function() {
                 });
             }
         });
-
-    function loadNavire() {
-        $.ajax({
-            url: '/get-navire',
-            type: 'GET',
-            success: function(data) {
-                $('#table-body').empty();
-                data.forEach(function(navire) {
-                    appendNavire(navire);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des navires : ", error);
-            }
-        });
-    }
-
 
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {

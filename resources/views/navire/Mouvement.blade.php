@@ -132,6 +132,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div id="pagination" class="mt-3 text-center"></div>
                 </div>
             </div>
         </div>
