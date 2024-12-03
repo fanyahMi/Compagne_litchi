@@ -29,6 +29,9 @@ class NumeroStation extends Model
             $query->where('id_compagne', $compagne );
         }
 
+        if($perPage == -1){
+            return $query->get();
+        }
         $numero_station = $query->paginate($perPage);
 
         return $numero_station;

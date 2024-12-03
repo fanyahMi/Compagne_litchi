@@ -121,7 +121,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div id="pagination" class="mt-3 text-center"></div>
                         </div>
                     </div>
                 </div>
@@ -260,6 +259,7 @@
                 condition: condition,
             },
             success: function(data) {
+                console.log(data);
                 $('#table-body').empty();
                 $('#pagination').empty();
 
@@ -277,11 +277,8 @@
 
 
 $(document).ready(function() {
-    $('#filter-btn').on('click', function() {
-        loadNavire(1)
-    });
 
-    loadNavire(1);
+    loadNavire();
     $('#ajout_navireForm').on('submit', function(event) {
         event.preventDefault();
         $.ajax({
@@ -330,6 +327,9 @@ $(document).ready(function() {
                 });
             }
         });
+
+
+
 
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
