@@ -188,30 +188,31 @@ class NavireController extends Controller
             $mouvements = DB::table('mouvement_navire')->where('id_mouvement_navire', $id)->first();
 
             return response()->json($mouvements);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error fetching navire: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 404);
         }
     }
 
     public function updateMouvement(Request $request){
-        $validator = Validator::make([
-            'compagne_id' => 'required|numeric',
-            'navire_id' => 'required|numeric',
-            'date_arrive' => 'required|date',
-            'date_depart' => 'nullable|date|after_or_equal:date_arrive'
+        //Log::debug($request->all());
+        $validator = Validator::make($request->all(),[
+            'compagne_id-modal' => 'required|numeric',
+            'navire_id-modal' => 'required|numeric',
+            'date_arrive-modal' => 'required|date',
+            'date_depart-modal' => 'nullable|date|after_or_equal:date_arrive-modal'
         ], [
-            'compagne_id.required' => 'L\'identifiant de la campagne est obligatoire.',
-            'compagne_id.numeric' => 'L\'identifiant de la campagne doit être un nombre.',
+            'compagne_id-modal.required' => 'L\'identifiant de la campagne est obligatoire.',
+            'compagne_id-modal.numeric' => 'L\'identifiant de la campagne doit être un nombre.',
 
-            'navire_id.required' => 'L\'identifiant du navire est obligatoire.',
-            'navire_id.numeric' => 'L\'identifiant du navire doit être un nombre.',
+            'navire_id-modal.required' => 'L\'identifiant du navire est obligatoire.',
+            'navire_id-modal.numeric' => 'L\'identifiant du navire doit être un nombre.',
 
-            'date_arrive.required' => 'La date d’arrivée est obligatoire.',
-            'date_arrive.date' => 'La date d’arrivée doit être une date valide.',
+            'date_arrive-modal.required' => 'La date d’arrivée est obligatoire.',
+            'date_arrive-modal.date' => 'La date d’arrivée doit être une date valide.',
 
-            'date_depart.date' => 'La date de départ doit être une date valide.',
-            'date_depart.after_or_equal' => 'La date de départ doit être après ou égale à la date d’arrivée.',
+            'date_depart-modal.date' => 'La date de départ doit être une date valide.',
+            'date_depart-modal.after_or_equal' => 'La date de départ doit être après ou égale à la date d’arrivée.',
         ]);
 
         if ($validator->fails()) {
@@ -223,10 +224,14 @@ class NavireController extends Controller
 
         try {
             $id = $request->input('id_mouvement_navire');
-            $data = $request->only(['compagne_id', 'navire_id', 'date_arrive', 'date_depart']);
+            $data = array(
+                'date_arrive' => $request->input('date_arrive-modal'),
+                'compagne_id' => $request->input('compagne_id-modal'),
+                'navire_id' => $request->input('navire_id-modal'),
+                'date_depart' => $request->input('date_depart-modal'),
+            );
             $mouvement = Navire::updateMouvement($id, $data);
-
-            return response()->json(['status' => 'success', 'message' => 'Mouvement mis à jour avec succès!', 'mouvement' => $mouvement]);
+            return response()->json(['status' => 'success']);
         } catch (\Exception $e) {
             Log::error('Erreur de modification : ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);

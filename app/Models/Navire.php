@@ -65,11 +65,9 @@ class Navire extends Model
     }
 
     public static function getmouvementTableau($perPage = 10 ,$compagne = null, $navire = null, $date_arriver = null, $date_depart= null){
-        // Initialiser la requête
         $query = DB::table('v_mouvement_navire')
                 ->orderBy('date_arriver','desc');
 
-        // Appliquer les filtres
         if (!empty($navire)) {
             $query->where('navire', 'like', '%' . $navire . '%');
         }
@@ -94,18 +92,14 @@ class Navire extends Model
 
     public static function updateMouvement($id, array $data) {
         try {
-            // Vérifier si l'enregistrement existe
             $mouvement = DB::table('mouvement_navire')->where('id_mouvement_navire', $id)->first();
             if (!$mouvement) {
                 throw new \Exception('Aucun mouvement trouvé avec cet identifiant.');
             }
 
-            // Mettre à jour l'enregistrement
             $updated = DB::table('mouvement_navire')
                         ->where('id_mouvement_navire', $id)
                         ->update([
-                            'compagne_id' => $data['compagne_id'],
-                            'navire_id' => $data['navire_id'],
                             'date_arriver' => $data['date_arrive'],
                             'date_depart' => $data['date_depart'],
                         ]);
