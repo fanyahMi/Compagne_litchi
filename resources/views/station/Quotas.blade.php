@@ -57,6 +57,35 @@
                 </form>
                 <div  class="error-message"></div>
             </div>
+
+            <div class="card-body">
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="filter-navire">Navire</label>
+                            <select id="filter-navire" class="form-control">
+                                <option value="">Sélectionner </option>
+                                @foreach($navires as $navire)
+                                    <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-annee">Annee</label>
+                            <select id="filter-annee" class="form-control">
+                                <option value="">Sélectionner</option>
+                                @foreach($compagnes as $campagne)
+                                    <option value="{{ $campagne->id_compagne }}">{{ $campagne->annee }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2" style="align-content: flex-end">
+                            <button type="button" class="btn btn-secondary" id="filter-btn">Filtrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card-body">
                 <h5 class="c-black-900"><b>Liste des stations</b></h5>
                 <div class="mT-30">
@@ -74,6 +103,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div id="pagination" class="mt-3 text-center"></div>
                 </div>
             </div>
         </div>

@@ -30,7 +30,7 @@ CREATE TABLE compagne(
    id_compagne INT AUTO_INCREMENT,
    annee int NOT NULL,
    debut date not null,
-   fin date not null,
+   fin date,
    etat int default 0,
    PRIMARY KEY(id_compagne),
    UNIQUE(annee)
