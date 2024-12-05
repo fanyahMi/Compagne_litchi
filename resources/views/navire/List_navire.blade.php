@@ -121,6 +121,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="pagination" class="mt-3 text-center"></div>
                         </div>
                     </div>
                 </div>
@@ -138,7 +139,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        <form id="modifier_agentForm" action="" method="POST">
+                        <form id="modifier_navireForm" action="" method="POST">
                             @csrf
                             <input type="hidden" id="id_navire-modal" name="id_navire">
                             <div class="form-group">
@@ -249,36 +250,38 @@
             const type = $('#filter-type').val();
             const capacite = $('#filter-capacite').val();
             const condition = $('#filter-condition').val();
-        $.ajax({
-            url: '/get-navire?page=' + page,
-            type: 'GET',
-            data: {
-                navire: navire,
-                type: type,
-                capacite: capacite,
-                condition: condition,
-            },
-            success: function(data) {
-                console.log(data);
-                $('#table-body').empty();
-                $('#pagination').empty();
+            $.ajax({
+                url: '/get-navire?page=' + page,
+                type: 'GET',
+                data: {
+                    navire: navire,
+                    type: type,
+                    capacite: capacite,
+                    condition: condition,
+                },
+                success: function(data) {
+                    $('#table-body').empty();
+                    $('#pagination').empty();
 
-                data.data.forEach(function(navires) {
-                    appendNavire(navires);
-                });
-                appendPagination(data);
-            },
-            error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des navires : ", error);
-            }
-        });
-    }
+                    data.data.forEach(function(navires) {
+                        appendNavire(navires);
+                    });
+                    appendPagination(data);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erreur lors du chargement des navires : ", error);
+                }
+            });
+        }
 
 
 
 $(document).ready(function() {
+    $('#filter-btn').on('click', function() {
+        loadNavire(1)
+    });
 
-    loadNavire();
+    loadNavire(1);
     $('#ajout_navireForm').on('submit', function(event) {
         event.preventDefault();
         $.ajax({
@@ -305,33 +308,6 @@ $(document).ready(function() {
         });
     });
 
-    $(document).on('click', '.delete-btn', function() {
-            var id = $(this).data('id_agent');
-
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette agent ?')) {
-                $.ajax({
-                    url: '/supp-agent/' + id,
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            alert(response.message);
-                            loadNavire();
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Erreur lors de la suppression : ", error);
-                    }
-                });
-            }
-        });
-
-
-
-
-
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
         var id = $(this).data('id_navire');
         $.ajax({
@@ -345,14 +321,14 @@ $(document).ready(function() {
                 $('#type_navire-modal').val(navireData.type_navire_id).trigger('change');
             },
             error: function(xhr, status, error) {
-                console.error("Erreur lors de la récupération de l'agent : ", error);
+                console.error("Erreur lors de la récupération du navire : ", error);
             }
         });
     });
 
     $('#saveChangesBtn').on('click', function(e) {
         e.preventDefault();
-        var formData = $('#modifier_agentForm').serialize();
+        var formData = $('#modifier_navireForm').serialize();
         $.ajax({
             url: '/update-navire',
             method: 'PUT',
@@ -367,19 +343,11 @@ $(document).ready(function() {
                 var errors = xhr.responseJSON.errors;
                 $.each(errors, function(key, messages) {
                     $('#error-modal-' + key).text(messages[0]);
-                });r
+                });
             }
         });
     });
 
-
-    $('#exampleModal').on('show.bs.modal', function(event) {
-		var button = $(event.relatedTarget)
-		var recipient = button.data('whatever')
-		var modal = $(this)
-		modal.find('.modal-title').text('New message to ' + recipient)
-		modal.find('.modal-body input').val(recipient)
-	})
 
 });
 

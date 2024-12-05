@@ -31,12 +31,12 @@
                         </div>
                         <div class="form-group col-md-5">
                             <label for="debut">Debut</label>
-                            <input type="month" class="form-control" name="debut" id="debut" min="1" placeholder="YYYY-MM" required>
+                            <input type="date" class="form-control" name="debut" id="debut" min="1"  required>
                             <div id="error-debut" class="error-message"></div>
                         </div>
                         <div class="form-group col-md-5">
                             <label for="fin">Fin</label>
-                            <input type="month" class="form-control" name="fin" id="fin" min="1" placeholder="YYYY-MM" required>
+                            <input type="date" class="form-control" name="fin" id="fin" min="1" >
                             <div id="error-fin" class="error-message"></div>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
 
         // If "En cours", add a "Terminer" button next to the status text
         var etatCellContent = compagne.etat === 1
-            ? etatText + ' <button class="btn-terminer" data-id="' + compagne.id + '">Terminer</button>'
+            ? etatText + ' <button class="btn-terminer" data-id="' + compagne.id_compagne + '">Terminer</button>'
             : etatText;
 
         var row = '<tr>' +
@@ -146,7 +146,18 @@
     // Event listener to handle the "Terminer" button click
     $(document).on('click', '.btn-terminer', function() {
         var compagneId = $(this).data('id');
-        // Add logic here to update the compagne's status to "Terminé"
+
+        $.ajax({
+            url: '/terminer-compagne/' + compagneId,
+            type: 'GET',
+            success: function(stationData) {
+                alert('Compagne terminé !');
+                loadAnnee();
+            },
+            error: function(xhr, status, error) {
+                console.error("Il y a une erreur : ", error);
+            }
+        });
         console.log("Compagne terminé");
         // Example: send an AJAX request to update the status on the server
     });
