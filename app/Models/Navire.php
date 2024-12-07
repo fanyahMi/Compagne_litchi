@@ -37,9 +37,9 @@ class Navire extends Model
 
         if (!empty($capacite)) {
             if ($condition === 'greater') {
-                $query->where('capacite', '>=', $capacite);
+                $query->where('quantite_max', '>=', $capacite);
             } elseif ($condition === 'less') {
-                $query->where('capacite', '<=', $capacite);
+                $query->where('quantite_max', '<=', $capacite);
             }
         }
 

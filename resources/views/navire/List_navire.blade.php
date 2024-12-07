@@ -269,7 +269,7 @@
                     appendPagination(data);
                 },
                 error: function(xhr, status, error) {
-                    console.error("Erreur lors du chargement des navires : ", error);
+                    console.log(xhr.responseJSON);
                 }
             });
         }

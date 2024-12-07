@@ -48,6 +48,7 @@ Route::middleware(['agent.entree'])->group(function () {
     Route::get('/get-quotas', [StationController::class, 'getQuotas']);
     Route::get('/get-quotas/{id}', [StationController::class, 'getQuotasById']);
     Route::put('/update-quotas', [StationController::class, 'updateQuotas']);
+    Route::get('/reste-quantite-palette-station/{idNumeroStation}/{idNavire}', [StationController::class, 'getResteQuantitePaletteStation']);
 
 
     Route::get('/list-compagne', [CompagneController::class, 'compagne']);
@@ -94,17 +95,18 @@ Route::middleware(['agent.entree'])->group(function () {
 
 
     Route::get('/export-model-navire-station', [ImportExportController::class, 'exportModelStationNavire']);
+    Route::get('/importation-quotas', [StationController::class, 'affichageImportationQuotas']);
     Route::post('/import-excel', [ImportExportController::class, 'importQuotasNumero'])->name('import.excel');
 
 
     /****Shift ****/
 
-Route::get('/shifts', [ShiftController::class, 'index']);
-Route::post('/ajout-shift', [ShiftController::class, 'addShift']);
-Route::get('/get-shifts', [ShiftController::class, 'getShifts']);
-Route::get('/shift/{id}', [ShiftController::class, 'getById']);
-Route::put('/shift/{id}', [ShiftController::class, 'update']);
-Route::delete('/shift/{id}', [ShiftController::class, 'destroy']);
+    Route::get('/shifts', [ShiftController::class, 'index']);
+    Route::post('/ajout-shift', [ShiftController::class, 'addShift']);
+    Route::get('/get-shifts', [ShiftController::class, 'getShifts']);
+    Route::get('/shift/{id}', [ShiftController::class, 'getById']);
+    Route::put('/shift/{id}', [ShiftController::class, 'update']);
+    Route::delete('/shift/{id}', [ShiftController::class, 'destroy']);
 });
 
 

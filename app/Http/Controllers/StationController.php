@@ -129,12 +129,30 @@ class StationController extends Controller
         $navires = DB::table('navire')->select('id_navire', 'navire')->get();
         $compagnes = DB::table('compagne')->get();
 
-        return view('station.Quotas', compact('navires','stations','compagnes'));
+        $normal_stations =  Station::all();
+
+        return view('station.Quotas', compact('navires','stations','compagnes', 'normal_stations'));
     }
 
-    public function getQuotas() {
-        $quotas = DB::table('v_quotas_station')->get();
+    public function getQuotas(Request $request) {
+        $navire = $request->input('navire');
+        $campagne = $request->input('campagne');
+        $station = $request->input('station');
+        $perPage = $request->input('per_page', 10);
 
+        $query  = DB::table('v_quotas_station')
+                    ->orderBy('id_compagne','desc');
+        if(!empty($campagne)){
+            $query->where('id_compagne', $campagne );
+        }
+        if(!empty($navire)){
+            $query->where('id_navire', $navire );
+        }
+        if(!empty($station)){
+            $query->where('id_station', $station );
+        }
+
+        $quotas = $query->paginate($perPage);
         return response()->json($quotas);
     }
 
@@ -188,10 +206,10 @@ class StationController extends Controller
         }
     }
 
-    public function updateQuotas(Request $request){
-        $validator = Validator::make(
-            $request->all(),
-            [
+    public function updateQuotas(Request $request)
+    {
+        // Validation des données
+        $validator = Validator::make($request->all(), [
             'id_quotas' => 'required|integer|exists:quotas,id_quotas',
             'navire_id' => 'required|integer|exists:navire,id_navire',
             'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
@@ -208,23 +226,44 @@ class StationController extends Controller
             'quotas.min' => 'Le nombre de quotas doit être au moins 1.',
         ]);
 
+        // Vérifier si la validation échoue
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
                 'errors' => $validator->errors()
-            ], 422); // Code d'erreur 422 : Unprocessable Entity
-        }
-        try {
-            $id = $request->input('id_quotas');
-            $data = $request->only(['navire_id', 'numero_station_id','quotas']);
-            $quotas = Station::updateQuotas($id, $data);
-            return response()->json(['status' => true, 'message' => 'Quotas mis à jour avec succès!', 'quotas' => $quotas]);
-        } catch (\Exception $e) {
-            Log::error('Error updating station: ' . $e->getMessage());
-            return response()->json(['status' => false, 'message' => $e->getMessage()]);
+            ], 422); // Retour des erreurs spécifiques
         }
 
+        try {
+            // Exemple de logique pour vérifier si un bon de livraison existe déjà
+            if (Station::existsBonLivraison($request->input('id_quotas'))) {
+                // Si un bon de livraison existe déjà, envoyer une erreur globale
+                return response()->json([
+                    'status' => false,
+                    'errors' => ['global' => ['Ce bon de livraison existe déjà.']]
+                ], 422);
+            }
+
+            // Logique pour mettre à jour les quotas
+            $id = $request->input('id_quotas');
+            $data = $request->only(['navire_id', 'numero_station_id', 'quotas']);
+            $quotas = Station::updateQuotas($id, $data);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Quotas mis à jour avec succès!',
+                'quotas' => $quotas
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating quotas: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la mise à jour des quotas.'
+            ], 500);
+        }
     }
+
 
     public function getNumeroStationCampagneEnCours(){
         $compagne = DB::table('v_station_numero_compagne')
@@ -267,5 +306,29 @@ class StationController extends Controller
         return response()->json($data);
     }
 
+    public function affichageImportationQuotas(){
+        $compagnes = DB::table('compagne')->get();
+
+        return view('station.Importation', compact('compagnes'));
+    }
+
+
+    public function getResteQuantitePaletteStation($idNumeroStation, $idNavire){
+        try {
+            $restePalette = DB::table('v_reste_palette_station')
+                        ->select('reste')
+                        ->where('id_numero_station', $idNumeroStation)
+                        ->where('id_navire', $idNavire)
+                        ->first();
+            return response()->json($restePalette);
+        } catch (Exception $e) {
+            Log::error('Error updating station: ' . $e->getMessage());
+            $data = array(
+                'num' =>$idNumeroStation,
+                'nav' => $idNavire
+            );
+            return response()->json($data);
+        }
+    }
 
 }
