@@ -39,7 +39,7 @@ class Agent extends Model
     {
         try {
             $user = DB::table('v_utilisateur_global')
-                ->select('matricule', 'role', 'mot_passe', 'id_utilisateur')
+                ->select('matricule', 'role', 'mot_passe', 'id_utilisateur' , 'nom', 'prenom')
                 ->where('matricule', $matricule)
                 ->first();
 
@@ -49,6 +49,8 @@ class Agent extends Model
                     return [
                         'matricule' => $user->matricule,
                         'role' => $user->role,
+                        'nom' => $user->nom,
+                        'prenom' => $user->prenom,
                         'id' => $user->id_utilisateur,
                     ];
                 } else {

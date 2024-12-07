@@ -16,12 +16,9 @@ class CheckRoleAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->session()->has('agent')) {
-            return redirect()->route('login');
-        }
 
-        if ($request->session()->get('agent.role') != "Administrateur") {
-            abort(403, 'Accès interdit');
+        if ($request->session()->get('agent.role') !== "Administrateur") {
+            abort(403, 'Accès  interditsss');
         }
 
         return $next($request);

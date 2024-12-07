@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class CheckRoleAgentEmbarquement
+class SessionConnexion
 {
     /**
      * Handle an incoming request.
@@ -16,12 +16,9 @@ class CheckRoleAgentEmbarquement
      */
     public function handle(Request $request, Closure $next)
     {
-
-
-        $role = $request->session()->get('agent.role');
-        if ($role !== "Agent_embarquement" && $role !== "Administrateur") {
-            abort(403, 'Accès interdit');
+        if (!$request->session()->has('agent')) {
+            return redirect()->route('login');
         }
-
-        return $next($request);    }
+        return $next($request);
+    }
 }
