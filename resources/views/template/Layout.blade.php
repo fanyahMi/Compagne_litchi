@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" href="{{ url('assets/css/style.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" href="{{ url('assets/images/SMMC-Logo-1.png') }}" type="image/png">
 
 
 </head>
