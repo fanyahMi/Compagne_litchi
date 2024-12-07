@@ -9,37 +9,39 @@ use Exception;
 use App\Models\Entree_magasin;
 use App\Models\Sorti_magasin;
 use App\Models\NumeroStation;
+use App\Models\Station;
+use App\Models\Shift;
 use Illuminate\Support\Facades\Validator;
 use Log;
 
 class MagasinController extends Controller
 {
     public function index(){
-        $navires = DB::table('navire')
+        $normal_navires = DB::table('navire')
                     ->select('id_navire', 'navire','quantite_max')
                     ->get();
+                    $navires = DB::table('v_mouvement_navire')
+                    ->select('id_navire', 'navire', 'quantite_max')
+                    ->whereNull('date_depart')  // Utilisation de whereNull pour vérifier si 'date_depart' est NULL
+                    ->get();
+
                     $compagne = DB::table('compagne')
                     ->where('etat', 1)
                     ->first();
         $stations = NumeroStation::getListeNumeroStation(-1, $compagne->id_compagne);
-
-        return view('magasin.Entree', compact('navires', 'stations'));
+        $compagnes = DB::table('compagne')->get();
+        $normal_stations =  Station::all();
+        $shifts = Shift::all();
+        return view('magasin.Entree', compact('navires', 'stations', 'normal_navires' ,'compagnes' ,'normal_stations', 'shifts'));
     }
 
     public function listeCamion(Request $request)
     {
-        $search = $request->input('search');
-        $camions = DB::table('v_mouvement_magasin')
-                     ->select('navire', 'station', 'numero_camion', 'chauffeur', 'date_entrant', 'date_sortie')
-                     ->when($search, function ($query, $search) {
-            return $query->where('numero_camion', 'like', "%{$search}%");
-        })->get();
+        $compagnes = DB::table('compagne')->get();
+        $normal_stations =  Station::all();
+        $shifts = Shift::all();
 
-        if ($request->ajax()) {
-            return view('camions.partials.table', compact('camions'))->render();
-        }
-
-        return view('magasin.camion', compact('camions'));
+        return view('magasin.camion', compact( 'compagnes', 'normal_stations', 'shifts'));
     }
 
 
@@ -103,7 +105,13 @@ class MagasinController extends Controller
 
     public function formSortie(){
         $camions = Entree_magasin::getCamionNonSortie();
-        return view('magasin.sortie', compact('camions'));
+        $compagnes = DB::table('compagne')->get();
+        $normal_stations =  Station::all();
+        $shifts = Shift::all();
+        $normal_navires = DB::table('navire')
+        ->select('id_navire', 'navire','quantite_max')
+        ->get();
+        return view('magasin.sortie', compact('camions', 'normal_navires' ,'compagnes' ,'normal_stations', 'shifts'));
     }
 
     public function ajouteSortie(Request $request)
@@ -128,19 +136,96 @@ class MagasinController extends Controller
         return response()->json($data);
     }
 
-    public function getEntree() {
-        $entree = Entree_magasin::getEntrerMagasin();
+    public function getEntree(Request $request) {
+        $navire = $request->input('navire');
+        $campagne = $request->input('campagne');
+        $station = $request->input('station');
+        $shift = $request->input('shift');
+        $camion = $request->input('camion$camion');
+        $bon_livraison = $request->input('bon_livraison');
+        $debut = $request->input('debut');
+        $fin = $request->input('fin');
+        $perPage = $request->input('per_page', 2);
 
+        $query = DB::table('v_mouvement_magasin')
+            ->select('*')
+                ->orderBy('date_entrant', 'desc');
+                if(!empty($campagne)){
+                    $query->where('id_compagne', $campagne );
+                }
+                if(!empty($navire)){
+                    $query->where('navire_id', $navire );
+                }
+                if(!empty($station)){
+                    $query->where('id_station', $station );
+                }
+                if(!empty($shift)){
+                    $query->where('id_shift', $shift );
+                }
+                if(!empty($camion)){
+                    $query->where('numero_camion', $camion );
+                }
+                if(!empty($bon_livraison)){
+                    $query->where('bon_livraison', $bon_livraison );
+                }
+                if (!empty($debut) && !empty($fin)) {
+                    $query->whereBetween('date_entrant', [$debut, $fin]);
+                }
+                $entree = $query->paginate($perPage);
         return response()->json($entree);
     }
 
-    public function getSortie() {
-        $sortie = DB::table('v_mouvement_magasin')
-                    ->select('matricule_sortant', 'quantite_sortie','date_sortie')
-                    ->whereNotNull('quantite_sortie')
-                    ->whereNotNull('date_sortie')
-                    ->limit(5)
-                    ->get();
+    public function getSortie(Request $request) {
+        $navire = $request->input('navire');
+        $campagne = $request->input('campagne');
+        $station = $request->input('station');
+        $shift = $request->input('shift');
+        $camion = $request->input('camion$camion');
+        $debut = $request->input('debut');
+        $fin = $request->input('fin');
+        $typeShift = $request->input('type_shift');
+        $typeDate = $request->input('type_date');
+        $mouvement = $request->input('mouvement');
+        $perPage = $request->input('per_page', 2);
+        if((int)$mouvement == 1){
+            $query = DB::table('v_mouvement_magasin')
+                    ->select('*');
+        }else{
+            $query = DB::table('v_mouvement_magasin')
+            ->select('*')
+            ->whereNotNull('quantite_sortie')
+            ->whereNotNull('date_sortie');
+        }
+                    if(!empty($campagne)){
+                        $query->where('id_compagne', $campagne );
+                    }
+                    if(!empty($navire)){
+                        $query->where('navire_id', $navire );
+                    }
+                    if(!empty($station)){
+                        $query->where('id_station', $station );
+                    }
+                    if(!empty($shift)){
+                        if((int)  $typeShift == 1){
+                            $query->where('id_shift', $shift );
+                        }else{
+                            $query->where('id_shift_sortie', $shift );
+                        }
+                    }
+                    if(!empty($camion)){
+
+                        $query->where('numero_camion', $camion );
+                    }
+
+                    if (!empty($debut) && !empty($fin)) {
+                        if((int)  $typeDate == 1){
+                            $query->whereBetween('date_entrant', [$debut, $fin]);
+                        }else{
+                            $query->whereBetween('date_sortie', [$debut, $fin]);
+                        }
+
+                    }
+                    $sortie = $query->paginate($perPage);
 
         return response()->json($sortie);
     }
@@ -156,44 +241,54 @@ class MagasinController extends Controller
     }
 
 
-    public function modifierEntrer(Request $request){
+    public function modifierEntrer(Request $request)
+{
+    // Validation des données
+    $validator = Validator::make($request->all(), [
+        'numero_camion' => 'required|string|max:50',
+        'encien' => 'nullable|string',  // "encien" doit être nullable et de type chaîne
+        'id_entree' => 'required|integer', // Ajout d'une validation pour 'id_entree'
+        'bon_livraison' => 'required|string|max:50',
+        'chauffeur' => 'required|string|max:60',
+        'quantite_palette' => 'required|integer|min:1',
+        'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
+        'navire_id' => 'nullable|integer|exists:navire,id_navire',  // 'navire_id' peut être nul
+        'fichier_base64' => 'nullable|string',  // Ajout de la validation pour le fichier base64 (s'il existe)
+    ], [
+        'numero_camion.required' => 'Le numéro du camion est obligatoire.',
+        'bon_livraison.required' => 'Le bon de livraison est obligatoire.',
+        'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
+        'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
+    ]);
 
-        $validator = Validator::make($request->all(),[
-            'numero_camion' => 'required|string|max:50',
-            'encien' => 'string',
-            'id_entree' => 'required',
-            'bon_livraison' => 'required|string|max:50',
-            'chauffeur' => 'required|string|max:60',
-            'quantite_palette' => 'required|integer|min:1',
-            'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
-            'navire_id' => 'nullable|integer|exists:navire,id_navire',
-        ], [
-            'numero_camion.required' => 'Le numéro du camion est obligatoire.',
-            'bon_livraison.required' => 'Le bon de livraison est obligatoire.',
-            'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
-            'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422); // Code d'erreur 422 : Unprocessable Entity
-        }
-        try {
-            $base64File = $request->input('fichier_base64');
-            $num =  $request->input('numero_camion');
-            $id = session('agent.id');
-            Entree_magasin::modifierEntrer($validatedData, $base64File);
-
-            return response()->json([
-                'message' =>   $num,
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'error' => 'Erreur lors de l\'insertion des données: ' . $e->getMessage()
-            ], 400);
-        }
+    // Vérification si la validation échoue
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'errors' => $validator->errors()
+        ], 422); // Code d'erreur 422 : Unprocessable Entity
     }
+
+    try {
+        // Récupération des données
+        $base64File = $request->input('fichier_base64');
+        $num = $request->input('numero_camion');
+        $id = session('agent.id');
+        $validatedData = $validator->validated(); // Utilisation des données validées
+
+        // Appel de la méthode pour mettre à jour l'entrée
+        Entree_magasin::modifierEntrer($validatedData, $base64File);
+
+        return response()->json([
+            'message' => "Entrée modifiée avec succès pour le camion : $num",
+        ], 200);
+    } catch (Exception $e) {
+        // Gestion des erreurs
+        return response()->json([
+            'error' => 'Erreur lors de l\'insertion des données: ' . $e->getMessage()
+        ], 400);
+    }
+}
 
 }
 

@@ -187,11 +187,10 @@
     });
 
     function appendNumero(numero_stations) {
-    // Check if the etat is 0 (modifiable) or not
-    var button = numero_stations.etat === 1
-        ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_station + '">'+
-        '<i class="fas fa-edit"></i></button>'
-        : ''; // Hide the button if etat is not 0
+        var button = numero_stations.etat === 1
+            ? '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_numero_stations="' + numero_stations.id_numero_station + '">'+
+            '<i class="fas fa-edit"></i></button>'
+            : ''; // Hide the button if etat is not 0
 
     var row = '<tr>' +
                 '<td>' + numero_stations.annee + '</td>' +

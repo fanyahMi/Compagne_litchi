@@ -23,6 +23,7 @@ class Entree_magasin extends Model
         'magasin_id',
         'path_bon_livraison',
         'navire_id',
+        'shift_id'
     ];
 
     public $timestamps = false;
@@ -51,6 +52,15 @@ class Entree_magasin extends Model
         $data['agent_id'] = $id;
         $data['magasin_id'] = 1;
 
+        $currentShift = DB::table('shift')
+                ->where(function ($query) {
+                    $query->whereRaw('CURRENT_TIME >= debut AND CURRENT_TIME <= fin');
+                })
+                ->orWhere(function ($query) {
+                    $query->whereRaw('debut > fin AND (CURRENT_TIME >= debut OR CURRENT_TIME <= fin)');
+                })
+                ->value('id_shift');
+        $data['shift_id'] = $currentShift;
         try {
             DB::beginTransaction();
             $entreeMagasin = self::create($data);

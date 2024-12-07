@@ -33,7 +33,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                Insertion de nouvel agent
+                Entrée en Magasin des camion
             </div>
             <div class="card-body">
                 <form id="ajout_magasin" method="POST">
@@ -53,8 +53,9 @@
                         <div class="form-group col-md-4">
                             <label for="station">Station</label>
                             <select id="station" name="numero_station_id" class="form-control" required>
+                                <option value="">Sélectionner</option>
                                 @foreach($stations as $station)
-                                <option value="{{ $station->id_numero_station }}">{{ $station->station }} / {{ $station->numero_station }}</option>
+                                    <option value="{{ $station->id_numero_station }}">{{ $station->station }} / {{ $station->numero_station }}</option>
                                 @endforeach
                             </select>
                             <div id="error-station" class="error-message">Veuillez sélectionner une station.</div>
@@ -63,15 +64,19 @@
                         <div class="form-group col-md-4">
                             <label for="quantite">Quantité de palette</label>
                             <input type="number" class="form-control" name="quantite_palette" id="quantite" min="1" required>
-                            <div id="error-quantite" class="error-message">Veuillez entrer une quantité valide.</div>
+                            <div id="error-quantite" class="error-message" style="display:none;">Veuillez entrer une quantité valide.</div>
+                            <div id="reste-info" class="text-success" style="margin-top: 5px;"></div>
                         </div>
+
+
+
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="bl">Bon de livraison</label>
                             <input type="text" class="form-control" name="bon_livraison" id="bl" required>
-                            <div id="error-bl" class="error-message">Veuillez entrer un bon de livraison valide.</div>
+                            <div id="error-bon_livraison" class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-4">
@@ -93,23 +98,90 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Insérer</button>
+                    <button type="submit" class="btn btn-primary">Validé</button>
                 </form>
             </div>
 
+            <div class="card-body">
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="filter-navire">Navire</label>
+                            <select id="filter-navire" class="form-control">
+                                <option value="">Sélectionner </option>
+                                @foreach($normal_navires as $navire)
+                                    <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filtre-station">Station</label>
+                            <select id="filtre-station" class="form-control">
+                                <option value="">Sélectionner</option>
+                                @foreach( $normal_stations as $station)
+                                    <option value="{{ $station->id_station }}">{{ $station->station }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-annee">Annee</label>
+                            <select id="filter-annee" class="form-control">
+                                <option value="">Sélectionner</option>
+                                @foreach($compagnes as $campagne)
+                                    <option value="{{ $campagne->id_compagne }}">{{ $campagne->annee }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-shift">Shift</label>
+                            <select id="filter-shift" class="form-control">
+                                <option value="">Sélectionner</option>
+                                @foreach($shifts as $shift)
+                                    <option value="{{ $shift->id_shift }}">{{ $shift->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-bon_livraison">Bon livraison</label>
+                            <input type="text" class="form-control"  id="filter-bon_livraison" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-camion">Numero Camion</label>
+                            <input type="text" class="form-control"  id="filter-camion" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="debut">Date debut</label>
+                            <input type="date" class="form-control"  id="debut" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="fin">Date fin</label>
+                            <input type="date" class="form-control"  id="fin" required>
+                        </div>
+                        <div class="form-group col-md-2" style="align-content: flex-end">
+                            <button type="button" class="btn btn-secondary" id="filter-btn">Filtrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- [Liste des réservations] -->
             <div class="card-body">
-                <h5 class="c-black-900"><b>Liste des réservations</b></h5>
+                <h5 class="c-black-900"><b>Liste des entrées</b></h5>
                 <div class="mT-30">
 
                     <div id="table-container">
                         <table id="" class="table table-hover table-bordered">
                             <thead>
                                 <tr>
+                                    <th>Agent</th>
+                                    <th>Campagne</th>
+                                    <th>Navire</th>
+                                    <th>Chaufeur</th>
                                     <th>Numero de camion</th>
                                     <th>Bon de livraison</th>
+                                    <th>Shift</th>
                                     <th>Quantité de palette</th>
                                     <th>Nº station</th>
+                                    <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body">
@@ -117,6 +189,7 @@
                         </table>
                     </div>
                 </div>
+                <div id="pagination" class="mt-3 text-center"></div>
             </div>
         </div>
     </div>
@@ -198,15 +271,123 @@
 @section('script')
 <script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
-$(document).ready(function() {
-
-    $.ajaxSetup({
+     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    loadEntree();
+    function appendEntree(entree) {
+       var row = '<tr>' +
+                    '<td>' + entree.matricule_entrant + '</td>' +
+                    '<td>' + entree.annee + '</td>' +
+                    '<td>' + entree.navire + '</td>' +
+                    '<td>' + entree.chauffeur + '</td>' +
+                    '<td>' + entree.numero_camion + '</td>' +
+                    '<td>' + entree.bon_livraison +'</td>' +
+                    '<td>' + entree.description + '</td>' +
+                    '<td>' + entree.quantite_palette + '</td>' +
+                    '<td>' + entree.numero_station + '<small> ( ' + ( entree.station || 'Station inconnue') + ' )</small></td>' +
+                    '<td>' + entree.date_entrant + '</td>' +
+                    '<td>' +
+                        '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_entree="' + entree.id_entree_magasin + '">Modifier</button>' +
+                    '</td>' +
+                    '</tr>';
+        $('#table-body').append(row);
+    }
+
+    function appendPagination(data) {
+        let pagination = '';
+
+        // Bouton "Précédent"
+        if (data.prev_page_url) {
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadEntree(' + (data.current_page - 1) + ')">Précédent</button>';
+        } else {
+            pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
+        }
+
+        // Numéros de pages
+        for (let i = 1; i <= data.last_page; i++) {
+            pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadEntree(' + i + ')">' + i + '</button>';
+        }
+
+        // Bouton "Suivant"
+        if (data.next_page_url) {
+            pagination += '<button class="btn btn-primary mx-1" onclick="loadEntree(' + (data.current_page + 1) + ')">Suivant</button>';
+        } else {
+            pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
+        }
+
+        $('#pagination').html(pagination);
+    }
+
+    function loadEntree(page = 1) {
+        const navire = $('#filter-navire').val();
+        const campagne = $('#filter-annee').val();
+        const station = $('#filtre-station').val();
+        const shift = $('#filter-shift').val();
+        const bon_livraison = $('#filtre-bon_livraison').val();
+        const camion = $('#filtre-camion').val();
+        const debut = $('#debut').val();
+        const fin  = $('#fin').val();
+        $.ajax({
+            url: '/get-entree?page='+page,
+            type: 'GET',
+            data: {
+                    navire:navire,
+                    campagne:campagne,
+                    station: station,
+                    shift:shift,
+                    bon_livraison:bon_livraison,
+                    camion:camion,
+                    debut:debut,
+                    fin:fin
+                },
+            success: function(data) {
+                $('#table-body').empty();
+                data.data.forEach(function(entree) {
+                   appendEntree(entree);
+                });
+                appendPagination(data);
+            },
+            error: function(xhr, status, error) {
+               console.log(xhr.responseJSON);
+            }
+        });
+    }
+
+$(document).ready(function() {
+
+    $('#filter-btn').on('click', function() {
+        loadEntree(1);
+    });
+
+    $('#navire, #station').on('change', function () {
+        const idNavire = $('#navire').val();
+        const idNumeroStation = $('#station').val();
+
+        if (idNavire && idNumeroStation) {
+            $.ajax({
+                url:  `{{ url('reste-quantite-palette-station') }}/${idNumeroStation}/${idNavire}`,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    const reste = data.reste;
+                    $('#quantite').attr('max', reste);
+                    $('#quantite').val('');
+                    $('#reste-info').text(`Reste de palettes à entrer : ${reste}`);
+                    $('#error-quantite').hide();
+                },
+                error: function (xhr, status, error) {
+                    alert('Une erreur s\'est produite lors de la récupération du reste');
+                }
+            });
+        }
+    });
+
+
+
+    loadEntree(1);
 
     $('#ajout_magasin').submit(function(e) {
         e.preventDefault();
@@ -260,12 +441,14 @@ $(document).ready(function() {
             success: function(response) {
                 alert('Vous avez effectué un entré');
                 $('#ajout_magasin')[0].reset();
+                $('#reste-info').text(``);
                 loadEntree();
             },
             error: function(xhr) {
                 if (xhr.status === 422) {
                     var errors = xhr.responseJSON.errors;
                     $.each(errors, function(key, messages) {
+                        console.log(messages+ "  "+ key);
                         $('#error-' + key).text(messages[0]).show();
                     });
                 }
@@ -297,36 +480,6 @@ $(document).ready(function() {
         });
     }
 
-    function loadEntree() {
-        $.ajax({
-            url: '/get-entree',
-            type: 'GET',
-            success: function(data) {
-                $('#table-body').empty();
-                data.forEach(function(entree) {
-                   appendEntree(entree);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Erreur lors du chargement des entree en magasin : ", error);
-            }
-        });
-    }
-
-
-
-    function appendEntree(entree) {
-       var row = '<tr>' +
-                    '<td>' + entree.numero_camion + '</td>' +
-                    '<td>' + entree.bon_livraison + ' (' + entree.path_bon_livraison + ')</td>' +
-                    '<td>' + entree.quantite_palette + '</td>' +
-                    '<td>' + entree.numero_station + '<small> ( ' + ( entree.station || 'Station inconnue') + ' )</small></td>' + // Vérifie si la station existe
-                    '<td>' +
-                        '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_entree="' + entree.id_entree_magasin + '">Modifier</button>' +
-                    '</td>' +
-                    '</tr>';
-        $('#table-body').append(row);
-    }
 
     $(document).on('click', '.btn[data-toggle="modal"][data-target="#modifierModal"]', function() {
         var id = $(this).data('id_entree');

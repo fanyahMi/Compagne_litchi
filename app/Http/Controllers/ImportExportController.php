@@ -89,14 +89,15 @@ class   ImportExportController extends Controller
                     $error .= " Le quotas sur la ligne ".$rowIndex ." doit etre positif <br>";
                 }
 
-                $valideData[] = [
-                    'station' => $nomStation,
-                    'compagne_id' => intval($validatedData['compagne_id']),
-                    'numero_station' => intval($numeroStation),
-                    'navire' => $navire,
-                    'quotas'=> (double)$quotas
-                ];
-
+                if((double)$quotas != 0){
+                    $valideData[] = [
+                        'station' => $nomStation,
+                        'compagne_id' => intval($validatedData['compagne_id']),
+                        'numero_station' => intval($numeroStation),
+                        'navire' => $navire,
+                        'quotas'=> (double)$quotas
+                    ];
+                }
            }
         }
         if($check == true){
