@@ -65,9 +65,10 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\CheckRoleAdmin::class,
-        'agent.entree' => \App\Http\Middleware\CheckRoleAgentEntree::class,
+        'agent.entree-sortie' => \App\Http\Middleware\CheckRoleAgentEntree::class,
         'agent.sortie' => \App\Http\Middleware\CheckRoleAgentSortie::class,
         'agent.embarquement' => \App\Http\Middleware\CheckRoleAgentEmbarquement::class,
         'jwt' => \App\Http\Middleware\JwtMiddleware::class,
+        'session' => \App\Http\Middleware\SessionConnexion::class,
     ];
 }
