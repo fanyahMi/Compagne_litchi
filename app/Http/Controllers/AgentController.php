@@ -30,7 +30,7 @@ class AgentController extends Controller
         if (!$request->session()->has('agent')) {
             return view('login');
         }
-        return redirect()->route('admin.index');
+        return redirect()->route('accueil.index');
     }
 
 
@@ -59,9 +59,11 @@ class AgentController extends Controller
                 'matricule' => $result['matricule'],
                 'role' => $result['role'],
                 'id' => $result['id'],
+                'nom'=> $result['nom'],
+                'prenom' => $result['prenom'],
             ]);
             return response()->json([
-                'redirect' => url('/'),
+                'redirect' => url('/accueil'),
             ]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);

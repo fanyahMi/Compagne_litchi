@@ -17,12 +17,10 @@ class CheckRoleAgentSortie
     public function handle(Request $request, Closure $next)
     {
 
-        if (!$request->session()->has('agent')) {
-            return redirect()->route('login');
-        }
 
-        if ($request->session()->get('agent.role') != "Agent_sortie" || $request->session()->get('agent.role') != "Administrateur") {
-            abort(403, 'Accès interdit');
+        $role = $request->session()->get('agent.role') ;
+        if ($role !== "Agent_sortie" && $role !== "Administrateur") {
+            abort(403, 'Accèsrr interdit');
         }
 
         return $next($request);
