@@ -62,8 +62,17 @@ class AgentController extends Controller
                 'nom'=> $result['nom'],
                 'prenom' => $result['prenom'],
             ]);
+            if($result['role'] === 'Agent_entree'){
+                return response()->json([
+                    'redirect' => url('/entree-magasin'),
+                ]);
+            }elseif($result['role'] === 'Agent_sortie'){
+                return response()->json([
+                    'redirect' => url('/sortie-magasin'),
+                ]);
+            }
             return response()->json([
-                'redirect' => url('/accueil'),
+                'redirect' => url('/'),
             ]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);

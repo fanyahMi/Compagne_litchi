@@ -7,14 +7,7 @@
                 <li class="nav-item pcoded-menu-caption">
                     <label>Navigation</label>
                 </li>
-                <li class="nav-item">
-                    <a href="/accueil" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-home"></i></span>
-                        <span class="pcoded-mtext">Accueil</span>
-                    </a>
-                </li>
-                @if (session('agent.role') == '')
-                @endif
+
                 @if (session('agent.role') == 'Administrateur')
                     <li class="nav-item">
                         <a href="/" class="nav-link">
