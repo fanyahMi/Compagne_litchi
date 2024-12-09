@@ -10,7 +10,7 @@ use App\Http\Controllers\NumeroStationController;
 use App\Http\Controllers\ImportExportController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\AccueilController;
-
+use App\Http\Controllers\EmbarquementController;
 
 Route::get('/logout', [AgentController::class, 'logout'])->name('logout');
 Route::post('loginWeb', [AgentController::class, 'loginWeb']);
@@ -58,6 +58,28 @@ Route::middleware(['session','admin'])->group(function () {
     Route::get('/get-mouvement', [NavireController::class, 'getmouvementnavire']);
     Route::get('/get-mouvement/{id}', [NavireController::class, 'getmouvementId']);
     Route::put('/update-mouvement', [NavireController::class, 'updateMouvement']);
+
+
+    Route::get('/export-model-navire-station', [ImportExportController::class, 'exportModelStationNavire']);
+    Route::get('/importation-quotas', [StationController::class, 'affichageImportationQuotas']);
+    Route::post('/import-excel', [ImportExportController::class, 'importQuotasNumero'])->name('import.excel');
+
+    Route::get('/shifts', [ShiftController::class, 'index']);
+    Route::post('/ajout-shift', [ShiftController::class, 'addShift']);
+    Route::get('/get-shifts', [ShiftController::class, 'getShifts']);
+    Route::get('/shift/{id}', [ShiftController::class, 'getById']);
+    Route::put('/shift/{id}', [ShiftController::class, 'update']);
+    Route::delete('/shift/{id}', [ShiftController::class, 'destroy']);
+
+    /************* Historique ******/
+    Route::get('/historique-navire/{idCampagne}', [EmbarquementController::class, 'affichageHistoriqueNavire']);
+    Route::get('/historique-navire', [EmbarquementController::class, 'getNavireHistorique']);
+    Route::get('/historique-navire/cale/{idCampagne}/{idNavire}', [EmbarquementController::class, 'affichageDetailCalesHistorique']);
+    Route::get('/historique/navires/cales', [EmbarquementController::class, 'affichageDetailCale']);
+
+
+
+
 });
 
 
@@ -85,16 +107,6 @@ Route::middleware(['session',  'agent.entree-sortie'])->group(function () {
     Route::get('/get-entree/{id}', [MagasinController::class, 'getById']);
     Route::post('/entree-magasin/modifier', [MagasinController::class, 'modifierEntrer'])->name('entre.modifier');
 
-    Route::get('/export-model-navire-station', [ImportExportController::class, 'exportModelStationNavire']);
-    Route::get('/importation-quotas', [StationController::class, 'affichageImportationQuotas']);
-    Route::post('/import-excel', [ImportExportController::class, 'importQuotasNumero'])->name('import.excel');
-
-    Route::get('/shifts', [ShiftController::class, 'index']);
-    Route::post('/ajout-shift', [ShiftController::class, 'addShift']);
-    Route::get('/get-shifts', [ShiftController::class, 'getShifts']);
-    Route::get('/shift/{id}', [ShiftController::class, 'getById']);
-    Route::put('/shift/{id}', [ShiftController::class, 'update']);
-    Route::delete('/shift/{id}', [ShiftController::class, 'destroy']);
 });
 
 

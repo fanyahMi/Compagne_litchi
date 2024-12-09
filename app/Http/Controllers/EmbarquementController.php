@@ -4,17 +4,15 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Embarquement;
+use App\Models\Navire;
+use App\Models\Shift;
+use App\Models\Station;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
-
-use Firebase\JWT\JWT;
-use Illuminate\Support\Facades\Config;
 use Log;
-use Firebase\JWT\Key;
-use Firebase\JWT\ExpiredException;
-use Firebase\JWT\SignatureInvalidException;
+
 
 class EmbarquementController extends Controller
 {
@@ -65,8 +63,8 @@ class EmbarquementController extends Controller
             $query->whereBetween('heure_embarquement', [$heureDebut, $heureFin]);
         }
 
-        $query->orderBy('date_embarquement')
-                ->orderBy('heure_embarquement');
+        $query->orderBy('date_embarquement', 'desc')
+            ->orderBy('heure_embarquement', 'desc');
 
         // Exécution de la requête et récupération des résultats
         $resultats = $query->get();
@@ -168,4 +166,117 @@ class EmbarquementController extends Controller
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function affichageHistoriqueNavire($idCampagne){
+        $compagne = DB::table('compagne')
+            ->where('id_compagne',$idCampagne)
+            ->first();
+        $campagne =   $compagne->annee;
+        $navires = Navire::all();
+        return view('station.HistoriqueNavire', compact('idCampagne', 'campagne',  'navires'));
+    }
+
+    public function getNavireHistorique(Request $request){
+        $idCampagne = $request->input('id_campagne');
+        $idNavire = $request->input('id_navire');
+        $perPage = $request->input('per_page', 10);
+        $query = DB::table('v_mouvement_navire');
+        $query->where('id_compagne', $idCampagne);
+        if(!empty($idNavire)){
+            $query->where('id_navire', $idNavire);
+        }
+        $historique = $query->paginate($perPage);
+        return response()->json($historique);
+    }
+
+    public function affichageDetailCalesHistorique($idCampagne, $idNavire){
+        $cales = DB::table('v_quantite_cales')
+            ->where('id_navire', '=', $idNavire)
+            ->where('id_compagne', '=', $idCampagne)
+            ->get();
+        $shifts = Shift::all();
+        $compagne = DB::table('compagne')
+            ->where('id_compagne',$idCampagne)
+            ->first();
+        $campagne =   $compagne->annee;
+        $nav = DB::table('navire')
+                ->where('id_navire',$idNavire)
+                ->first();
+        $navire = $nav->navire;
+        $normal_stations =  Station::all();
+
+        return view('station.DetailCaleHistorique', compact('idCampagne', 'idNavire', 'cales', 'shifts' , 'campagne', 'navire', 'normal_stations'));
+    }
+
+    public function affichageDetailHistoriqueCales(Request $request){
+        $idCampagne = $request->input('id_campagne');
+        $idNavire =  $request->input('id_navire');
+        $cale =  $request->input('cale');
+        $perPage = $request->input('per_page', 1);
+        $idStation = $request->input('id_station');
+        $query = DB::table('v_historique_embarquement_navire');
+        $query->where('id_compagne', $idCampagne);
+
+        $query->where('id_navire', $idNavire);
+
+        if ($idStation) {
+            $query->where('id_station', $idStation);
+        }
+        if ($cale) {
+            $query->where('numero_cal', $cale);
+        }
+        $historique = $query->paginate($perPage);
+        return response()->json($historique);
+    }
+
+
+    public function affichageDetailCale(Request $request){
+        $idCampagne = $request->input('id_campagne');
+        $idNavire =  $request->input('id_navire');
+        $cale =  $request->input('cale');
+        $idShift = $request->input('id_shift');
+        $idStation = $request->input('id_station');
+        $agent = $request->input('agent');
+        $perPage = $request->input('per_page', 10);
+        $dateDebut = $request->input('date_debut'); // Plage de date début
+        $dateFin = $request->input('date_fin'); // Plage de date fin
+
+        $query = DB::table('v_historique_embarquement');
+
+
+
+        $query->where('id_compagne', $idCampagne);
+        $query->where('id_navire', $idNavire);
+        if ($cale) {
+            $query->where('numero_cal', $cale);
+        }
+
+        if ($agent) {
+            $query->where(function ($q) use ($agent) {
+                $q->whereRaw("agent LIKE ?", ["%$agent%"]);
+            });
+        }
+
+        if ($idStation) {
+            $query->where('id_station', $idStation);
+        }
+
+        if ($idShift) {
+            $query->where('id_shift', $idShift);
+        }
+
+        if ($dateDebut && $dateFin) {
+            $query->whereBetween('date_embarquement', [$dateDebut, $dateFin]);
+        }
+
+
+
+        $query->orderBy('date_embarquement', 'desc')
+            ->orderBy('heure_embarquement', 'desc');
+
+            $historique = $query->paginate($perPage);
+            return response()->json($historique);
+
+    }
+
 }

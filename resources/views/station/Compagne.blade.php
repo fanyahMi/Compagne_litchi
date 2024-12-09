@@ -84,7 +84,6 @@
             data: $(this).serialize(),
             success: function(response) {
                 alert('Agent ajouté avec succès !');
-                console.log(response);
                 $('p.error-message').text(''); // Réinitialiser les messages d'erreur
                 $('#create_compagne_form')[0].reset(); // Réinitialiser le formulaire
                 loadAnnee(); // Recharger les années ou autres données pertinentes
@@ -134,7 +133,7 @@
             : etatText;
 
         var row = '<tr>' +
-                    '<td>' + compagne.annee + '</td>' +
+                    '<td><a href="' + '{{ url("historique-navire") }}/' + compagne.id_compagne + '">' + compagne.annee + '</a></td>' +
                     '<td>' + compagne.debut + '</td>' +
                     '<td>' + compagne.fin + '</td>' +
                     '<td>' + etatCellContent + '</td>' + // Add status and button in the same column

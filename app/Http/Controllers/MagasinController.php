@@ -13,6 +13,7 @@ use App\Models\Station;
 use App\Models\Shift;
 use Illuminate\Support\Facades\Validator;
 use Log;
+use Mpdf\Mpdf;
 
 class MagasinController extends Controller
 {
@@ -242,53 +243,71 @@ class MagasinController extends Controller
 
 
     public function modifierEntrer(Request $request)
-{
-    // Validation des données
-    $validator = Validator::make($request->all(), [
-        'numero_camion' => 'required|string|max:50',
-        'encien' => 'nullable|string',  // "encien" doit être nullable et de type chaîne
-        'id_entree' => 'required|integer', // Ajout d'une validation pour 'id_entree'
-        'bon_livraison' => 'required|string|max:50',
-        'chauffeur' => 'required|string|max:60',
-        'quantite_palette' => 'required|integer|min:1',
-        'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
-        'navire_id' => 'nullable|integer|exists:navire,id_navire',  // 'navire_id' peut être nul
-        'fichier_base64' => 'nullable|string',  // Ajout de la validation pour le fichier base64 (s'il existe)
-    ], [
-        'numero_camion.required' => 'Le numéro du camion est obligatoire.',
-        'bon_livraison.required' => 'Le bon de livraison est obligatoire.',
-        'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
-        'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
-    ]);
+    {
+        // Validation des données
+        $validator = Validator::make($request->all(), [
+            'numero_camion' => 'required|string|max:50',
+            'encien' => 'nullable|string',  // "encien" doit être nullable et de type chaîne
+            'id_entree' => 'required|integer', // Ajout d'une validation pour 'id_entree'
+            'bon_livraison' => 'required|string|max:50',
+            'chauffeur' => 'required|string|max:60',
+            'quantite_palette' => 'required|integer|min:1',
+            'numero_station_id' => 'required|integer|exists:numero_station,id_numero_station',
+            'navire_id' => 'nullable|integer|exists:navire,id_navire',  // 'navire_id' peut être nul
+            'fichier_base64' => 'nullable|string',  // Ajout de la validation pour le fichier base64 (s'il existe)
+        ], [
+            'numero_camion.required' => 'Le numéro du camion est obligatoire.',
+            'bon_livraison.required' => 'Le bon de livraison est obligatoire.',
+            'chauffeur.required' => 'Le nom du chauffeur est obligatoire.',
+            'quantite_palette.required' => 'La quantité de palettes est obligatoire.',
+        ]);
 
-    // Vérification si la validation échoue
-    if ($validator->fails()) {
-        return response()->json([
-            'status' => false,
-            'errors' => $validator->errors()
-        ], 422); // Code d'erreur 422 : Unprocessable Entity
+        // Vérification si la validation échoue
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code d'erreur 422 : Unprocessable Entity
+        }
+
+        try {
+            // Récupération des données
+            $base64File = $request->input('fichier_base64');
+            $num = $request->input('numero_camion');
+            $id = session('agent.id');
+            $validatedData = $validator->validated(); // Utilisation des données validées
+
+            // Appel de la méthode pour mettre à jour l'entrée
+            Entree_magasin::modifierEntrer($validatedData, $base64File);
+
+            return response()->json([
+                'message' => "Entrée modifiée avec succès pour le camion : $num",
+            ], 200);
+        } catch (Exception $e) {
+            // Gestion des erreurs
+            return response()->json([
+                'error' => 'Erreur lors de l\'insertion des données: ' . $e->getMessage()
+            ], 400);
+        }
     }
 
-    try {
-        // Récupération des données
-        $base64File = $request->input('fichier_base64');
-        $num = $request->input('numero_camion');
-        $id = session('agent.id');
-        $validatedData = $validator->validated(); // Utilisation des données validées
+    public function telechergerBonLivraison($id){
+        $entree = Entree_magasin::find($id);
 
-        // Appel de la méthode pour mettre à jour l'entrée
-        Entree_magasin::modifierEntrer($validatedData, $base64File);
+        if (!$entree || !$entree->path_bon_livraison) {
+            return response()->json(['error' => 'Fichier non trouvé ou accès non autorisé.'], 404);
+        }
 
-        return response()->json([
-            'message' => "Entrée modifiée avec succès pour le camion : $num",
-        ], 200);
-    } catch (Exception $e) {
-        // Gestion des erreurs
-        return response()->json([
-            'error' => 'Erreur lors de l\'insertion des données: ' . $e->getMessage()
-        ], 400);
+        $filePath = storage_path('app/public/' . $entree->path_bon_livraison);
+
+        if (!file_exists($filePath)) {
+            return response()->json(['error' => 'Fichier non trouvé.'], 404);
+        }
+
+        return response()->file($filePath);
+
     }
-}
+
 
 }
 

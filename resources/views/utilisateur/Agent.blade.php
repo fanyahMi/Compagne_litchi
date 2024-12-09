@@ -452,6 +452,7 @@ $(document).ready(function() {
             error: function(xhr) {
                 var errors = xhr.responseJSON.errors;
                 $.each(errors, function(key, messages) {
+                    console.log(messages);
                     $('#error-modal-' + key).text(messages[0]);
                 });
             }

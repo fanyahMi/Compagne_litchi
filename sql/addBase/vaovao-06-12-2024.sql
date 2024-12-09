@@ -106,7 +106,7 @@ select
     c.id_compagne , c.annee, c.etat as etat_campagne,
     s.id_shift, s.description,
     n.id_navire, n.navire, n.nb_compartiment,  e.numero_cal,
-    u.id_utilisateur, u.matricule, CONCAT(u.nom, '-' , u.prenom) as agent,
+    u.id_utilisateur, u.matricule, CONCAT(u.nom, ' - ' , u.prenom) as agent,
     c.station, c.id_station, c.numero_station,
     e.date_embarquement, e.heure_embarquement,
     (e.nombre_pallets), (e.nombre_pallets ) as quantite
@@ -115,4 +115,5 @@ join v_utilisateur_global u on u.id_utilisateur = e.utilisateur_id
 join v_station_numero_compagne c on c.id_numero_station = e.numero_station_id
 join shift s on s.id_shift = e.shift_id
 join navire n on n.id_navire = e.navire_id;
+
 
