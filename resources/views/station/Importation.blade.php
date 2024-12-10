@@ -25,16 +25,21 @@
                         <hr>
                         <form action="{{ route('import.excel') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-
                             <div class="form-row">
-                                <select name="compagne_id" id="">
-                                    @foreach ($compagnes as $compagne)
-                                            <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="form-group col-md-2">
+                                    <select class="form-control" name="compagne_id" id="">
+                                        @foreach ($compagnes as $compagne)
+                                                <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                            <input type="file" name="file" accept=".xlsx" required>
-                            <button type="submit">Importer</button>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <input type="file" class="form-control" name="file" accept=".xlsx" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Importer</button>
                         </form>
                         <div id="error-message" class="error-message"></div>
                     </div>
@@ -42,8 +47,5 @@
             </div>
             <!-- [ form-element ] end -->
         </div>        <!--  Liste   --->
-
-
-
 @endsection
 

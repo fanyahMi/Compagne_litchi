@@ -58,6 +58,8 @@ Route::middleware(['session','admin'])->group(function () {
     Route::get('/get-mouvement', [NavireController::class, 'getmouvementnavire']);
     Route::get('/get-mouvement/{id}', [NavireController::class, 'getmouvementId']);
     Route::put('/update-mouvement', [NavireController::class, 'updateMouvement']);
+
+    Route::get('/import', [ImportExportController::class, 'index']);
 });
 
 
