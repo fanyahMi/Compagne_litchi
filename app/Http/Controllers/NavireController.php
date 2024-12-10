@@ -257,8 +257,12 @@ class NavireController extends Controller
     public function getQuatiteCalesApi( $idNavire)
     {
         try {
+            $compagne = DB::table('compagne')
+                    ->where('etat', 1)
+                    ->first();
             $navire = DB::table('v_quantite_cales')
             ->where('id_navire', '=', $idNavire)
+            ->where('id_compagne', '=', $compagne->id_compagne)
             ->get();
             return response()->json($navire);
         } catch (ModelNotFoundException $e) {

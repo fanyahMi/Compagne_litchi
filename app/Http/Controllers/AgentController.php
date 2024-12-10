@@ -194,7 +194,7 @@ class AgentController extends Controller
         }
         try {
             $id = $request->input('id_utilisateur');
-            $data = $request->only(['nom', 'prenom', 'dateNaissance', 'cin', 'sexe', 'situation']);
+            $data = $request->only(['nom', 'prenom', 'dateNaissance', 'cin', 'sexe', 'situation', 'role']);
             $agent = Agent::updateAgent($id, $data);
             return response()->json(['status' => 'success', 'message' => 'Agent mis à jour avec succès!', 'agent' => $agent]);
         } catch (\Exception $e) {
