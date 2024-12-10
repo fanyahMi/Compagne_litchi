@@ -113,6 +113,7 @@
                         <table id="" class="table table-hover table-bordered ">
                             <thead>
                                 <tr>
+                                    <th>Bon de sortie</th>
                                     <th>Agent</th>
                                     <th>Campagne</th>
                                     <th>Navire</th>
@@ -138,8 +139,89 @@
 @endsection
 
 @section('script')
+<script src="assets/js/jsPdf.js"></script>
+<script src="assets/js/auto-table.js"></script>
 <script>
 
+const { jsPDF } = window.jspdf;
+    // Fonction pour générer le PDF avec jsPDF
+    function generatePDF(entree) {
+    const {
+        id_entree_magasin,
+        id_sortant_magasin,
+        matricule_sortant,
+        annee,
+        navire,
+        chauffeur,
+        numero_camion,
+        bon_livraison,
+        quantite_sortie,
+        numero_station,
+        station,
+        date_sortie
+    } = entree;
+
+    const doc = new jsPDF();
+
+    // Ajout du Logo (image encodée en base64)
+    const logoUrl = 'assets/images/SMMC-Logo.png';
+    const img = new Image();
+    img.src = logoUrl;
+    doc.addImage(img, 'PNG', 10, 10, 100, 20);
+
+    // En-tête
+    doc.setFontSize(12);
+    doc.setFont('Helvetica', 'B');
+    doc.text("SMMC", 130, 20);
+    doc.setFontSize(10);
+    doc.text("TAMATAVE", 130, 28);
+    doc.text("Téléphone : 034 90 133 58", 130, 35);
+    doc.text("Email : alpha.house@gmail.com", 130, 42);
+
+    // Dessiner une ligne sous l'en-tête
+    doc.setLineWidth(0.5);
+    doc.line(10, 50, 200, 50);
+
+    // Informations principales de l'entrée
+    doc.setFontSize(10);
+    const detailsStartY = 60;
+    const lineSpacing = 7; // Espacement entre les lignes
+
+    doc.text(`Bon de sortie : ${id_sortant_magasin}`, 10, detailsStartY);
+    doc.text(`Bon d'entré : ${id_entree_magasin}`, 10, detailsStartY + lineSpacing);
+    doc.text(`Campagne : ${annee}`, 10, detailsStartY + 2 * lineSpacing);
+    doc.text(`Date : ${date_sortie}`, 10, detailsStartY + 3 * lineSpacing);
+    doc.text(`Navire : ${navire}`, 10, detailsStartY + 4 * lineSpacing);
+    doc.text(`Numéro station : ${numero_station} - ${station}`, 10, detailsStartY + 5 * lineSpacing);
+    doc.text(`Agent : ${matricule_sortant}`, 10, detailsStartY + 6 * lineSpacing);
+
+    // Tableau des données
+    const startTableY = detailsStartY + 8 * lineSpacing;
+    doc.setFontSize(10);
+
+    doc.text("Détails des entrées", 10, startTableY - 5);
+
+    // Utiliser autoTable pour créer le tableau
+    doc.autoTable({
+        startY: startTableY,
+        head: [['Chauffeur', 'Camion', 'Quantité']],
+        body: [[chauffeur, numero_camion, quantite_sortie]],
+        styles: {
+            fontSize: 10,
+            halign: 'center',
+        },
+        theme: 'grid',
+    });
+
+    // Pied de page
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(8);
+    doc.text("SMMC - Alpha House", 10, pageHeight - 10);
+    doc.text("Page 1", 190, pageHeight - 10, { align: 'right' });
+
+    // Sauvegarde du PDF
+    doc.save(`bon_entree_${id_entree_magasin}.pdf`);
+}
 $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -147,20 +229,22 @@ $.ajaxSetup({
     });
 
     function appendSortie(sortie) {
-        var row = '<tr>' +
-                    '<td>' + sortie.matricule_sortant + '</td>' +
-                    '<td>' + sortie.annee + '</td>' +
-                    '<td>' + sortie.navire + '</td>' +
-                    '<td>' + sortie.chauffeur + '</td>' +
-                    '<td>' + sortie.numero_camion + '</td>' +
-                    '<td>' + sortie.date_sortie + '</td>' +
-                    '<td>' + sortie.description_sortie + '</td>' +
-                    '<td>' + sortie.numero_station + '<small> ( ' + ( sortie.station || 'Station inconnue') + ' )</small></td>' +
-                    '<td>' + sortie.quantite_sortie + '</td>' +
+    var row = `
+        <tr>
+            <td><a href="#" onclick='generatePDF(${JSON.stringify(sortie)})'>${sortie.id_sortant_magasin}</a></td>
+            <td>${sortie.annee}</td>
+            <td>${sortie.navire}</td>
+            <td>${sortie.chauffeur}</td>
+            <td>${sortie.numero_camion}</td>
+            <td>${sortie.date_sortie}</td>
+            <td>${sortie.description_sortie}</td>
+            <td>${sortie.numero_station}<small> (${sortie.station || 'Station inconnue'})</small></td>
+            <td>${sortie.quantite_sortie}</td>
+        </tr>`;
 
-                   '</tr>';
-        $('#table-body').append(row);
-    }
+    $('#table-body').append(row);
+}
+
 
     function appendPagination(data) {
         let pagination = '';

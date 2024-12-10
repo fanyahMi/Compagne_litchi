@@ -161,4 +161,5 @@ class Entree_magasin extends Model
         return $data;
     }
 
+
 }

@@ -160,6 +160,7 @@ class Agent extends Model
                 'cin' => $data['cin'],
                 'sexe_id' => $data['sexe'],
                 'situation_familial_id' => $data['situation'],
+                'role_id'=> $data['role'],
             ]);
             return $agent;
         } catch (\Exception $e) {

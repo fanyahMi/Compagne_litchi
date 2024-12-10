@@ -6,11 +6,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "barryvdh/laravel-dompdf": "^2.0",
+        "barryvdh/laravel-snappy": "^1.0",
+        "dompdf/dompdf": "2.0",
         "firebase/php-jwt": "^6.10",
         "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/tinker": "^2.7",
+        "mpdf/mpdf": "^8.2",
         "phpoffice/phpspreadsheet": "^1.25"
     },
     "require-dev": {
