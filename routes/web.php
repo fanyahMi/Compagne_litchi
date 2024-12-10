@@ -60,6 +60,7 @@ Route::middleware(['session','admin'])->group(function () {
     Route::put('/update-mouvement', [NavireController::class, 'updateMouvement']);
 
 
+
     Route::get('/export-model-navire-station', [ImportExportController::class, 'exportModelStationNavire']);
     Route::get('/importation-quotas', [StationController::class, 'affichageImportationQuotas']);
     Route::post('/import-excel', [ImportExportController::class, 'importQuotasNumero'])->name('import.excel');
@@ -79,6 +80,8 @@ Route::middleware(['session','admin'])->group(function () {
 
 
 
+
+    Route::get('/import', [ImportExportController::class, 'index']);
 
 });
 
