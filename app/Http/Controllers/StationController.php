@@ -306,12 +306,6 @@ class StationController extends Controller
         return response()->json($data);
     }
 
-    public function affichageImportationQuotas(){
-        $compagnes = DB::table('compagne')->get();
-
-        return view('station.Importation', compact('compagnes'));
-    }
-
 
     public function getResteQuantitePaletteStation($idNumeroStation, $idNavire){
         try {

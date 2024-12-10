@@ -10,9 +10,16 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class   ImportExportController extends Controller
 {
+    public function index(){
+        $compagnes = DB::table('compagne')->get();
+
+        return view('station.Importation', compact('compagnes'));
+    }
+
     public function exportModelStationNavire()
     {
         $navires = Navire::all();
