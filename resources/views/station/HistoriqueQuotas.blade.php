@@ -71,7 +71,7 @@
                 <!-- Table des quotas -->
                 <div class="table-container">
                     <div id="table-container" class="table-responsive">
-                        <table id="produitTable" class="table table-hover table-responsive table-bordered">
+                        <table id="produitTable" class="table table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th>Année</th>

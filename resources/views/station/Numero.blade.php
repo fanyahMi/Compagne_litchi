@@ -102,8 +102,8 @@
                 <h5 class="c-black-900"><b>Liste numereo station</b></h5>
                 <div class="mT-30">
 
-                    <div id="table-container">
-                        <table id="" class="table table-responsive table-hover table-bordered">
+                    <div id="table-responsive">
+                        <table id="" class="table table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th>Compagne</th>

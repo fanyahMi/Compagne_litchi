@@ -109,12 +109,11 @@
 
             <div class="card-body">
                 <div class="mT-30">
-                    <div id="table-container table-responsive">
-                        <table id="" class="table table-responsive table-hover table-bordered ">
+                    <div id=" table-responsive">
+                        <table id="" class="table table-hover table-bordered ">
                             <thead>
                                 <tr>
-                                    <th>Bon de sortie</th>
-                                    <th>Agent</th>
+                                    <th>ID</th>
                                     <th>Campagne</th>
                                     <th>Navire</th>
                                     <th>Chaufeur</th>

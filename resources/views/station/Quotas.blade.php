@@ -96,8 +96,8 @@
             <div class="card-body">
                 <h5 class="c-black-900"><b>Liste des stations</b></h5>
                 <div class="mT-30">
-                    <div id="table-container" class="table-responsive">
-                        <table id="produitTable" class="table table-responsive table-hover table-bordered ">
+                    <div class="table-responsive">
+                        <table id="produitTable" class="table table-hover table-bordered ">
                             <thead>
                                 <tr>
                                     <th>Année</th>

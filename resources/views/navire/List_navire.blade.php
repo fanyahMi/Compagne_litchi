@@ -107,8 +107,8 @@
                     <div class="card-body">
                         <h5 class="c-black-900"><b>Liste des navires</b></h5>
                         <div class="mT-30">
-                            <div id="table-container table-responsive">
-                                <table id="produitTable" class="table table-hover table-responsive table-bordered">
+                            <div id="table-responsive">
+                                <table id="produitTable" class="table table-hover table-bordered">
                                     <thead>
                                         <tr>
                                             <th>Navire</th>

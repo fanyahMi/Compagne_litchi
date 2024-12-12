@@ -163,8 +163,8 @@
                 <h5 class="c-black-900"></h5>
                 <div class="mT-30">
 
-                    <div id="table-container">
-                        <table id="" class="table table-hover table-responsive table-bordered">
+                    <div id="table-container table-responsive ">
+                        <table id="" class="table table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th>Numero Cale</th>

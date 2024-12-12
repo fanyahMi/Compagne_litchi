@@ -87,7 +87,7 @@
 
             <div class="card-body">
                 <div class="mT-30">
-                    <div id="table-container table-responsive">
+                    <div id="table-responsive">
                         <table id="" class="table table-responsive table-hover table-bordered ">
                             <thead>
                                 <tr>
