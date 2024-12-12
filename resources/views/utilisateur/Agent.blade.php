@@ -145,7 +145,6 @@
                                             <th>Situation patrimoniale</th>
                                             <th>Embauché le</th>
                                             <th>Rôle</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body"></tbody>

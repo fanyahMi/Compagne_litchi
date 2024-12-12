@@ -387,7 +387,7 @@ create or replace view v_palette_entree as
  SELECT e.numero_station_id, e.navire_id,
          SUM(e.quantite_palette) as somme_quantite_palette
         FROM entree_magasin e
-            group by e.numero_station_id, e.navire_id
+            group by e.numero_station_id, e.navire_id;
 
 create or replace view v_reste_palette_station as
 SELECT

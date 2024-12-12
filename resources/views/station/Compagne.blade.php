@@ -47,8 +47,8 @@
             </div>
             <div class="card-body">
                 <div class="mT-30">
-                    <div id="table-container table-responsive">
-                        <table id="" class="table table-hover table-bordered ">
+                    <div id="table-responsive">
+                        <table id="" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
                                     <th>Annee de compagne</th>
