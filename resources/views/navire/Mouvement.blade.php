@@ -93,7 +93,7 @@
                             <label for="filter-compagne">compagne</label>
                             <select id="filter-compagne" class="form-control">
                                 <option value="">Sélectionner compagne</option>
-                                @foreach($compagnes as $compagne)
+                                @foreach($allcompagnes as $compagne)
                                     <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
                                 @endforeach
                             </select>
@@ -119,7 +119,7 @@
                 <div class="mT-30">
 
                     <div id="table-container">
-                        <table id="" class="table table-hover table-bordered">
+                        <table id="" class="table table-hover table-responsive table-bordered">
                             <thead>
                                 <tr>
                                     <th>Compagne</th>

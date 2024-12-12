@@ -118,8 +118,11 @@ class NavireController extends Controller
                     ->select('id_compagne', 'annee')
                     ->where('etat', '!=', 0)
                     ->get();
+        $allcompagnes = DB::table('compagne')
+                    ->select('id_compagne', 'annee')
+                    ->get();
         $navires = Navire::all();
-        return view('navire.Mouvement', compact('compagnes','navires'));
+        return view('navire.Mouvement', compact('compagnes','navires','allcompagnes'));
     }
 
     public function addmouvementnavire(Request $request) {

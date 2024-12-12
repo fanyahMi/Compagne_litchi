@@ -103,7 +103,7 @@
                 <div class="mT-30">
 
                     <div id="table-container">
-                        <table id="" class="table table-hover table-bordered">
+                        <table id="" class="table table-responsive table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th>Compagne</th>

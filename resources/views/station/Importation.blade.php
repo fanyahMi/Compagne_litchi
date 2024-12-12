@@ -21,7 +21,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="mt-5">Insertion des quotas </h5>
-                        <a href="{{ url('import-excel') }}">Exporté model</a>
+                        <a href="{{ url('export-model-navire-station') }}">Exporter modèle</a>
                         <hr>
                         <form action="{{ route('import.excel') }}" method="POST" enctype="multipart/form-data">
                             @csrf

@@ -65,7 +65,7 @@
                 <div class="mT-30">
 
                     <div id="table-container">
-                        <table id="" class="table table-hover table-bordered">
+                        <table id="" class="table table-hover table-responsive table-bordered">
                             <thead>
                                 <tr>
                                     <th>Navire</th>
