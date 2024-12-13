@@ -371,7 +371,9 @@
                     "type": "tidelift"
                 }
             ],
+
             "time": "2024-02-05T11:56:58+00:00"
+
         },
         {
             "name": "dragonmantank/cron-expression",
@@ -2242,6 +2244,7 @@
             "time": "2024-11-12T12:43:37+00:00"
         },
         {
+
             "name": "nesbot/carbon",
             "version": "2.72.5",
             "source": {
@@ -2621,6 +2624,7 @@
             ],
             "support": {
                 "issues": "https://github.com/nunomaduro/termwind/issues",
+
                 "source": "https://github.com/nunomaduro/termwind/tree/v1.17.0"
             },
             "funding": [
@@ -2637,7 +2641,9 @@
                     "type": "github"
                 }
             ],
+
             "time": "2024-11-21T10:36:35+00:00"
+
         },
         {
             "name": "phpoffice/phpspreadsheet",

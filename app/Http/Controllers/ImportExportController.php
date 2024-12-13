@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\ImportationQuotas;
 use App\Models\Navire;
 use App\Models\Station;
+use App\Models\Shift;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-
+use Log;
 class   ImportExportController extends Controller
 {
     public function index(){
@@ -116,5 +117,116 @@ class   ImportExportController extends Controller
         return redirect('list-quotas');
 
     }
+
+    public function exportRapport($idCampagne, $idNavire)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'SMMC PORT TOAMASINA');
+        $sheet->setCellValue('A2', 'DIREX');
+        $sheet->setCellValue('A3', 'DEPARTEMENT EXPLOITATION');
+        $sheet->setCellValue('A4', 'SERVICE EXPERTISE');
+        $sheet->setCellValue('A7', 'ETAT EMBARQUEMENT DES PALETTES PAR SHIFT');
+
+        $rowIndex = 8;
+
+        $shifts = Shift::all();
+        $cales = DB::table('v_quantite_cales')
+            ->where('id_navire', $idNavire)
+            ->where('id_compagne', $idCampagne)
+            ->get();
+
+        DB::statement('SET @id_compagne = ?', [$idCampagne]);
+        DB::statement('SET @id_navire = ?', [$idNavire]);
+        $results = DB::select('CALL GeneratePivot2()');
+
+        $columns = ['BATEAU', 'DATE', 'STATION'];
+        $shiftColumnIndex = count($columns);
+
+        foreach ($columns as $key => $column) {
+            $sheet->setCellValue($this->getColonne($key) . $rowIndex, $column);
+        }
+
+        foreach ($shifts as $shift) {
+            $startColumn = $this->getColonne($shiftColumnIndex);
+            $endColumn = $this->getColonne($shiftColumnIndex + count($cales) - 1);
+
+            $sheet->setCellValue($startColumn . $rowIndex, $shift->description);
+            $sheet->mergeCells($startColumn . $rowIndex . ':' . $endColumn . $rowIndex);
+
+            foreach ($cales as $cale) {
+                $currentColumn = $this->getColonne($shiftColumnIndex);
+                $sheet->setCellValue($currentColumn . ($rowIndex + 1), 'CALE ' . $cale->numero_cale);
+                $shiftColumnIndex++;
+            }
+        }
+
+        $totalColumn = $this->getColonne($shiftColumnIndex);
+        $sheet->setCellValue($totalColumn . $rowIndex, 'TOTAL');
+
+        $dataStartRow = $rowIndex + 2;
+        foreach ($results as $result) {
+            $sheet->setCellValue('A' . $dataStartRow, $result->BATEAU);
+            $sheet->setCellValue('B' . $dataStartRow, $result->DATE);
+            $sheet->setCellValue('C' . $dataStartRow, $result->STATION);
+
+            $colIndex = count($columns);
+            foreach ($shifts as $shift) {
+                foreach ($cales as $cale) {
+                    $cellValue = $result->{'Shift ' . $shift->id_shift . ' Cale ' . $cale->numero_cale} ?? 0;
+                    $sheet->setCellValue($this->getColonne($colIndex) . $dataStartRow, $cellValue);
+                    $colIndex++;
+                }
+            }
+
+            // Ajouter le total des palettes
+            $sheet->setCellValue($this->getColonne($colIndex) . $dataStartRow, $result->TOTAL_PALLETS);
+            $dataStartRow++;
+        }
+
+        $lastColumn = $this->getColonne($shiftColumnIndex);
+        $sheet->getColumnDimension('A')->setWidth(15);
+        $sheet->getColumnDimension('B')->setWidth(15);
+        $sheet->getColumnDimension('C')->setWidth(25);
+
+        $sheet->getStyle('A' . $rowIndex . ':' . $lastColumn . ($dataStartRow - 1))->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => '00000000'],
+                ],
+            ],
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'situation.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit();
+    }
+
+    private function getColonne($index)
+    {
+        $letter = '';
+        while ($index >= 0) {
+            $letter = chr($index % 26 + 65) . $letter;
+            $index = intval($index / 26) - 1;
+        }
+        return $letter;
+    }
+
+
 
 }

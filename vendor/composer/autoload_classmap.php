@@ -3062,6 +3062,7 @@ return array(
     'Monolog\\SignalHandler' => $vendorDir . '/monolog/monolog/src/Monolog/SignalHandler.php',
     'Monolog\\Test\\TestCase' => $vendorDir . '/monolog/monolog/src/Monolog/Test/TestCase.php',
     'Monolog\\Utils' => $vendorDir . '/monolog/monolog/src/Monolog/Utils.php',
+
     'Nette\\ArgumentOutOfRangeException' => $vendorDir . '/nette/utils/src/exceptions.php',
     'Nette\\DeprecatedException' => $vendorDir . '/nette/utils/src/exceptions.php',
     'Nette\\DirectoryNotFoundException' => $vendorDir . '/nette/utils/src/exceptions.php',
@@ -4717,6 +4718,7 @@ return array(
     'Ramsey\\Uuid\\UuidInterface' => $vendorDir . '/ramsey/uuid/src/UuidInterface.php',
     'Ramsey\\Uuid\\Validator\\GenericValidator' => $vendorDir . '/ramsey/uuid/src/Validator/GenericValidator.php',
     'Ramsey\\Uuid\\Validator\\ValidatorInterface' => $vendorDir . '/ramsey/uuid/src/Validator/ValidatorInterface.php',
+
     'SQLite3Exception' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/SQLite3Exception.php',
     'SebastianBergmann\\CliParser\\AmbiguousOptionException' => $vendorDir . '/sebastian/cli-parser/src/exceptions/AmbiguousOptionException.php',
     'SebastianBergmann\\CliParser\\Exception' => $vendorDir . '/sebastian/cli-parser/src/exceptions/Exception.php',
@@ -5095,6 +5097,7 @@ return array(
     'Spatie\\LaravelIgnition\\Support\\StringComparator' => $vendorDir . '/spatie/laravel-ignition/src/Support/StringComparator.php',
     'Spatie\\LaravelIgnition\\Views\\BladeSourceMapCompiler' => $vendorDir . '/spatie/laravel-ignition/src/Views/BladeSourceMapCompiler.php',
     'Spatie\\LaravelIgnition\\Views\\ViewExceptionMapper' => $vendorDir . '/spatie/laravel-ignition/src/Views/ViewExceptionMapper.php',
+
     'Stringable' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
     'Symfony\\Component\\Console\\Application' => $vendorDir . '/symfony/console/Application.php',
     'Symfony\\Component\\Console\\Attribute\\AsCommand' => $vendorDir . '/symfony/console/Attribute/AsCommand.php',
