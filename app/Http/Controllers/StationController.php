@@ -47,10 +47,10 @@ class StationController extends Controller
             ]
         ], [
             'nom.required' => 'Le champ nom est obligatoire.',
-            'nif_stat.required' => 'Le NIF est obligatoire.',
-            'nif_stat.size' => 'Le NIF doit contenir exactement 13 caractères',
-            'nif_stat.regex' => 'Le NIF ne doit contenir que des lettres et des chiffres',
-            'nif_stat.unique' => 'Le NIF existe déjà dans la base de données.'
+            'nif_stat.required' => 'Le NIF/STAT est obligatoire.',
+            'nif_stat.size' => 'Le NIF/STAT doit contenir exactement 13 caractères',
+            'nif_stat.regex' => 'Le NIF/STAT ne doit contenir que des lettres et des chiffres',
+            'nif_stat.unique' => 'Le NIF/STAT existe déjà dans la base de données.'
         ]);
 
         if ($validator->fails()) {

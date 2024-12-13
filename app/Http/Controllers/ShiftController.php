@@ -28,7 +28,7 @@ class ShiftController extends Controller
         $validator = Validator::make($request->all(), [
             'description' => 'required|string|max:255',
             'debut' => 'required|date_format:H:i',
-            'fin' => 'required|date_format:H:i|after:debut',
+            'fin' => 'required|date_format:H:i',
         ], [
             'description.required' => 'La description est obligatoire.',
             'description.string' => 'La description doit être une chaîne de caractères.',
@@ -37,7 +37,6 @@ class ShiftController extends Controller
             'debut.date_format' => 'Le format de l\'heure de début doit être HH:MM.',
             'fin.required' => 'L\'heure de fin est obligatoire.',
             'fin.date_format' => 'Le format de l\'heure de fin doit être HH:MM.',
-            'fin.after' => 'L\'heure de fin doit être après l\'heure de début.',
         ]);
 
         if ($validator->fails()) {

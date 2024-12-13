@@ -22,6 +22,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ url('list-compagne') }}" class="nav-link">
+                            <span class="pcoded-micon"><i class="feather icon-calendar"></i></span>
+                            <span class="pcoded-mtext">Compagne</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ url('import') }}" class="nav-link">
                             <span class="pcoded-micon"><i class="feather icon-download"></i></span>
                             <span class="pcoded-mtext">Import</span>
@@ -35,7 +41,6 @@
                         <ul class="pcoded-submenu">
                             <li><a href="{{ url('list-Station') }}">Liste</a></li>
                             <li><a href="{{ url('list-numero-station') }}">Numero station</a></li>
-                            <li><a href="{{ url('list-compagne') }}">Compagne</a></li>
                             <li><a href="{{ url('list-quotas') }}">Quotas</a></li>
                         </ul>
                     </li>

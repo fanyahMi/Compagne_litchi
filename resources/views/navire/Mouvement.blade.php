@@ -93,7 +93,7 @@
                             <label for="filter-compagne">compagne</label>
                             <select id="filter-compagne" class="form-control">
                                 <option value="">Sélectionner compagne</option>
-                                @foreach($compagnes as $compagne)
+                                @foreach($allcompagnes as $compagne)
                                     <option value="{{ $compagne->id_compagne }}">{{ $compagne->annee }}</option>
                                 @endforeach
                             </select>
@@ -118,7 +118,7 @@
                 <h5 class="c-black-900"></h5>
                 <div class="mT-30">
 
-                    <div id="table-container">
+                    <div id=" table-responsive">
                         <table id="" class="table table-hover table-bordered">
                             <thead>
                                 <tr>

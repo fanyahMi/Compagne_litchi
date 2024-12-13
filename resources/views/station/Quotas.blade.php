@@ -20,8 +20,6 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="mt-5">Insertion des quotas </h5>
-                <a href="{{ url('export-model-navire-station') }}">Exporter modèle</a>
-
                 <hr>
                 <form id="ajout_quotasForm" action="{{ url('ajout-quotas') }}" method="POST">
                     @csrf
@@ -98,7 +96,7 @@
             <div class="card-body">
                 <h5 class="c-black-900"><b>Liste des stations</b></h5>
                 <div class="mT-30">
-                    <div id="table-container" class="table-responsive">
+                    <div class="table-responsive">
                         <table id="produitTable" class="table table-hover table-bordered ">
                             <thead>
                                 <tr>

@@ -63,12 +63,12 @@
                     <div class="card-body">
                         <h5 class="c-black-900"><b>Liste des stations</b></h5>
                         <div class="mT-30">
-                            <div id="table-responsive">
-                                <table id="produitTable" class="table table-hover table-bordered ">
+                            <div id="table-container table-responsive">
+                                <table id="produitTable" class="table table-hover table-bordered">
                                     <thead>
                                         <tr>
                                             <th>Station</th>
-                                            <th>NIF</th>
+                                            <th>NIF/STAT</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body">
