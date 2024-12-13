@@ -36,6 +36,7 @@
                 Entrée en Magasin des camion
             </div>
             <div class="card-body">
+                @if (!empty($stations))
                 <form id="ajout_magasin" method="POST">
                     @csrf
                     <div class="form-row">
@@ -100,6 +101,7 @@
 
                     <button type="submit" class="btn btn-primary">Validé</button>
                 </form>
+                @endif
             </div>
 
             <div class="card-body">
@@ -196,7 +198,7 @@
     </div>
 </div>
 
-
+@if (!empty($stations))
 <div id="modifierModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModificationEntree" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -265,7 +267,7 @@
         </div>
     </div>
 </div>
-
+@endif
 
 @endsection
 
@@ -362,6 +364,8 @@ const { jsPDF } = window.jspdf;
     });
     const baseDownloadUrl = '{{ url('/telecharger') }}';
     function appendEntree(entree) {
+        button = entree.etat == 1 ? `<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_entree="${entree.id_entree_magasin}">Modifier</button> `
+            : "";
         const row = `
             <tr>
                 <td><a href="#" onclick='generatePDF(${JSON.stringify(entree)})'>${entree.id_entree_magasin}</a></td>
@@ -376,7 +380,7 @@ const { jsPDF } = window.jspdf;
                 <td>${entree.numero_station} <small>(${entree.station || 'Station inconnue'})</small></td>
                 <td>${entree.date_entrant}</td>
                 <td>
-                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifierModal" data-id_entree="${entree.id_entree_magasin}">Modifier</button>
+                    ${button}
                 </td>
             </tr>
         `;
