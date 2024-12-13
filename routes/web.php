@@ -62,6 +62,9 @@ Route::middleware(['session','admin'])->group(function () {
 
     Route::get('/import', [ImportExportController::class, 'index']);
     Route::get('/export-model-navire-station', [ImportExportController::class, 'exportModelStationNavire']);
+    Route::get('/export-situation/{idCompagne}/{idNavire}', [ImportExportController::class, 'exportRapport']);
+    Route::get('/importation-quotas', [StationController::class, 'affichageImportationQuotas']);
+
     Route::post('/import-excel', [ImportExportController::class, 'importQuotasNumero'])->name('import.excel');
 
     Route::get('/shifts', [ShiftController::class, 'index']);

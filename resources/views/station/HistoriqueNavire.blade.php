@@ -104,11 +104,16 @@ function appendMouvement(mouvement) {
         '<a class="btn btn-primary btn-sm" href="' + baseUrl + '/' + compagne + '/' + mouvement.id_navire + '">' +
         '<i class="fas fa-eye"></i> Détail' +
         '</a>' : '';
+    var baseUrl2 = "{{ url('/export-situation') }}";
+    var button2 = mouvement.quantite_embarque != 0 ?
+        '<a class="btn btn-primary btn-sm" href="' + baseUrl2 + '/' + compagne + '/' + mouvement.id_navire + '">' +
+        '<i class="fas fa-eye"></i> Rapport' +
+        '</a>' : '';
     var row = '<tr>' +
                 '<td>' + mouvement.navire + '</td>' +
                 '<td style="text-align: right;">' + mouvement.quantite_max + '</td>' +
                 '<td style="text-align: right;">' + mouvement.quantite_embarque + '</td>' +
-                '<td>' + button + '</td>' +
+                '<td>' + button +'   '+ button2+'</td>' +
             '</tr>';
     $('#table-body').append(row);
 }

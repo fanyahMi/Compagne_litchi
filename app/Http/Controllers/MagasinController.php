@@ -25,11 +25,14 @@ class MagasinController extends Controller
                     ->select('id_navire', 'navire', 'quantite_max')
                     ->whereNull('date_depart')  // Utilisation de whereNull pour vérifier si 'date_depart' est NULL
                     ->get();
-
+                    $stations = null;
                     $compagne = DB::table('compagne')
                     ->where('etat', 1)
                     ->first();
-        $stations = NumeroStation::getListeNumeroStation(-1, $compagne->id_compagne);
+                    if(!empty($compagne)){
+                        $stations = NumeroStation::getListeNumeroStation(-1, $compagne->id_compagne);
+                    }
+
         $compagnes = DB::table('compagne')->get();
         $normal_stations =  Station::all();
         $shifts = Shift::all();
