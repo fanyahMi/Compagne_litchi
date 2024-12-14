@@ -279,4 +279,45 @@ class EmbarquementController extends Controller
 
     }
 
+    public function modifierEmbarquement(Request $request, $idEmbarquement)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nombre_pallets' => 'required|integer|min:1',
+            ],
+            [
+                'nombre_pallets.required' => 'Le champ "Nombre de palettes" est obligatoire.',
+                'nombre_pallets.integer' => 'Le nombre de palettes doit être un entier.',
+                'nombre_pallets.min' => 'Le nombre de palettes doit être au moins 1.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()]);
+        }
+
+        try {
+            $embarquement = Embarquement::findOrFail($idEmbarquement);
+            $embarquement->nombre_pallets = $request->input('nombre_pallets');
+            $embarquement->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Le nombre de palettes a été mis à jour avec succès.',
+                'embarquement' => $embarquement
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error during embarquement update: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur s\'est produite lors de la mise à jour de l\'embarquement.'
+            ]);
+        }
+    }
+
+
+
+
 }

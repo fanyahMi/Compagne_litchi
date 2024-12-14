@@ -41,4 +41,7 @@ Route::middleware('jwt')->group(function () {
     Route::post('/v1/embarquements/historiques/navires/embarquements', [EmbarquementController::class, 'rechercherHistoriqueNavire']);
     Route::post('/v1/embarquements', [EmbarquementController::class, 'embarquer']);
 
+
+    Route::put('/v1/embarquement/{idEmbarquement}', [EmbarquementController::class, 'modifierEmbarquement']);
+
 });

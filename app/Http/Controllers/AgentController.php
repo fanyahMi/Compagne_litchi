@@ -232,7 +232,7 @@ class AgentController extends Controller
             'matricule' => $result['matricule'],
             'role' => $result['role'],
             'id' => $result['id'],
-            'exp' => time() + (100 * Config::get('jwt.expiration')) // durée de vie du token
+            //'exp' => time() + (100 * Config::get('jwt.expiration')) // durée de vie du token
         ];
 
         $token = JWT::encode($payload,  Config::get('jwt.secret'), 'HS256');
