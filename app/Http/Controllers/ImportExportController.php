@@ -16,10 +16,12 @@ use Log;
 class   ImportExportController extends Controller
 {
     public function index(){
-        $compagnes = DB::table('compagne')->get();
-
+        $compagnes = DB::table('compagne')
+                        ->where('etat', 1)
+                        ->get();
         return view('station.Importation', compact('compagnes'));
     }
+
 
     public function exportModelStationNavire()
     {
@@ -30,21 +32,34 @@ class   ImportExportController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         $sheet->setCellValue('A1', 'Nom Station');
-        $sheet->setCellValue('C1', 'Navire');
         $sheet->setCellValue('B1', 'Numéro Station');
-        $sheet->setCellValue('D1', 'Quotas');
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+
+        $colIndex = 3; // Colonne D
+        foreach ($navires as $navire) {
+            $sheet->setCellValueByColumnAndRow($colIndex, 1, $navire->navire);
+            $sheet->getColumnDimensionByColumn($colIndex)->setAutoSize(true); // Ajuster la largeur
+            $colIndex++;
+        }
 
         $rowIndex = 2;
 
         foreach ($stations as $station) {
             $sheet->setCellValue('A' . $rowIndex, $station->station);
+            $sheet->setCellValue('B' . $rowIndex, $station->numero);
+
+            $colIndex = 3;
             foreach ($navires as $navire) {
-                $sheet->setCellValue('C' . $rowIndex, $navire->navire);
-                $sheet->setCellValue('D' . $rowIndex, '');
-                $rowIndex++;
-                $sheet->setCellValue('A' . $rowIndex, $station->station);
+                $sheet->setCellValueByColumnAndRow($colIndex, $rowIndex, '');
+                $colIndex++;
             }
+
+            $rowIndex++;
         }
+
+        $spreadsheet->getActiveSheet()->getDefaultRowDimension()->setRowHeight(15);
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'stations_navires.xlsx';
@@ -56,6 +71,7 @@ class   ImportExportController extends Controller
         $writer->save('php://output');
         exit();
     }
+
 
 
 
@@ -82,41 +98,62 @@ class   ImportExportController extends Controller
         $check = false;
         $error = "";
         $valideData = array();
+        $navireColumns = range('C', 'Z');
+        $navireNames = [];
         foreach ($sheetData as $rowIndex => $row) {
-           if($rowIndex != 1){
+            if ($rowIndex == 1) {
+                foreach ($row as $col => $value) {
+                    if ($col >= 'C' && !empty(trim($value))) {
+                        $navireNames[] = trim($value);
+                    }
+                }
+                break;
+            }
+        }
+
+        foreach ($sheetData as $rowIndex => $row) {
+            if ($rowIndex != 1) {
                 $nomStation = trim($row['A']);
                 $numeroStation = trim($row['B']);
-                $navire = trim($row['C']);
-                $quotas = str_replace(',', '', trim($row['D']))  ;
+                $quotas = [];
 
-                if (!is_numeric($quotas)) {
-                    $check = true;
-                    $error .= " Le quotas sur la ligne ".$rowIndex ." doit un nombre <br>";
-                }elseif($quotas < 0 ){
-                    $check = true;
-                    $error .= " Le quotas sur la ligne ".$rowIndex ." doit etre positif <br>";
+                foreach ($navireColumns as $key => $col) {
+                    if (isset($row[$col]) && in_array(trim($sheetData[1][$col]), $navireNames)) {
+                        $value = str_replace(',', '', trim($row[$col]));
+                        if (!is_numeric($value)) {
+                            $check = true;
+                            $error .= " Le quotas $navireNames[$key] sur la ligne " . $rowIndex . " doit être un nombre ";
+                        } elseif ($value < 0) {
+                            $check = true;
+                            $error .= " Le quotas $navireNames[$key] sur la ligne " . $rowIndex . " doit être positif";
+                        }
+                        echo trim( $col)."  -  ";
+                        $quotas[ $navireNames[$key]] = (double)$value;
+                    }
                 }
 
-                if((double)$quotas != 0){
-                    $valideData[] = [
-                        'station' => $nomStation,
-                        'compagne_id' => intval($validatedData['compagne_id']),
-                        'numero_station' => intval($numeroStation),
-                        'navire' => $navire,
-                        'quotas'=> (double)$quotas
-                    ];
+                if (array_sum($quotas) > 0) {
+                    foreach ($quotas as $navire => $quota) {
+                        $valideData[] = [
+                            'station' => $nomStation,
+                            'compagne_id' => intval($validatedData['compagne_id']),
+                            'numero_station' => intval($numeroStation),
+                            'navire' => $navire,
+                            'quotas' => $quota
+                        ];
+                    }
                 }
-           }
+            }
         }
-        if($check == true){
-            echo $error;
-        }else{
-            ImportationQuotas::insertImportation( $valideData);
+        if ($check == true) {
+            return redirect()->back()->withErrors($error);
+        } else {
+            ImportationQuotas::insertImportation($valideData);
         }
 
         return redirect('list-quotas');
-
     }
+
 
     public function exportRapport($idCampagne, $idNavire)
     {
@@ -180,7 +217,6 @@ class   ImportExportController extends Controller
                 }
             }
 
-            // Ajouter le total des palettes
             $sheet->setCellValue($this->getColonne($colIndex) . $dataStartRow, $result->TOTAL_PALLETS);
             $dataStartRow++;
         }
