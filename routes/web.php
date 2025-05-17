@@ -11,6 +11,7 @@ use App\Http\Controllers\ImportExportController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\AccueilController;
 use App\Http\Controllers\EmbarquementController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/logout', [AgentController::class, 'logout'])->name('logout');
 Route::post('loginWeb', [AgentController::class, 'loginWeb']);
@@ -80,6 +81,10 @@ Route::middleware(['session','admin'])->group(function () {
     Route::get('/historique-navire/cale/{idCampagne}/{idNavire}', [EmbarquementController::class, 'affichageDetailCalesHistorique']);
     Route::get('/historique/navires/cales', [EmbarquementController::class, 'affichageDetailCale']);
 
+    /**** Tableau de Board  ****/
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard/quotas', [DashboardController::class, 'getQuotasData'])->name('dashboard.quotas');
+Route::get('/historique/navires/cales', [DashboardController::class, 'getMouvements'])->name('historique.navires.cales');
 });
 
 

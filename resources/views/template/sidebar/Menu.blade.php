@@ -9,6 +9,12 @@
                 </li>
 
                 @if (session('agent.role') == 'Administrateur')
+                <li class="nav-item">
+                    <a href="/dashboard" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-home"></i></span>
+                        <span class="pcoded-mtext">Tableau de Bord</span>
+                    </a>
+                </li>
                     <li class="nav-item">
                         <a href="/" class="nav-link">
                             <span class="pcoded-micon"><i class="feather icon-users"></i></span>
