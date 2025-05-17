@@ -324,9 +324,7 @@
             method: 'PUT',
             data: form.serialize(),
             success: function(response) {
-                console.log(response.status);
                 if(response.status){
-                    alert('Quota modifié avec succès !');
                     loadquotas();
                     $('#modifierModal').modal('hide');
                 }else{

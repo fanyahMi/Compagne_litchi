@@ -40,7 +40,7 @@ class Station extends Model
         try {
             return Station::findOrFail($id);
         } catch (\Exception $e) {
-            Log::error('Error fetching station: ' . $e->getMessage());
+            Log::error('Error fetching station: ' . $e->getMessage(). "   ".$id);
             throw new \Exception('Station non trouvé.');
         }
     }

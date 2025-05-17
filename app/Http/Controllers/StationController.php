@@ -235,15 +235,7 @@ class StationController extends Controller
         }
 
         try {
-            // Exemple de logique pour vérifier si un bon de livraison existe déjà
-            if (Station::existsBonLivraison($request->input('id_quotas'))) {
-                // Si un bon de livraison existe déjà, envoyer une erreur globale
-                return response()->json([
-                    'status' => false,
-                    'errors' => ['global' => ['Ce bon de livraison existe déjà.']]
-                ], 422);
-            }
-
+            
             // Logique pour mettre à jour les quotas
             $id = $request->input('id_quotas');
             $data = $request->only(['navire_id', 'numero_station_id', 'quotas']);
