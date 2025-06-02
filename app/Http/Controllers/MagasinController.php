@@ -27,7 +27,7 @@ class MagasinController extends Controller
                     ->get();
                     $stations = null;
                     $compagne = DB::table('compagne')
-                    ->where('etat', 1)
+                    ->where('etat', 0)
                     ->first();
                     if(!empty($compagne)){
                         $stations = NumeroStation::getListeNumeroStation(-1, $compagne->id_compagne);
