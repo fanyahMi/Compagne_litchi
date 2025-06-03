@@ -15,7 +15,6 @@ class NumeroStationController extends Controller
     public function index(){
         $compagnes = DB::table('compagne')
                     ->select('id_compagne', 'annee')
-                    ->where('etat', '!=', 0)
                     ->get();
 
         $stations = DB::table('station')
