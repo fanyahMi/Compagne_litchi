@@ -231,7 +231,7 @@ function generatePDF(entree) {
     doc.setFont('Helvetica', 'normal');
     doc.text("SMMC", 130, 20);
     doc.setFontSize(10);
-    doc.text("TAMATAVE", 130, 28);
+    doc.text("TAOMASINA", 130, 28);
     doc.text("Téléphone : +261 20 53 312 63", 130, 35);
     doc.text("Email : contact@smmc.mg", 130, 42);
 
