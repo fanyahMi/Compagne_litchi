@@ -308,8 +308,8 @@ const { jsPDF } = window.jspdf;
     doc.text("SMMC", 130, 20);
     doc.setFontSize(10);
     doc.text("TAMATAVE", 130, 28);
-    doc.text("Téléphone : 034 90 133 58", 130, 35);
-    doc.text("Email : alpha.house@gmail.com", 130, 42);
+    doc.text("Téléphone : +261 20 53 312 63", 130, 35);
+    doc.text("Email : contact@smmc.mg", 130, 42);
 
     // Dessiner une ligne sous l'en-tête
     doc.setLineWidth(0.5);

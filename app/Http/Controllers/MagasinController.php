@@ -190,15 +190,17 @@ class MagasinController extends Controller
         $typeShift = $request->input('type_shift');
         $typeDate = $request->input('type_date');
         $mouvement = $request->input('mouvement');
-        $perPage = $request->input('per_page', 2);
+        $perPage = $request->input('per_page', 10);
         if((int)$mouvement == 1){
             $query = DB::table('v_mouvement_magasin')
-                    ->select('*');
+                    ->select('*')
+                    ->orderBy('id_sortant_magasin', 'desc');
         }else{
             $query = DB::table('v_mouvement_magasin')
             ->select('*')
             ->whereNotNull('quantite_sortie')
-            ->whereNotNull('date_sortie');
+            ->whereNotNull('date_sortie')
+            ->orderBy('id_sortant_magasin', 'desc');
         }
                     if(!empty($campagne)){
                         $query->where('id_compagne', $campagne );
