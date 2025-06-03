@@ -149,11 +149,11 @@ class MagasinController extends Controller
         $bon_livraison = $request->input('bon_livraison');
         $debut = $request->input('debut');
         $fin = $request->input('fin');
-        $perPage = $request->input('per_page', 2);
+        $perPage = $request->input('per_page', 10);
 
         $query = DB::table('v_mouvement_magasin')
             ->select('*')
-                ->orderBy('date_entrant', 'desc');
+                ->orderBy('id_entree_magasin', 'desc');
                 if(!empty($campagne)){
                     $query->where('id_compagne', $campagne );
                 }
