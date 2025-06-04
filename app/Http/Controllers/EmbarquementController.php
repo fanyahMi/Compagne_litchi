@@ -317,7 +317,8 @@ class EmbarquementController extends Controller
         }
     }
 
-
-
-
+    public function dashboardEmbarquementNavire()
+    {
+        return view('embarquement.Embarquement');
+    }
 }

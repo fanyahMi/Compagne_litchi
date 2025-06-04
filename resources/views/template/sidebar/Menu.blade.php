@@ -39,6 +39,12 @@
                             <span class="pcoded-mtext">Import</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/dahsboard/embarquement') }}" class="nav-link">
+                            <span class="pcoded-micon"><i class="feather icon-download"></i></span>
+                            <span class="pcoded-mtext">Embarquement</span>
+                        </a>
+                    </li>
                     <li class="nav-item pcoded-hasmenu">
                         <a href="#!" class="nav-link">
                             <span class="pcoded-micon"><i class="feather icon-briefcase"></i></span>

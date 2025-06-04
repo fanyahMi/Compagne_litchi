@@ -12,6 +12,7 @@ use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\AccueilController;
 use App\Http\Controllers\EmbarquementController;
 use App\Http\Controllers\DashboardController;
+use App\Models\Embarquement;
 
 Route::get('/logout', [AgentController::class, 'logout'])->name('logout');
 Route::post('loginWeb', [AgentController::class, 'loginWeb']);
@@ -111,6 +112,7 @@ Route::middleware(['session',  'agent.entree-sortie'])->group(function () {
     Route::get('/get-entree', [MagasinController::class, 'getEntree']);
     Route::get('/get-entree/{id}', [MagasinController::class, 'getById']);
     Route::post('/entree-magasin/modifier', [MagasinController::class, 'modifierEntrer'])->name('entre.modifier');
+    Route::get('/dahsboard/embarquement', [EmbarquementController::class, 'dashboardEmbarquementNavire']);
 
 });
 
