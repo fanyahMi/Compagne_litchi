@@ -74,33 +74,8 @@
 <div class="row">
     <div class="col-sm-12">
         <!-- Conteneurs pour les messages -->
-        
+
         <div id="error-message" class="error-message" style="display: none;"></div>
-
-        <!-- Bouton pour montrer/fermer les filtres -->
-        <div class="mb-4 text-left">
-            <button type="button" class="btn btn-secondary" id="show-filter-btn"><i class="fas fa-filter"></i> Afficher les filtres</button>
-        </div>
-
-        <!-- Card for Filters -->
-        <div class="card mb-4" id="filter-card">
-            <div class="card-header">
-                <h5>Filtres</h5>
-            </div>
-            <div class="card-body">
-                <div class="mT-30">
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="filter-name">Nom</label>
-                            <input type="text" class="form-control" id="filter-name" placeholder="Filtrer par nom">
-                        </div>
-                        <div class="form-group col-md-2" style="align-content: flex-end">
-                            <button type="button" class="btn btn-secondary" id="filter-btn"><i class="fas fa-search"></i> Filtrer</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Card for Insertion -->
         <div class="card mb-4">
@@ -131,6 +106,32 @@
                     </div>
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Insérer</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Bouton pour montrer/fermer les filtres -->
+        <div class="mb-4 text-left">
+            <button type="button" class="btn btn-secondary" id="show-filter-btn"><i class="fas fa-filter"></i> Afficher les filtres</button>
+        </div>
+
+
+        <!-- Card for Filters -->
+        <div class="card mb-4" id="filter-card">
+            <div class="card-header">
+                <h5>Filtres</h5>
+            </div>
+            <div class="card-body">
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="filter-name">Nom</label>
+                            <input type="text" class="form-control" id="filter-name" placeholder="Filtrer par nom">
+                        </div>
+                        <div class="form-group col-md-2" style="align-content: flex-end">
+                            <button type="button" class="btn btn-secondary" id="filter-btn"><i class="fas fa-search"></i> Filtrer</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

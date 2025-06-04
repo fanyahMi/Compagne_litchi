@@ -158,7 +158,7 @@
 </style>
 
 <div class="container text-center mt-5">
-    
+
     <div class="header d-flex justify-content-between align-items-center">
         <img src="/assets/images/SMMC-Logo.png" alt="SMMC Logo" class="me-3">
         <div class="text-end">
@@ -167,78 +167,124 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
-            <div class="card mb-4">
+        <div class="col-3">
+            <div class="card info-section mb-4">
                 <div class="card-body">
                     <h5 class="card-title text-center mb-3"><i class="fas fa-boxes"></i> Calages du Navire</h5>
                     <table class="table table-custom">
                         <tbody>
                             <tr>
                                 <td class="rank">1</td>
-                                <td class="large-number">0849</td>
-                                 
+                                <td class="large-number">0040</td>
+
                             </tr>
                             <tr>
                                 <td class="rank">2</td>
-                                <td class="large-number">0988</td>
-                                 
+                                <td class="large-number">0020</td>
+
                             </tr>
                             <tr>
                                 <td class="rank">3</td>
-                                <td class="large-number">1170</td>
-                                 
+                                <td class="large-number">0199</td>
+
                             </tr>
                             <tr>
                                 <td class="rank">4</td>
-                                <td class="large-number">0866</td>
-                                 
+                                <td class="large-number">00</td>
+
                             </tr>
                             <tr>
-                                <td colspan="2" class="large-number">3873</td>
-                                 
+                                <td class="rank">5</td>
+                                <td class="large-number">00</td>
+
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+            <div class="card mb-1">
+                <div class="card-body">
+                    <h5 class="card-title mb-2"></i> Total</h5>
+                    <p class="forecast-value">0259</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card mb-1">
+                <div class="card-body">
+                    <h5 class="card-title mb-2">&#8721; </i> Entree magasin</h5>
+                    <p class="forecast-value">256</p>
+                </div>
+            </div>
+            <div class="card mb-1">
+                <div class="card-body">
+                    <h5 class="card-title mb-2">&#8721; </i> Sortie magasin</h5>
+                    <p class="forecast-value">256</p>
+                </div>
+            </div>
+            <div class="card mb-1">
+                <div class="card-body">
+                    <h5 class="card-title mb-2">&#8721; </i> Entree shift</h5>
+                    <p class="forecast-value">256</p>
+                </div>
+            </div>
+            <div class="card mb-1">
+                <div class="card-body">
+                    <h5 class="card-title mb-2">&#8721; </i> Sortie shift</h5>
+                    <p class="forecast-value">256</p>
+                </div>
+            </div>
+            <div class="card mb-1">
+                <div class="card-body">
+                    <h5 class="card-title mb-2">&#8721; </i> Embarquer shift</h5>
+                    <p class="forecast-value">256</p>
+                </div>
+            </div>
         </div>
         <div class="col-6">
-            <div class="card mb-4">
-                <div class="card-body info-section">
+            <div class="card">
+                <div class="card-body ">
                     <div class="info-top">
-                        <div class="info-text">
-                            <h5 class="card-title mb-3"><i class="fas fa-ship"></i> Informations Navire</h5>
-                            <p><i class="fas fa-ship"></i> NAVIRE: CS TRUST</p>
-                            <p><i class="fas fa-map-marker-alt"></i> DESTINATION: COTONOU</p>
-                            <p><i class="fas fa-clock"></i> ETA: 2025-06-03 22:18</p>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-wrapper">
-                                <p>%</p>
-                                <div class="progress progress-vertical">
-                                    <div class="progress-bar progress-bar-striped bg-success progress-bar-vertical" role="progressbar" style="height: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                                        <span class="progress-text">75</span>
-                                    </div>
+                        <div class="col-8">
+                            <div class="info-text">
+                                <h5 class="card-title mb-3"><i class="fas fa-ship"></i> Informations Navire</h5>
+                                <p><i class="fas fa-ship"></i> NAVIRE: Atlantic klipper</p>
+                                <p><i class="fas fa-map-marker-alt"></i> DESTINATION: Europe</p>
+                                <p><i class="fas fa-clock"></i> ETAT: 2025-05-03 22:18</p>
+                            </div>
+                            <br>
+                            <div class="forecast-section">
+                                <div class="forecast-card">
+                                    <p><i class="fas fa-eye"></i> Prévision</p>
+                                    <p class="forecast-value">7311</p>
+                                </div>
+                                <div class="forecast-card reste">
+                                    <p><i class="fas fa-hourglass-half"></i> Reste</p>
+                                    <p class="forecast-value">7052</p>
                                 </div>
                             </div>
-                            <div class="shift-container">
-                                <p>Shift</p>
-                                <div class="shift-box">2</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="progress-container">
+                                <div class="progress-wrapper">
+                                    <p>%</p>
+                                    <div class="progress progress-vertical">
+                                        <div class="progress-bar progress-bar-striped bg-success progress-bar-vertical" role="progressbar" style="height: 3.5%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                            <span class="progress-text">3,5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="shift-container">
+                                    <p>Shift</p>
+                                    <div class="shift-box">3</div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="forecast-section">
-                        <div class="forecast-card">
-                            <p><i class="fas fa-eye"></i> Prévision</p>
-                            <p class="forecast-value">7171</p>
-                        </div>
-                        <div class="forecast-card reste">
-                            <p><i class="fas fa-hourglass-half"></i> Reste</p>
-                            <p class="forecast-value">4000</p>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="card">
+Stat
             </div>
         </div>
     </div>

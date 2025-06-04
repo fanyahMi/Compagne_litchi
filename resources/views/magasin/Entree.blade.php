@@ -57,79 +57,6 @@
 <div class="row">
     <div class="col-sm-12">
 
-       
-        <!-- Bouton pour montrer/fermer les filtres, aligné à gauche -->
-        <div class="mb-4 text-left">
-            <button type="button" class="btn btn-secondary" id="show-filter-btn"><i class="fas fa-filter"></i> Afficher les filtres</button>
-        </div>
-
-        <!-- Card for Filters -->
-        <div class="card mb-4" id="filter-card">
-            <div class="card-header">
-                <h5>Filtres</h5>
-            </div>
-            <div class="card-body">
-                <div class="mT-30">
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label for="filter-navire">Navire</label>
-                            <select id="filter-navire" class="form-control">
-                                <option value="">Sélectionner</option>
-                                @foreach($normal_navires as $navire)
-                                    <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="filtre-station">Station</label>
-                            <select id="filtre-station" class="form-control">
-                                <option value="">Sélectionner</option>
-                                @foreach($normal_stations as $station)
-                                    <option value="{{ $station->id_station }}">{{ $station->station }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="filter-annee">Année</label>
-                            <select id="filter-annee" class="form-control">
-                                <option value="">Sélectionner</option>
-                                @foreach($compagnes as $campagne)
-                                    <option value="{{ $campagne->id_compagne }}">{{ $campagne->annee }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="filter-shift">Shift</label>
-                            <select id="filter-shift" class="form-control">
-                                <option value="">Sélectionner</option>
-                                @foreach($shifts as $shift)
-                                    <option value="{{ $shift->id_shift }}">{{ $shift->description }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="filter-bon_livraison">Bon de livraison</label>
-                            <input type="text" class="form-control" id="filter-bon_livraison">
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="filter-camion">Numéro Camion</label>
-                            <input type="text" class="form-control" id="filter-camion">
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="debut">Date début</label>
-                            <input type="date" class="form-control" id="debut">
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="fin">Date fin</label>
-                            <input type="date" class="form-control" id="fin">
-                        </div>
-                        <div class="form-group col-md-3" style="align-content: flex-end">
-                            <button type="button" class="btn btn-secondary" id="filter-btn"><i class="fas fa-search"></i> Filtrer</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Card for Form -->
         @if (!empty($stations))
@@ -207,6 +134,80 @@
             </div>
         </div>
         @endif
+
+        <!-- Bouton pour montrer/fermer les filtres, aligné à gauche -->
+        <div class="mb-4 text-left">
+            <button type="button" class="btn btn-secondary" id="show-filter-btn"><i class="fas fa-filter"></i> Afficher les filtres</button>
+        </div>
+
+        <!-- Card for Filters -->
+        <div class="card mb-4" id="filter-card">
+            <div class="card-header">
+                <h5>Filtres</h5>
+            </div>
+            <div class="card-body">
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="filter-navire">Navire</label>
+                            <select id="filter-navire" class="form-control">
+                                <option value="">Sélectionner</option>
+                                @foreach($normal_navires as $navire)
+                                    <option value="{{ $navire->id_navire }}">{{ $navire->navire }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filtre-station">Station</label>
+                            <select id="filtre-station" class="form-control">
+                                <option value="">Sélectionner</option>
+                                @foreach($normal_stations as $station)
+                                    <option value="{{ $station->id_station }}">{{ $station->station }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-annee">Année</label>
+                            <select id="filter-annee" class="form-control">
+                                <option value="">Sélectionner</option>
+                                @foreach($compagnes as $campagne)
+                                    <option value="{{ $campagne->id_compagne }}">{{ $campagne->annee }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-shift">Shift</label>
+                            <select id="filter-shift" class="form-control">
+                                <option value="">Sélectionner</option>
+                                @foreach($shifts as $shift)
+                                    <option value="{{ $shift->id_shift }}">{{ $shift->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-bon_livraison">Bon de livraison</label>
+                            <input type="text" class="form-control" id="filter-bon_livraison">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="filter-camion">Numéro Camion</label>
+                            <input type="text" class="form-control" id="filter-camion">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="debut">Date début</label>
+                            <input type="date" class="form-control" id="debut">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="fin">Date fin</label>
+                            <input type="date" class="form-control" id="fin">
+                        </div>
+                        <div class="form-group col-md-3" style="align-content: flex-end">
+                            <button type="button" class="btn btn-secondary" id="filter-btn"><i class="fas fa-search"></i> Filtrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Card for Table -->
         <div class="card">
