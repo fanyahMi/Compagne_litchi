@@ -155,8 +155,13 @@
         color: #003087;
         font-weight: bold;
     }
+    canvas {
+        max-width: 90%;
+        height: 400px;
+        margin: auto;
+    }
 </style>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div class="container text-center mt-5">
 
     <div class="header d-flex justify-content-between align-items-center">
@@ -212,32 +217,32 @@
         <div class="col-3">
             <div class="card mb-1">
                 <div class="card-body">
-                    <h5 class="card-title mb-2">&#8721; </i> Entree magasin</h5>
-                    <p class="forecast-value">256</p>
+                    <h5 class="card-title mb-2">∑ </i> Entree magasin</h5>
+                    <p class="forecast-value">539</p>
                 </div>
             </div>
             <div class="card mb-1">
                 <div class="card-body">
-                    <h5 class="card-title mb-2">&#8721; </i> Sortie magasin</h5>
-                    <p class="forecast-value">256</p>
+                    <h5 class="card-title mb-2">∑ </i> Sortie magasin</h5>
+                    <p class="forecast-value">322</p>
                 </div>
             </div>
             <div class="card mb-1">
                 <div class="card-body">
-                    <h5 class="card-title mb-2">&#8721; </i> Entree shift</h5>
-                    <p class="forecast-value">256</p>
+                    <h5 class="card-title mb-2">∑ </i> Entree shift</h5>
+                    <p class="forecast-value">96</p>
                 </div>
             </div>
             <div class="card mb-1">
                 <div class="card-body">
-                    <h5 class="card-title mb-2">&#8721; </i> Sortie shift</h5>
-                    <p class="forecast-value">256</p>
+                    <h5 class="card-title mb-2">∑ </i> Sortie shift</h5>
+                    <p class="forecast-value">128</p>
                 </div>
             </div>
             <div class="card mb-1">
                 <div class="card-body">
-                    <h5 class="card-title mb-2">&#8721; </i> Embarquer shift</h5>
-                    <p class="forecast-value">256</p>
+                    <h5 class="card-title mb-2">∑ </i> Embarquer shift</h5>
+                    <p class="forecast-value">128</p>
                 </div>
             </div>
         </div>
@@ -269,8 +274,8 @@
                                 <div class="progress-wrapper">
                                     <p>%</p>
                                     <div class="progress progress-vertical">
-                                        <div class="progress-bar progress-bar-striped bg-success progress-bar-vertical" role="progressbar" style="height: 3.5%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                                            <span class="progress-text">3,5</span>
+                                        <div class="progress-bar progress-bar-striped bg-success progress-bar-vertical" role="progressbar" style="height: 3.5%" aria-valuenow="3.5" aria-valuemin="0" aria-valuemax="100">
+                                            <span class="progress-text">3.5%</span>
                                         </div>
                                     </div>
                                 </div>
@@ -284,7 +289,7 @@
                 </div>
             </div>
             <div class="card">
-Stat
+                <canvas id="shift3Chart"></canvas>
             </div>
         </div>
     </div>
@@ -295,5 +300,47 @@ Stat
 @section('script')
 <script>
     console.log('Page d\'accueil pour l\'exportateur de litchis chargée.');
+</script>
+<script>
+    const ctx = document.getElementById('shift3Chart').getContext('2d');
+    const shift3Chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['22h', '23h', '00h', '01h', '02h', '03h', '04h', '05h', '06h'],
+        datasets: [{
+          label: 'Nombre de mouvements',
+          data: [25, 15, 20, 30, 40, 35, 35, 39, 20],
+          borderColor: 'steelblue',
+          backgroundColor: 'lightsteelblue',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 5,
+          pointBackgroundColor: 'steelblue'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Nombre de mouvements'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Heures'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
 </script>
 @endsection
