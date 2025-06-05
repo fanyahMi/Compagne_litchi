@@ -143,7 +143,7 @@
                         <div class="card-header-custom">Stations Actives</div>
                         <div class="card-body-custom">
                             <div class="stat-value" id="stat-stations">0</div>
-                            <p>Stations utilisées</p>
+                            <p>Stations</p>
                         </div>
                     </div>
                 </div>
