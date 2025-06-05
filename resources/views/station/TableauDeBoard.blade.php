@@ -334,17 +334,36 @@ function loadDashboardData(compagneId, navireId = '') {
     });
 }
 
-$(document).ready(function() {
-    // Charger les données initiales du dashboard
-    const initialCompagne = $('#filter-compagne').val();
-    loadDashboardData(initialCompagne);
+$(document).ready(function () {
+    const navires = ['Atlantic Klipper', 'Trust'];
+    const totalPallets = [4200, 3430];
+    const quotas = [4700, 4000];
+    const pourcentages = [89, 86];
 
-    // Événement pour le filtre des graphiques
-    $('#filter-charts-btn').on('click', function() {
-        const compagne = $('#filter-compagne').val();
-        const navire = $('#filter-navire').val();
-        loadDashboardData(compagne, navire);
-    });
+    const stationsLabels = ['EXA Trading', 'CFM', 'MON LITCHI', 'COMEX', 'MCO TRADE', 'MADAPRO'];
+    const stationsData = {
+        'Atlantic Klipper': {
+            'EXA Trading': 800,
+            'CFM': 700,
+            'MON LITCHI': 600,
+            'COMEX': 700,
+            'MCO TRADE': 750,
+            'MADAPRO': 650
+        },
+        'Trust': {
+            'EXA Trading': 700,
+            'CFM': 630,
+            'MON LITCHI': 520,
+            'COMEX': 610,
+            'MCO TRADE': 500,
+            'MADAPRO': 470
+        }
+    };
+
+    // Inject stats
+    updateStats(7630, 86, 6);
+    initializeCharts(navires, totalPallets, quotas, pourcentages, stationsLabels, stationsData);
 });
+
 </script>
 @endsection
