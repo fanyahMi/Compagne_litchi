@@ -125,22 +125,25 @@
     }
 
     function appendAnneCompagne(compagne) {
-        var etatText = compagne.etat === 1 ? 'En cours...' : 'Terminé';
+    var etatText = compagne.etat === 1 ? 'En cours...' : 'Terminé';
 
-        // If "En cours", add a "Terminer" button next to the status text
-        var etatCellContent = compagne.etat === 1
-            ? etatText + ' <button class="btn-terminer" data-id="' + compagne.id_compagne + '">Terminer</button>'
-            : etatText;
+    // Si "En cours", ajouter un bouton "Terminer"
+    var etatCellContent = compagne.etat === 1
+        ? etatText + ' <button class="btn-terminer btn btn-sm btn-warning" data-id="' + compagne.id_compagne + '">Terminer</button>'
+        : etatText;
 
-        var row = '<tr>' +
-                    '<td><a href="' + '{{ url("historique-navire") }}/' + compagne.id_compagne + '">' + compagne.annee + '</a></td>' +
-                    '<td>' + compagne.debut + '</td>' +
-                    '<td>' + compagne.fin + '</td>' +
-                    '<td>' + etatCellContent + '</td>' + // Add status and button in the same column
-                '</tr>';
+    // Si fin est null ou vide, afficher N/A
+    var finText = compagne.fin ? compagne.fin : '<span class="text-muted">N/A</span>';
 
-        $('#table-body').append(row);
-    }
+    var row = '<tr>' +
+                '<td><a href="' + '{{ url("historique-navire") }}/' + compagne.id_compagne + '">' + compagne.annee + '</a></td>' +
+                '<td>' + compagne.debut + '</td>' +
+                '<td>' + finText + '</td>' +
+                '<td>' + etatCellContent + '</td>' +
+              '</tr>';
+
+    $('#table-body').append(row);
+}
 
     // Event listener to handle the "Terminer" button click
     $(document).on('click', '.btn-terminer', function() {
