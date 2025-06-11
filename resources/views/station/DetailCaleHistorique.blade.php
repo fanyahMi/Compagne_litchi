@@ -188,7 +188,6 @@
 
 @endsection
 @section('script')
-<script src="assets/js/plugins/jquery-ui.min.js"></script>
 <script>
 
 $.ajaxSetup({

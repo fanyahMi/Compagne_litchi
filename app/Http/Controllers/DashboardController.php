@@ -162,20 +162,22 @@ class DashboardController extends Controller
         $page = $request->input('page', 1);
 
         $query = DB::table('embarquement as e')
-            ->select(
-                'e.numero_cale',
-                'e.numero_station_id',
-                's.station',
-                'sh.description',
-                'e.matricule',
-                'e.prenom',
-                'e.embarquement',
-                'e.nombre_pallets'
-            )
+        ->select(
+            'e.numero_cal as numero_cale',
+            'e.numero_station_id',
+            's.station',
+            'sh.description',
+            'u.matricule',
+            'u.prenom',
+            DB::raw('CONCAT(e.date_embarquement, " ", e.heure_embarquement) as embarquement'),
+            'e.nombre_pallets'
+        )
+        
             ->leftJoin('numero_station as ns', 'ns.id_numero_station', '=', 'e.numero_station_id')
+            ->leftJoin('utilisateur as u', 'u.id_utilisateur', '=', 'e.utilisateur_id')
             ->leftJoin('station as s', 'ns.station_id', '=', 's.id_station')
             ->leftJoin('shift as sh', 'sh.id_shift', '=', 'e.shift_id')
-            ->where('e.id_campagne', $compagneId);
+            ->where('ns.compagne_id', $compagneId);
 
         if ($navireId) {
             $query->where('e.navire_id', $navireId);
