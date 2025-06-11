@@ -306,28 +306,47 @@ function appendSortie(sortie) {
 
 function appendPagination(data) {
     let pagination = '';
+    const currentPage = data.current_page;
+    const lastPage = data.last_page;
 
     // Bouton "Précédent"
-    if (data.prev_page_url) {
-        pagination += '<button class="btn btn-primary mx-1" onclick="loadSortie(' + (data.current_page - 1) + ')">Précédent</button>';
-    } else {
-        pagination += '<button class="btn btn-secondary mx-1" disabled>Précédent</button>';
+    pagination += data.prev_page_url
+        ? `<button class="btn btn-primary mx-1" onclick="loadSortie(${currentPage - 1})">Précédent</button>`
+        : `<button class="btn btn-secondary mx-1" disabled>Précédent</button>`;
+
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(lastPage, currentPage + 2);
+
+    if (currentPage <= 3) {
+        endPage = Math.min(5, lastPage);
+    }
+    if (currentPage >= lastPage - 2) {
+        startPage = Math.max(1, lastPage - 4);
     }
 
-    // Numéros de pages
-    for (let i = 1; i <= data.last_page; i++) {
-        pagination += '<button class="btn ' + (i === data.current_page ? 'btn-dark' : 'btn-light') + ' mx-1" onclick="loadSortie(' + i + ')">' + i + '</button>';
+    // "..." avant
+    if (startPage > 1) {
+        pagination += `<button class="btn btn-light mx-1" disabled>...</button>`;
+    }
+
+    // Numéros de pages visibles
+    for (let i = startPage; i <= endPage; i++) {
+        pagination += `<button class="btn ${i === currentPage ? 'btn-dark' : 'btn-light'} mx-1" onclick="loadSortie(${i})">${i}</button>`;
+    }
+
+    // "..." après
+    if (endPage < lastPage) {
+        pagination += `<button class="btn btn-light mx-1" disabled>...</button>`;
     }
 
     // Bouton "Suivant"
-    if (data.next_page_url) {
-        pagination += '<button class="btn btn-primary mx-1" onclick="loadSortie(' + (data.current_page + 1) + ')">Suivant</button>';
-    } else {
-        pagination += '<button class="btn btn-secondary mx-1" disabled>Suivant</button>';
-    }
+    pagination += data.next_page_url
+        ? `<button class="btn btn-primary mx-1" onclick="loadSortie(${currentPage + 1})">Suivant</button>`
+        : `<button class="btn btn-secondary mx-1" disabled>Suivant</button>`;
 
     $('#pagination').html(pagination);
 }
+
 
 function loadSortie(page = 1) {
     const navire = $('#filter-navire').val();
