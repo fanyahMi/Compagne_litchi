@@ -163,12 +163,13 @@ class DashboardController extends Controller
 
         $query = DB::table('embarquement as e')
         ->select(
-            'e.numero_cal as numero_cale',
+            'e.numero_cal as numero_cal',
             'e.numero_station_id',
             's.station',
             'sh.description',
             'u.matricule',
             'u.prenom',
+            'ns.numero_station',
             DB::raw('CONCAT(e.date_embarquement, " ", e.heure_embarquement) as embarquement'),
             'e.nombre_pallets'
         )
