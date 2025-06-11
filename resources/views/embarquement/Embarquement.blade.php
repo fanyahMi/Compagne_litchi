@@ -168,7 +168,8 @@
         <img src="/assets/images/SMMC-Logo.png" alt="SMMC Logo" class="me-3">
         <div class="text-end">
             <p class="mb-0"><i class="fas fa-info-circle"></i> INFORMATION TECHNIQUE</p>
-            <p class="mb-0"><i class="fas fa-calendar-alt"></i> Date: {{ now()->format('Y-m-d H:i') }}</p>
+            <p class="mb-0"><i class="fas fa-calendar-alt"></i> Date: {{ $navireInfo->date_heure_systeme }}
+            </p>
         </div>
     </div>
     <div class="row">
@@ -241,7 +242,7 @@
                             <div class="info-text">
                                 <h5 class="card-title mb-3"><i class="fas fa-ship"></i> Informations Navire</h5>
                                 <p><i class="fas fa-ship"></i> NAVIRE: {{ $navireInfo->navire ?? 'N/A' }}</p>
-                                <p><i class="fas fa-clock"></i> ETAT: {{ now()->format('Y-m-d H:i') }}</p>
+                                <p><i class="fas fa-clock"></i> ETAT: {{ $navireInfo->date_heure_systeme }}</p>
                             </div>
                             <br>
                             <div class="forecast-section">

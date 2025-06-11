@@ -12,7 +12,6 @@ class DashboardController extends Controller
         // Récupérer la campagne en cours (par exemple, la plus récente)
         $currentCampagne = DB::table('compagne')
             ->select('id_compagne', 'annee')
-            ->where('etat', 0)
             ->first();
 
         // Récupérer toutes les campagnes pour le filtre
