@@ -268,7 +268,7 @@
                                 </div>
                                 <div class="shift-container">
                                     <p>Shift</p>
-                                    <div class="shift-box">3</div>
+                                    <div class="shift-box">2</div>
                                 </div>
                             </div>
                         </div>
