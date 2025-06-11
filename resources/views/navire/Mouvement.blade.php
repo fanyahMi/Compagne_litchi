@@ -224,11 +224,13 @@ function appendMouvement(mouvement) {
         '<i class="fas fa-edit"></i></button>'
         : '';
 
+        var  depart = mouvement.date_depart ? mouvement.date_depart : '<span class="text-muted">N/A</span>';
+
     var row = '<tr>' +
                 '<td>' + mouvement.annee + '</td>' +
                 '<td>' + mouvement.navire + '</td>' +
                 '<td>' + mouvement.date_arriver + '</td>' +
-                '<td>' + mouvement.date_depart + '</td>' +
+                '<td>' + depart + '</td>' +
                 '<td>' + button + '</td>' +
             '</tr>';
 
