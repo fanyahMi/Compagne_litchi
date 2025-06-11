@@ -261,7 +261,7 @@ class NavireController extends Controller
     {
         try {
             $compagne = DB::table('compagne')
-                    ->where('etat', 0)
+                    ->where('etat', 1)
                     ->first();
             $navire = DB::table('v_quantite_cales')
             ->where('id_navire', '=', $idNavire)

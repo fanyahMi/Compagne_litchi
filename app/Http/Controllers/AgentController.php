@@ -247,7 +247,7 @@ class AgentController extends Controller
         }
 
         $campagne = DB::table('compagne')
-                    ->where('etat', 0)
+                    ->where('etat', 1)
                     ->first();
 
         return response()->json(['token' => $token, 'campagne' => $campagne, 'agent' => $decoded ]);

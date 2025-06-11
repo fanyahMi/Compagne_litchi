@@ -259,7 +259,7 @@ class StationController extends Controller
 
     public function getNumeroStationCampagneEnCours(){
         $compagne = DB::table('v_station_numero_compagne')
-                    ->where('etat', 0)
+                    ->where('etat', 1)
                     ->get();
         return response()->json($compagne);
     }
