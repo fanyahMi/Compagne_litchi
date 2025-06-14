@@ -64,7 +64,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                Historique embarquement campagne {{ $campagne }} - {{ $navire }}
+                <h5>Historique embarquement campagne {{ $campagne }} - {{ $navire }}</h5>
                 <input type="hidden" id="filter-compagne" name="filter-compagne" value="{{ $idCampagne }}">
                 <input type="hidden" id="filter-navire" name="filter-navire" value="{{ $idNavire }}">
             </div>
@@ -95,7 +95,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                Liste des mouvements
+                <h5>Liste des mouvements</h5>
                 <input type="hidden" id="filter-compagne" name="filter-compagne" value="{{ $idCampagne }}" >
                 <input type="hidden" id="filter-navire" name="filter-navire" value="{{ $idNavire }}" >
             </div>

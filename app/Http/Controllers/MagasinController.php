@@ -27,7 +27,7 @@ class MagasinController extends Controller
                     ->get();
                     $stations = null;
                     $compagne = DB::table('compagne')
-                    ->where('etat', 1)
+                    ->where('etat', 0)
                     ->first();
                     if(!empty($compagne)){
                         $stations = NumeroStation::getListeNumeroStation(-1, $compagne->id_compagne);
@@ -149,11 +149,11 @@ class MagasinController extends Controller
         $bon_livraison = $request->input('bon_livraison');
         $debut = $request->input('debut');
         $fin = $request->input('fin');
-        $perPage = $request->input('per_page', 2);
+        $perPage = $request->input('per_page', 10);
 
         $query = DB::table('v_mouvement_magasin')
             ->select('*')
-                ->orderBy('date_entrant', 'desc');
+                ->orderBy('id_entree_magasin', 'desc');
                 if(!empty($campagne)){
                     $query->where('id_compagne', $campagne );
                 }
@@ -190,15 +190,17 @@ class MagasinController extends Controller
         $typeShift = $request->input('type_shift');
         $typeDate = $request->input('type_date');
         $mouvement = $request->input('mouvement');
-        $perPage = $request->input('per_page', 2);
+        $perPage = $request->input('per_page', 10);
         if((int)$mouvement == 1){
             $query = DB::table('v_mouvement_magasin')
-                    ->select('*');
+                    ->select('*')
+                    ->orderBy('id_sortant_magasin', 'desc');
         }else{
             $query = DB::table('v_mouvement_magasin')
             ->select('*')
             ->whereNotNull('quantite_sortie')
-            ->whereNotNull('date_sortie');
+            ->whereNotNull('date_sortie')
+            ->orderBy('id_sortant_magasin', 'desc');
         }
                     if(!empty($campagne)){
                         $query->where('id_compagne', $campagne );
