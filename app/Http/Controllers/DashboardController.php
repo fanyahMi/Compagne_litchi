@@ -36,33 +36,73 @@ class DashboardController extends Controller
     {
         $compagneId = $request->input('id_compagne');
         $navireId = $request->input('id_navire');
-
-        $query = DB::table('v_quotas_navire_compagne as v')
+        
+        // Vérification des données dans v_quotas_navire_compagne et embarquement
+        $testQuotas = DB::table('v_quotas_navire_compagne')
+            ->where('id_compagne', $compagneId)
+            ->where('id_navire', $navireId ?? 0)
+            ->get();
+        
+        $testEmbarquement = DB::table('embarquement')
+            ->where('navire_id', $navireId ?? 0)
+            ->get();
+        
+        // Sous-requête pour TotalParNavire
+        $totalParNavire = DB::table('v_quotas_navire_compagne as v')
+            ->leftJoin('embarquement as e', 'v.id_navire', '=', 'e.navire_id')
+            ->where('v.id_compagne', $compagneId)
+            ->when($navireId, function ($query) use ($navireId) {
+                return $query->where('v.id_navire', $navireId);
+            })
+            ->groupBy('v.navire', 'v.id_navire', 'v.quotas_navire')
             ->select(
                 'v.navire',
                 'v.id_navire',
-                DB::raw('SUM(e.nombre_pallets) as total_pallets'),
                 'v.quotas_navire',
-                DB::raw('ROUND((SUM(e.nombre_pallets) / v.quotas_navire * 100), 2) as pourcentage_quota'),
+                DB::raw('SUM(e.nombre_pallets) as total_pallets'),
+                DB::raw('ROUND((SUM(e.nombre_pallets) / NULLIF(v.quotas_navire, 0) * 100), 2) as pourcentage_quota')
+            );
+    
+        // Requête principale
+        $results = DB::table(DB::raw("({$totalParNavire->toSql()}) as t"))
+            ->mergeBindings($totalParNavire) // Fusionner les bindings de la sous-requête
+            ->leftJoin('v_quotas_navire_compagne as v', 't.id_navire', '=', 'v.id_navire')
+            ->leftJoin('embarquement as e', 'v.id_navire', '=', 'e.navire_id')
+            ->leftJoin('numero_station as ns', 'ns.id_numero_station', '=', 'e.numero_station_id')
+            ->leftJoin('station as s', 'ns.station_id', '=', 's.id_station')
+            ->where('v.id_compagne', $compagneId)
+            ->when($navireId, function ($query) use ($navireId) {
+                return $query->where('v.id_navire', $navireId);
+            })
+            ->groupBy(
+                't.navire',
+                't.id_navire',
+                't.total_pallets',
+                't.quotas_navire',
+                't.pourcentage_quota',
+                'e.numero_station_id',
+                's.station'
+            )
+            ->orderBy('t.navire')
+            ->orderBy('e.numero_station_id')
+            ->select(
+                't.navire',
+                't.id_navire',
+                't.total_pallets',
+                't.quotas_navire',
+                't.pourcentage_quota',
                 'e.numero_station_id',
                 's.station',
                 DB::raw('SUM(e.nombre_pallets) as pallets_par_station')
             )
-            ->leftJoin('embarquement as e', 'v.id_navire', '=', 'e.navire_id')
-            ->leftJoin('numero_station as ns', 'ns.id_numero_station', '=', 'e.numero_station_id')
-            ->leftJoin('station as s', 'ns.station_id', '=', 's.id_station')
-            ->where('v.id_compagne', $compagneId);
-            
-        if ($navireId) {
-            $query->where('v.id_navire', $navireId);
-        }
-
-        $results = $query
-            ->groupBy('v.navire', 'v.id_navire', 'v.quotas_navire', 'e.numero_station_id', 's.station')
-            ->orderBy('v.navire')
-            ->orderBy('e.numero_station_id')
             ->get();
-
+    
+        
+        if ($results->isEmpty() && $navireId) {
+            return response()->json(['error' => 'Aucune donnée trouvée pour le navire et la campagne spécifiés.'], 404);
+        }
+    
+        // Traitement des résultats
         $navires = [];
         $totalPallets = [];
         $quotas = [];
@@ -72,26 +112,30 @@ class DashboardController extends Controller
         $totalPalletsSum = 0;
         $pourcentageSum = 0;
         $stationsSet = [];
-
+        $processedNavires = [];
+    
         foreach ($results as $row) {
             $navire = $row->navire;
-            if (!in_array($navire, $navires)) {
+            if (!in_array($navire, $processedNavires)) {
                 $navires[] = $navire;
-                $totalPallets[] = $row->total_pallets;
-                $quotas[] = $row->quotas_navire;
-                $pourcentages[] = $row->pourcentage_quota;
-                $totalPalletsSum += $row->total_pallets;
-                $pourcentageSum += $row->pourcentage_quota;
+                $totalPallets[] = $row->total_pallets ?? 0;
+                $quotas[] = $row->quotas_navire ?? 0;
+                $pourcentages[] = $row->pourcentage_quota ?? 0;
+                $totalPalletsSum += $row->total_pallets ?? 0;
+                $pourcentageSum += $row->pourcentage_quota ?? 0;
+                $processedNavires[] = $navire;
             }
+    
             $station = $row->station ?? 'Inconnue';
             if (!in_array($station, $stationsLabels)) {
                 $stationsLabels[] = $station;
                 $stationsSet[] = $station;
             }
-            $stationsData[$navire][$station] = $row->pallets_par_station;
+            $stationsData[$navire][$station] = $row->pallets_par_station ?? 0;
         }
-
-        return response()->json([
+    
+        // Débogage de la réponse JSON
+        $response = [
             'navires' => $navires,
             'total_pallets_data' => $totalPallets,
             'quotas' => $quotas,
@@ -101,7 +145,9 @@ class DashboardController extends Controller
             'total_pallets' => $totalPalletsSum,
             'avg_pourcentage' => count($pourcentages) ? round($pourcentageSum / count($pourcentages), 2) : 0,
             'stations_count' => count($stationsSet)
-        ]);
+        ];
+        
+        return response()->json($response);
     }
 
     public function getMouvements(Request $request)
