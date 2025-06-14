@@ -101,7 +101,7 @@
                         <select id="filter-compagne" class="form-control">
                             <option value="">Sélectionner</option>
                             @foreach($campagnes as $campagne)
-                                <option value="{{ $campagne->id_compagne }}" 
+                                <option value="{{ $campagne->id_compagne }}"
                                         {{ $campagne->etat == 1 ? 'selected' : '' }}>
                                     {{ $campagne->annee }} {{ $campagne->etat == 1 ? '(En cours)' : '' }}
                                 </option>
@@ -164,7 +164,7 @@
                     <div class="card card-custom">
                         <div class="card-header-custom">Palettes par Station</div>
                         <div class="card-body-custom">
-                            <div class="chart-container">
+                            <div class="chart-container" style="width: 50%">
                                 <canvas id="stationsChart"></canvas>
                             </div>
                         </div>
@@ -266,10 +266,10 @@ function initializeCharts(navires, totalPallets, quotas, pourcentages, stationsL
             datasets: [{
                 label: 'Palettes par Station',
                 data: stationTotals,
-                backgroundColor: stationsLabels.map((_, index) => 
+                backgroundColor: stationsLabels.map((_, index) =>
                     `rgba(${100 + index * 50}, ${150 - index * 30}, ${200 - index * 20}, 0.5)`
                 ),
-                borderColor: stationsLabels.map((_, index) => 
+                borderColor: stationsLabels.map((_, index) =>
                     `rgba(${100 + index * 50}, ${150 - index * 30}, ${200 - index * 20}, 1)`
                 ),
                 borderWidth: 1
@@ -279,8 +279,8 @@ function initializeCharts(navires, totalPallets, quotas, pourcentages, stationsL
             responsive: true,
             plugins: {
                 legend: { position: 'top' },
-                title: { 
-                    display: true, 
+                title: {
+                    display: true,
                     text: selectedNavire ? `Palettes par Station pour ${navires.find(n => stationsData[n] && Object.keys(stationsData[n]).length > 0)}` : 'Palettes par Station (Global)'
                 },
                 tooltip: {

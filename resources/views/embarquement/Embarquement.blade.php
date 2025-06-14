@@ -254,7 +254,6 @@
                             <div class="info-text">
                                 <h5 class="card-title mb-3"><i class="fas fa-ship"></i> Informations Navire</h5>
                                 <p><i class="fas fa-ship"></i> NAVIRE: Atlantic klipper</p>
-                                <p><i class="fas fa-map-marker-alt"></i> DESTINATION: Europe</p>
                                 <p><i class="fas fa-clock"></i> ETAT: 2025-05-03 22:18</p>
                             </div>
                             <br>
