@@ -12,7 +12,6 @@ class DashboardController extends Controller
         // Récupérer la campagne en cours (par exemple, la plus récente)
         $currentCampagne = DB::table('compagne')
             ->select('id_compagne', 'annee')
-            ->where('etat', 0)
             ->first();
 
         // Récupérer toutes les campagnes pour le filtre
@@ -36,17 +35,17 @@ class DashboardController extends Controller
     {
         $compagneId = $request->input('id_compagne');
         $navireId = $request->input('id_navire');
-        
+
         // Vérification des données dans v_quotas_navire_compagne et embarquement
         $testQuotas = DB::table('v_quotas_navire_compagne')
             ->where('id_compagne', $compagneId)
             ->where('id_navire', $navireId ?? 0)
             ->get();
-        
+
         $testEmbarquement = DB::table('embarquement')
             ->where('navire_id', $navireId ?? 0)
             ->get();
-        
+
         // Sous-requête pour TotalParNavire
         $totalParNavire = DB::table('v_quotas_navire_compagne as v')
             ->leftJoin('embarquement as e', 'v.id_navire', '=', 'e.navire_id')
@@ -62,7 +61,7 @@ class DashboardController extends Controller
                 DB::raw('SUM(e.nombre_pallets) as total_pallets'),
                 DB::raw('ROUND((SUM(e.nombre_pallets) / NULLIF(v.quotas_navire, 0) * 100), 2) as pourcentage_quota')
             );
-    
+
         // Requête principale
         $results = DB::table(DB::raw("({$totalParNavire->toSql()}) as t"))
             ->mergeBindings($totalParNavire) // Fusionner les bindings de la sous-requête
@@ -96,12 +95,12 @@ class DashboardController extends Controller
                 DB::raw('SUM(e.nombre_pallets) as pallets_par_station')
             )
             ->get();
-    
-        
+
+
         if ($results->isEmpty() && $navireId) {
             return response()->json(['error' => 'Aucune donnée trouvée pour le navire et la campagne spécifiés.'], 404);
         }
-    
+
         // Traitement des résultats
         $navires = [];
         $totalPallets = [];
@@ -113,7 +112,7 @@ class DashboardController extends Controller
         $pourcentageSum = 0;
         $stationsSet = [];
         $processedNavires = [];
-    
+
         foreach ($results as $row) {
             $navire = $row->navire;
             if (!in_array($navire, $processedNavires)) {
@@ -125,7 +124,7 @@ class DashboardController extends Controller
                 $pourcentageSum += $row->pourcentage_quota ?? 0;
                 $processedNavires[] = $navire;
             }
-    
+
             $station = $row->station ?? 'Inconnue';
             if (!in_array($station, $stationsLabels)) {
                 $stationsLabels[] = $station;
@@ -133,7 +132,7 @@ class DashboardController extends Controller
             }
             $stationsData[$navire][$station] = $row->pallets_par_station ?? 0;
         }
-    
+
         // Débogage de la réponse JSON
         $response = [
             'navires' => $navires,
@@ -146,7 +145,7 @@ class DashboardController extends Controller
             'avg_pourcentage' => count($pourcentages) ? round($pourcentageSum / count($pourcentages), 2) : 0,
             'stations_count' => count($stationsSet)
         ];
-        
+
         return response()->json($response);
     }
 
