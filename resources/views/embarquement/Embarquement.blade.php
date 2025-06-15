@@ -162,13 +162,13 @@
     }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<div class="container text-center mt-5">
 
+<div class="container text-center mt-5">
     <div class="header d-flex justify-content-between align-items-center">
         <img src="/assets/images/SMMC-Logo.png" alt="SMMC Logo" class="me-3">
         <div class="text-end">
             <p class="mb-0"><i class="fas fa-info-circle"></i> INFORMATION TECHNIQUE</p>
-            <p class="mb-0"><i class="fas fa-calendar-alt"></i> Date: 2025-06-03 22:18</p>
+            <p class="mb-0"><i class="fas fa-calendar-alt"></i> Date: {{ now()->format('Y-m-d H:i') }}</p>
         </div>
     </div>
     <div class="row">
@@ -178,31 +178,18 @@
                     <h5 class="card-title text-center mb-3"><i class="fas fa-boxes"></i> Calages du Navire</h5>
                     <table class="table table-custom">
                         <tbody>
-                            <tr>
-                                <td class="rank">1</td>
-                                <td class="large-number">0040</td>
-
-                            </tr>
-                            <tr>
-                                <td class="rank">2</td>
-                                <td class="large-number">0020</td>
-
-                            </tr>
-                            <tr>
-                                <td class="rank">3</td>
-                                <td class="large-number">0199</td>
-
-                            </tr>
-                            <tr>
-                                <td class="rank">4</td>
-                                <td class="large-number">00</td>
-
-                            </tr>
-                            <tr>
-                                <td class="rank">5</td>
-                                <td class="large-number">00</td>
-
-                            </tr>
+                            @foreach($calages as $index => $calage)
+                                <tr>
+                                    <td class="rank">{{ $index + 1 }}</td>
+                                    <td class="large-number">{{ str_pad($calage->nombre_pallets, 4, '0', STR_PAD_LEFT) }}</td>
+                                </tr>
+                            @endforeach
+                            @for($i = count($calages); $i < 5; $i++)
+                                <tr>
+                                    <td class="rank">{{ $i + 1 }}</td>
+                                    <td class="large-number">00</td>
+                                </tr>
+                            @endfor
                         </tbody>
                     </table>
                 </div>
@@ -210,7 +197,7 @@
             <div class="card mb-1">
                 <div class="card-body">
                     <h5 class="card-title mb-2"></i> Total</h5>
-                    <p class="forecast-value">0259</p>
+                    <p class="forecast-value">{{ array_sum(array_column($calages, 'nombre_pallets')) }}</p>
                 </div>
             </div>
         </div>
@@ -218,53 +205,53 @@
             <div class="card mb-1">
                 <div class="card-body">
                     <h5 class="card-title mb-2">∑ </i> Entree magasin</h5>
-                    <p class="forecast-value">539</p>
+                    <p class="forecast-value">{{ $entreeMagasin }}</p>
                 </div>
             </div>
             <div class="card mb-1">
                 <div class="card-body">
                     <h5 class="card-title mb-2">∑ </i> Sortie magasin</h5>
-                    <p class="forecast-value">322</p>
+                    <p class="forecast-value">{{ $sortieMagasin }}</p>
                 </div>
             </div>
             <div class="card mb-1">
                 <div class="card-body">
                     <h5 class="card-title mb-2">∑ </i> Entree shift</h5>
-                    <p class="forecast-value">96</p>
+                    <p class="forecast-value">{{ $entreeShift }}</p>
                 </div>
             </div>
             <div class="card mb-1">
                 <div class="card-body">
                     <h5 class="card-title mb-2">∑ </i> Sortie shift</h5>
-                    <p class="forecast-value">128</p>
+                    <p class="forecast-value">{{ $sortieShift }}</p>
                 </div>
             </div>
             <div class="card mb-1">
                 <div class="card-body">
                     <h5 class="card-title mb-2">∑ </i> Embarquer shift</h5>
-                    <p class="forecast-value">128</p>
+                    <p class="forecast-value">{{ $embarquementShift }}</p>
                 </div>
             </div>
         </div>
         <div class="col-6">
             <div class="card">
-                <div class="card-body ">
+                <div class="card-body">
                     <div class="info-top">
                         <div class="col-8">
                             <div class="info-text">
                                 <h5 class="card-title mb-3"><i class="fas fa-ship"></i> Informations Navire</h5>
-                                <p><i class="fas fa-ship"></i> NAVIRE: Atlantic klipper</p>
-                                <p><i class="fas fa-clock"></i> ETAT: 2025-05-03 22:18</p>
+                                <p><i class="fas fa-ship"></i> NAVIRE: {{ $navireInfo->navire ?? 'N/A' }}</p>
+                                <p><i class="fas fa-clock"></i> ETAT: {{ now()->format('Y-m-d H:i') }}</p>
                             </div>
                             <br>
                             <div class="forecast-section">
                                 <div class="forecast-card">
                                     <p><i class="fas fa-eye"></i> Prévision</p>
-                                    <p class="forecast-value">7311</p>
+                                    <p class="forecast-value">{{ $navireInfo->quotas_navire ?? 0 }}</p>
                                 </div>
                                 <div class="forecast-card reste">
                                     <p><i class="fas fa-hourglass-half"></i> Reste</p>
-                                    <p class="forecast-value">7052</p>
+                                    <p class="forecast-value">{{ ($navireInfo->quotas_navire ?? 0) - ($navireInfo->total_pallets ?? 0) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -273,8 +260,8 @@
                                 <div class="progress-wrapper">
                                     <p>%</p>
                                     <div class="progress progress-vertical">
-                                        <div class="progress-bar progress-bar-striped bg-success progress-bar-vertical" role="progressbar" style="height: 3.5%" aria-valuenow="3.5" aria-valuemin="0" aria-valuemax="100">
-                                            <span class="progress-text">3.5%</span>
+                                        <div class="progress-bar progress-bar-striped bg-success progress-bar-vertical" role="progressbar" style="height: {{ $navireInfo->pourcentage_quota ?? 0 }}%" aria-valuenow="{{ $navireInfo->pourcentage_quota ?? 0 }}" aria-valuemin="0" aria-valuemax="100">
+                                            <span class="progress-text">{{ $navireInfo->pourcentage_quota ?? 0 }}%</span>
                                         </div>
                                     </div>
                                 </div>
@@ -292,7 +279,6 @@
             </div>
         </div>
     </div>
-
 </div>
 @endsection
 
@@ -305,10 +291,10 @@
     const shift3Chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['22h', '23h', '00h', '01h', '02h', '03h', '04h', '05h', '06h'],
+        labels: @json($chartLabels),
         datasets: [{
           label: 'Nombre de mouvements',
-          data: [25, 15, 20, 30, 40, 35, 35, 39, 20],
+          data: @json($chartValues),
           borderColor: 'steelblue',
           backgroundColor: 'lightsteelblue',
           fill: true,

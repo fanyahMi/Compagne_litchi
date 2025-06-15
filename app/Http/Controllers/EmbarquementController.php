@@ -319,6 +319,153 @@ class EmbarquementController extends Controller
 
     public function dashboardEmbarquementNavire()
     {
-        return view('embarquement.Embarquement');
+        $calages = DB::select("
+            SELECT 
+                b.navire_id, 
+                b.numero_cal, 
+                SUM(b.nombre_pallets) as nombre_pallets
+            FROM embarquement b
+            JOIN mouvement_navire m 
+                ON b.navire_id = m.navire_id
+            WHERE m.date_depart IS NULL
+            GROUP BY b.navire_id, b.numero_cal
+            ORDER BY nombre_pallets DESC
+            LIMIT 5
+        ");
+
+        // Requête pour l'entrée magasin
+        $entreeMagasin = DB::select("
+            SELECT 
+                SUM(e.quantite_palette) as quantite_palette
+            FROM entree_magasin e
+            JOIN mouvement_navire m 
+                ON e.navire_id = m.navire_id
+            WHERE m.date_depart IS NULL
+        ")[0]->quantite_palette ?? 0;
+
+        // Requête pour la sortie magasin
+        $sortieMagasin = DB::select("
+            SELECT 
+                SUM(sr.quantite_sortie) as quantite_palette
+            FROM sortant_magasin sr
+            JOIN entree_magasin e
+                ON sr.entree_magasin_id = e.id_entree_magasin  
+            JOIN mouvement_navire m 
+                ON e.navire_id = m.navire_id
+            WHERE m.date_depart IS NULL
+        ")[0]->quantite_palette ?? 0;
+
+        // Requête pour l'entrée shift
+        $entreeShift = DB::select("
+            SELECT 
+                SUM(e.quantite_palette) as quantite_palette
+            FROM entree_magasin e
+            JOIN shift s 
+                ON e.shift_id = s.id_shift
+            JOIN mouvement_navire m 
+                ON e.navire_id = m.navire_id
+            WHERE m.date_depart IS NULL
+        ")[0]->quantite_palette ?? 0;
+
+        // Requête pour la sortie shift
+        $sortieShift = DB::select("
+            SELECT 
+                SUM(sr.quantite_sortie) as quantite_palette
+            FROM sortant_magasin sr
+            JOIN shift s
+                ON sr.shift_id = s.id_shift
+            JOIN entree_magasin e
+                ON sr.entree_magasin_id = e.id_entree_magasin  
+            JOIN mouvement_navire m 
+                ON e.navire_id = m.navire_id
+            WHERE m.date_depart IS NULL
+        ")[0]->quantite_palette ?? 0;
+
+        // Requête pour l'embarquement shift
+        $embarquementShift = DB::select("
+            SELECT 
+                SUM(b.nombre_pallets) as nombre_pallets
+            FROM embarquement b
+            JOIN mouvement_navire m 
+                ON b.navire_id = m.navire_id
+            JOIN shift s
+                ON b.shift_id = s.id_shift
+            WHERE m.date_depart IS NULL
+        ")[0]->nombre_pallets ?? 0;
+
+        // Requête pour les informations du navire
+        $navireInfo = DB::select("
+            SELECT 
+                v.navire, 
+                v.id_navire, 
+                v.quotas_navire,
+                SUM(e.nombre_pallets) AS total_pallets,
+                ROUND((SUM(e.nombre_pallets) / NULLIF(v.quotas_navire, 0) * 100), 2) AS pourcentage_quota
+            FROM v_quotas_navire_compagne AS v
+            LEFT JOIN embarquement AS e ON v.id_navire = e.navire_id
+            WHERE v.id_compagne = (
+                SELECT c.id_compagne 
+                FROM compagne c
+                WHERE c.etat = 0
+            ) AND v.id_navire = (
+                SELECT mn.navire_id
+                FROM mouvement_navire mn 
+                WHERE mn.date_depart IS NULL
+            )
+            GROUP BY v.navire, v.id_navire, v.quotas_navire
+        ")[0] ?? null;
+
+        // Requête pour le graphique (mouvements par heure pour un shift spécifique)
+        $chartData = DB::select("
+            WITH heures AS (
+                SELECT h.heure
+                FROM (
+                    SELECT 0 AS heure UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION 
+                    SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION 
+                    SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION 
+                    SELECT 15 UNION SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19 UNION 
+                    SELECT 20 UNION SELECT 21 UNION SELECT 22 UNION SELECT 23
+                ) h
+            ),
+            dates AS (
+                SELECT DISTINCT date_embarquement AS date
+                FROM embarquement
+            ),
+            combinaisons AS (
+                SELECT d.date, h.heure, s.id_shift, s.description AS shift_description
+                FROM dates d
+                CROSS JOIN heures h
+                CROSS JOIN shift s
+            )
+            SELECT 
+                c.heure,
+                COALESCE(COUNT(e.id_embarquement), 0) AS nombre_mouvements
+            FROM combinaisons c
+            LEFT JOIN embarquement e 
+                ON e.date_embarquement = c.date 
+                AND HOUR(e.heure_embarquement) = c.heure 
+                AND e.shift_id = c.id_shift
+            WHERE c.id_shift = 3
+            GROUP BY c.heure
+            ORDER BY c.heure
+        ");
+
+        // Préparer les données pour le graphique
+        $chartLabels = array_map(function ($item) { return $item->heure . 'h'; }, $chartData);
+        $chartValues = array_map(function ($item) { return $item->nombre_mouvements; }, $chartData);
+
+        // Passer les données à la vue
+        return view('embarquement.Embarquement', compact(
+            'calages',
+            'entreeMagasin',
+            'sortieMagasin',
+            'entreeShift',
+            'sortieShift',
+            'embarquementShift',
+            'navireInfo',
+            'chartLabels',
+            'chartValues'
+        ));
+        //return view('');
     }
 }
