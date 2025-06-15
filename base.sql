@@ -2048,26 +2048,6 @@ INSERT INTO  entree_magasin( id_entree_magasin, numero_camion, bon_livraison, pa
 INSERT INTO  entree_magasin( id_entree_magasin, numero_camion, bon_livraison, path_bon_livraison, chauffeur, quantite_palette, date_entrant, agent_id, numero_station_id, magasin_id, navire_id, shift_id ) VALUES ( 149, 'PT-053-NI', 'Q90_1112', 'bon_livraison/Q90_1112.pdf', 'Capucine', 5.0, '2025-06-06', 2, 4, 1, 2, 2);
 INSERT INTO  magasin( id_magasin, magasin ) VALUES ( 1, 'Magasin B1');
 INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 1, 1, '2024-11-12', null, 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 7, 1, '2025-05-10', '2025-06-15', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 8, 1, '2025-05-12', '2025-05-13', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 9, 1, '2025-05-04', '2025-06-19', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 10, 1, '2025-05-16', '2025-06-08', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 11, 1, '2025-05-11', '2025-06-18', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 12, 1, '2025-05-06', '2025-05-29', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 13, 1, '2025-05-09', '2025-06-06', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 14, 1, '2025-05-02', '2025-06-20', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 15, 1, '2025-04-28', '2025-05-25', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 16, 1, '2025-04-28', '2025-05-07', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 17, 1, '2025-05-22', '2025-06-03', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 18, 1, '2025-05-17', '2025-06-20', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 19, 1, '2025-05-21', '2025-05-28', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 20, 1, '2025-05-07', '2025-05-11', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 21, 1, '2025-04-25', '2025-05-27', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 22, 1, '2025-05-14', '2025-06-10', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 23, 1, '2025-04-26', '2025-05-30', 1);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 24, 1, '2025-05-13', '2025-05-28', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 25, 1, '2025-05-21', '2025-05-30', 2);
-INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 26, 1, '2025-05-18', '2025-06-10', 1);
 INSERT INTO  navire( id_navire, navire, nb_compartiment, quantite_max, type_navire_id ) VALUES ( 1, 'Atlantic klipper', 5, 22700, 1);
 INSERT INTO  navire( id_navire, navire, nb_compartiment, quantite_max, type_navire_id ) VALUES ( 2, 'Trust', 4, 4000, 1);
 INSERT INTO  numero_station( id_numero_station, compagne_id, station_id, numero_station ) VALUES ( 1, 1, 27, 1);
@@ -2414,6 +2394,7 @@ INSERT INTO  station( id_station, station, nif_stat ) VALUES ( 50, 'SODIAT', '40
 INSERT INTO  station( id_station, station, nif_stat ) VALUES ( 51, 'MIRA', '4081234564');
 INSERT INTO  station( id_station, station, nif_stat ) VALUES ( 52, 'EMEXAL', '4082345675');
 INSERT INTO  type_navire( id_type_navire, type_navire ) VALUES ( 1, 'Transporteur');
+
 INSERT INTO  utilisateur( id_utilisateur, matricule, nom, prenom, date_naissance, cin, mot_passe, sexe_id, role_id, situation_familial_id, created_at ) VALUES ( 1, '20240901', 'Greg', 'Johnson', '1985-06-15', '12345678', 'Doe', 1, 1, 1, '2025-05-21 11:24:2');
 INSERT INTO  utilisateur( id_utilisateur, matricule, nom, prenom, date_naissance, cin, mot_passe, sexe_id, role_id, situation_familial_id, created_at ) VALUES ( 2, '20240902', 'Smith', 'Jane', '1990-04-22', '87654321', 'Smith', 2, 2, 2, '2025-05-21 11:24:23');
 INSERT INTO  utilisateur( id_utilisateur, matricule, nom, prenom, date_naissance, cin, mot_passe, sexe_id, role_id, situation_familial_id, created_at ) VALUES ( 3, '20250902', 'Mirantsoa', 'Fanyah', '2006-03-22', '89694321', 'Fanyah', 2, 3, 2, '2025-05-21 11:28:00');
