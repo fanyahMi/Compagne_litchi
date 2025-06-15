@@ -1,3 +1,4 @@
+
 CREATE  TABLE  compagne ( 
 	id_compagne          INT  NOT NULL   AUTO_INCREMENT  PRIMARY KEY,
 	annee                INT  NOT NULL     ,
@@ -2067,7 +2068,7 @@ INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, d
 INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 24, 1, '2025-05-13', '2025-05-28', 2);
 INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 25, 1, '2025-05-21', '2025-05-30', 2);
 INSERT INTO  mouvement_navire( id_mouvement_navire, compagne_id, date_arriver, date_depart, navire_id ) VALUES ( 26, 1, '2025-05-18', '2025-06-10', 1);
-INSERT INTO  navire( id_navire, navire, nb_compartiment, quantite_max, type_navire_id ) VALUES ( 1, 'Atlantic klipper', 5, 4700, 1);
+INSERT INTO  navire( id_navire, navire, nb_compartiment, quantite_max, type_navire_id ) VALUES ( 1, 'Atlantic klipper', 5, 22700, 1);
 INSERT INTO  navire( id_navire, navire, nb_compartiment, quantite_max, type_navire_id ) VALUES ( 2, 'Trust', 4, 4000, 1);
 INSERT INTO  numero_station( id_numero_station, compagne_id, station_id, numero_station ) VALUES ( 1, 1, 27, 1);
 INSERT INTO  numero_station( id_numero_station, compagne_id, station_id, numero_station ) VALUES ( 2, 1, 28, 2);
