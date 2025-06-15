@@ -99,7 +99,6 @@
                     <div class="form-group col-md-3">
                         <label for="filter-compagne">Campagne</label>
                         <select id="filter-compagne" class="form-control">
-                            <option value="">Sélectionner</option>
                             @foreach($campagnes as $campagne)
                                 <option value="{{ $campagne->id_compagne }}" 
                                         {{ $campagne->etat == 1 ? 'selected' : '' }}>
@@ -312,6 +311,7 @@ function loadDashboardData(compagneId, navireId = '') {
             id_navire: navireId
         },
         success: function(data) {
+            console.log(data);
             // Mettre à jour les statistiques
             updateStats(data.total_pallets, data.avg_pourcentage, data.stations_count);
 
@@ -334,36 +334,17 @@ function loadDashboardData(compagneId, navireId = '') {
     });
 }
 
-$(document).ready(function () {
-    const navires = ['Atlantic Klipper', 'Trust'];
-    const totalPallets = [4200, 3430];
-    const quotas = [4700, 4000];
-    const pourcentages = [89, 86];
+$(document).ready(function() {
+    // Charger les données initiales du dashboard
+    const initialCompagne = $('#filter-compagne').val();
+    loadDashboardData(initialCompagne);
 
-    const stationsLabels = ['EXA Trading', 'CFM', 'MON LITCHI', 'COMEX', 'MCO TRADE', 'MADAPRO'];
-    const stationsData = {
-        'Atlantic Klipper': {
-            'EXA Trading': 800,
-            'CFM': 700,
-            'MON LITCHI': 600,
-            'COMEX': 700,
-            'MCO TRADE': 750,
-            'MADAPRO': 650
-        },
-        'Trust': {
-            'EXA Trading': 700,
-            'CFM': 630,
-            'MON LITCHI': 520,
-            'COMEX': 610,
-            'MCO TRADE': 500,
-            'MADAPRO': 470
-        }
-    };
-
-    // Inject stats
-    updateStats(7630, 86, 6);
-    initializeCharts(navires, totalPallets, quotas, pourcentages, stationsLabels, stationsData);
+    // Événement pour le filtre des graphiques
+    $('#filter-charts-btn').on('click', function() {
+        const compagne = $('#filter-compagne').val();
+        const navire = $('#filter-navire').val();
+        loadDashboardData(compagne, navire);
+    });
 });
-
 </script>
 @endsection
